@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+
+  userId                  String @id
+  email                   String
+  password                String
+  refreshToken            String?
+  defaultLanguageId       Int
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime
+
+  //REFERANS VERDİKLERİ
+  liveSession           LiveSession?
+  flashcards            Flashcard[]
+
+}
+
+model Language {
+
+  id                    Int @id @default(autoincrement())
+  name                  String
+  imageUrl              String
+
+  //REFERANS VERDİKLERİ
+  practices             Practice[]
+  flashcards            Flashcard[]
+
+}
+
+model Practice {
+
+  id                    Int @id @default(autoincrement())
+  languageId            Int
+  name                  String
+
+  //REFERANS VERDİKLERİ
+  flashcards            Flashcard[]
+
+  //REFERANS ALDIKLARI
+  language              Language @relation(fields: [languageId], references: [id])
+
+}
+
+model LiveSession {
+
+  liveSessionId         String @id
+  userId                String
+
+  //REFERANS ALDIKLARI
+  user                  User @relation(fields: [userId], references: [userId])
+}
+
+model Flashcard {
+
+  id                    Int @id @default(autoincrement())
+  userId                String
+  languageId            Int
+  practiceId            Int
+
+  //REFERANS ALDIKLARI
+  user                  User @relation(fields: [userId], references: [userId])
+  language              Language @relation(fields: [languageId], references: [id])
+  practice              Practice @relation(fields: [practiceId], references: [id])
+
+  //REFERANS VERDİKLERİ
+  flashcardCategories   FlashcardCategory[]
+  flashcardOldSessions  FlashcardOldSession[]
+}
+
+model FlashcardCategory {
+
+  id                    Int @id @default(autoincrement())
+  flashcardId           Int
+  name                  String
+
+  //REFERANS ALDIKLARI
+  flashcard             Flashcard @relation(fields: [flashcardId], references: [id])
+
+  //REFERANS VERDİKLERİ
+  flashcardOldSessions  FlashcardOldSession[]
+
+}
+
+model FlashcardOldSession {
+
+  oldSessionId          String @id
+  flashcardId           Int
+  categoryId            Int
+  rate                  Decimal
+  createdAt             DateTime @default(now())
+
+  //REFERANS ALDIKLARI
+  flashcard             Flashcard @relation(fields: [flashcardId], references: [id])
+  category              FlashcardCategory @relation(fields: [categoryId], references: [id])
+
+}
+
+
+model DeckWord {
+  
+  
+}
+
+model FlashcardSessionRow {
+
+}
