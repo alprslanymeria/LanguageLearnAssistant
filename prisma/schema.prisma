@@ -18,8 +18,11 @@ model User {
   updatedAt               DateTime
 
   //REFERANS VERDİKLERİ
-  liveSession           LiveSession?
-  flashcards            Flashcard[]
+  liveSession             LiveSession?
+  flashcards              Flashcard[]
+  listenings              Listening[]
+  writings                Writing[]
+  readings                Reading[]
 
 }
 
@@ -32,6 +35,9 @@ model Language {
   //REFERANS VERDİKLERİ
   practices             Practice[]
   flashcards            Flashcard[]
+  listenings            Listening[]
+  writings              Writing[]
+  readings              Reading[]
 
 }
 
@@ -43,6 +49,9 @@ model Practice {
 
   //REFERANS VERDİKLERİ
   flashcards            Flashcard[]
+  listenings            Listening[]
+  writings              Writing[]
+  readings              Reading[]
 
   //REFERANS ALDIKLARI
   language              Language @relation(fields: [languageId], references: [id])
@@ -52,7 +61,7 @@ model Practice {
 model LiveSession {
 
   liveSessionId         String @id
-  userId                String
+  userId                String @unique
 
   //REFERANS ALDIKLARI
   user                  User @relation(fields: [userId], references: [userId])
@@ -67,8 +76,8 @@ model Flashcard {
 
   //REFERANS ALDIKLARI
   user                  User @relation(fields: [userId], references: [userId])
-  language              Language @relation(fields: [languageId], references: [id])
-  practice              Practice @relation(fields: [practiceId], references: [id])
+  language              Language @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  practice              Practice @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction )
 
   //REFERANS VERDİKLERİ
   flashcardCategories   FlashcardCategory[]
@@ -86,6 +95,7 @@ model FlashcardCategory {
 
   //REFERANS VERDİKLERİ
   flashcardOldSessions  FlashcardOldSession[]
+  deckWords             DeckWord[]
 
 }
 
@@ -99,16 +109,220 @@ model FlashcardOldSession {
 
   //REFERANS ALDIKLARI
   flashcard             Flashcard @relation(fields: [flashcardId], references: [id])
-  category              FlashcardCategory @relation(fields: [categoryId], references: [id])
+  category              FlashcardCategory @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
+  //REFERANS VERDİKLERİ
+  flashcardSessionRows   FlashcardSessionRow[]
 }
 
 
 model DeckWord {
   
+  id                    Int @id @default(autoincrement())
+  categoryId            Int
+  question              String
+  answer                String
+
+  //REFERANS ALDIKLARI
+  category              FlashcardCategory @relation(fields: [categoryId], references: [id])
   
 }
 
 model FlashcardSessionRow {
 
+  id                    Int @id @default(autoincrement())
+  oldSessionId          String
+  question              String
+  answer                String
+  status                Boolean
+
+  //REFERANS ALDIKLARI
+  oldSession            FlashcardOldSession @relation(fields: [oldSessionId], references: [oldSessionId])
+}
+
+
+model Listening {
+
+  id                    Int @id @default(autoincrement())
+  userId                String
+  languageId            Int
+  practiceId            Int
+
+  //REFERANS ALDIKLARI
+  user                  User @relation(fields: [userId], references: [userId])
+  language              Language @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  practice              Practice @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  //REFERANS VERDİKLERİ
+  listeningFilms        ListeningFilm[]
+  listeningOldSessions  ListeningOldSession[]
+}
+
+model ListeningFilm {
+
+  id                    Int @id @default(autoincrement())
+  listeningId           Int
+  name                  String
+  imageUrl              String
+  sourceUrl             String
+
+  //REFERANS ALDIKLARI
+  listening             Listening @relation(fields: [listeningId], references: [id])
+
+  //REFERANS VERDİKLERİ
+  listeningOldSessions  ListeningOldSession[]
+}
+
+model ListeningOldSession {
+
+  oldSessionId          String @id
+  listeningId           Int
+  filmId                Int
+  rate                  Decimal
+  createdAt             DateTime @default(now())
+
+  //REFERANS ALDIKLARI
+  listening             Listening @relation(fields: [listeningId], references: [id])     
+  film                  ListeningFilm @relation(fields: [filmId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  //REFERANS VERDİKLERİ
+  listeningSessionRows  ListeningSessionRow[]
+}
+
+model ListeningSessionRow {
+
+  id                    Int @id @default(autoincrement())
+  oldSessionId          String
+  listenedSentence      String
+  answer                String
+  similarity            Decimal
+
+  //REFERANS ALDIKLARI
+  oldSession            ListeningOldSession @relation(fields: [oldSessionId], references: [oldSessionId])
+}
+
+
+model Writing {
+
+  id                    Int @id @default(autoincrement())
+  userId                String
+  languageId            Int
+  practiceId            Int
+
+  //REFERANS ALDIKLARI
+  user                  User @relation(fields: [userId], references: [userId])
+  language              Language @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  practice              Practice @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  //REFERANS VERDİKLERİ
+  writingBooks          WritingBook[]
+  writingOldSessions    WritingOldSession[]
+}
+
+model WritingBook {
+
+  id                    Int @id @default(autoincrement())
+  writingId             Int
+  name                  String
+  imageUrl              String
+  leftColor             String
+  sourceUrl             String
+
+  //REFERANS ALDIKLARI
+  writing               Writing @relation(fields: [writingId], references: [id])
+
+  //REFERANS VERDİKLERİ
+  writingOldSessions    WritingOldSession[]
+}
+
+model WritingOldSession {
+
+  oldSessionId          String @id
+  writingId             Int
+  bookId                Int
+  rate                  Decimal
+  createdAt             DateTime @default(now())
+
+  //REFERANS ALDIKLARI
+  writing               Writing @relation(fields: [writingId], references: [id])
+  book                  WritingBook @relation(fields: [bookId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  //REFERANS VERDİKLERİ
+  writingSessionRows    WritingSessionRow[]
+}
+
+model WritingSessionRow {
+
+  id                    Int @id @default(autoincrement())
+  oldSessionId          String
+  selectedSentence      String
+  answer                String
+  answerTranslate       String
+  similarity            Decimal
+
+  //REFERANS ALDIKLARI
+  oldSession            WritingOldSession @relation(fields: [oldSessionId], references: [oldSessionId])
+
+}
+
+model Reading {
+
+  id                    Int @id @default(autoincrement())
+  userId                String
+  languageId            Int
+  practiceId            Int
+
+  //REFERANS ALDIKLARI
+  user                  User @relation(fields: [userId], references: [userId])
+  language              Language @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  practice              Practice @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  //REFERANS VERDİKLERİ
+  readingBooks          ReadingBook[]
+  readingOldSessions    ReadingOldSession[]
+}
+
+model ReadingBook {
+
+  id                    Int @id @default(autoincrement())
+  readingId             Int
+  name                  String
+  imageUrl              String
+  leftColor             String
+  sourceUrl             String
+
+  //REFERANS ALDIKLARI
+  reading               Reading @relation(fields: [readingId], references: [id])
+
+  //REFERANS VERDİKLERİ
+  readingOldSessions    ReadingOldSession[]
+}
+
+model ReadingOldSession {
+  
+  oldSessionId          String @id
+  readingId             Int
+  bookId                Int
+  rate                  Decimal
+  createdAt             DateTime @default(now())
+
+  //REFERANS ALDIKLARI
+  reading               Reading @relation(fields: [readingId], references: [id])
+  book                  ReadingBook @relation(fields: [bookId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  //REFERANS VERDİKLERİ
+  readingSessionRows    ReadingSessionRow[]
+}
+
+model ReadingSessionRow {
+
+  id                    Int @id @default(autoincrement())
+  oldSessionId          String
+  selectedSentence      String
+  answer                String
+  answerTranslate       String
+  similarity            Decimal
+
+  //REFERANS ALDIKLARI
+  oldSession            ReadingOldSession @relation(fields: [oldSessionId], references: [oldSessionId])
 }
