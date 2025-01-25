@@ -18,10 +18,11 @@
         "name": "next"
       }
     ],
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "paths": {
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/Auth.js", "app/api/auth/[...nextauth]/route.ts"],
   "exclude": ["node_modules"]
 }
