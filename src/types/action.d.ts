@@ -4,3 +4,10 @@ export type Language = {
     name: string
     imageUrl: string
 };
+
+// TYPE Practice (ACTION METOT DÖNEN VERİ TİPİ)
+export type Practice = {
+    id: number
+    languageId: number
+    name: string
+}

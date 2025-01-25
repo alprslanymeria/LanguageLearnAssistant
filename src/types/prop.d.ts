@@ -1,3 +1,4 @@
+import { Practice } from "@prisma/client"
 import InfoMessageComponent from "../components/infoMessage"
 
 export type showErrorPropTypes = {
@@ -21,4 +22,9 @@ export type infoMessageComponentPropTypes = {
 
 export type flagComponentPropTypes = {
     languages : Language[]
+}
+
+export type practiceComponentPropTypes = {
+    practices : Practice[]
+    language : string | null
 }
