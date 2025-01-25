@@ -16,7 +16,7 @@ export default function Signup() {
     // STATES
     const [languages, setLanguages] = useState<Language[]>([]);
     const [isLoading, setIsLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
+    const [error, setError] = useState<string | null>("")
     const [errorDetails, setErrorDetails] = useState<string | null>(null)
 
     // FORM ACTION
@@ -56,7 +56,7 @@ export default function Signup() {
     return <></>
 
     if(error != "")
-    <ShowError error={error} errorDetails={errorDetails}></ShowError>
+    return <ShowError error={error} errorDetails={errorDetails}></ShowError>
 
     return (
         <div className="flex items-center justify-center">
