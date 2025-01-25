@@ -13,6 +13,6 @@ export async function GetLanguages() {
         
     } catch (error) {
         
-        if(error instanceof Error) return {data: null, status: 500, message: "Language verileri alınırken bir hata oluştu", details: error.message};
+        if(error instanceof Error) return {status: 500, message: "Language verileri alınırken bir hata oluştu", details: error.message};
     }
 }
