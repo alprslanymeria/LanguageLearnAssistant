@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 //TYPES
 import { practiceComponentPropTypes } from "../types/prop"
 //ASSETS
@@ -13,13 +14,13 @@ export default function PracticeComponent({practices, language} : practiceCompon
             {practices.map((practice,index) => {
                     return (
                         <div key={index} className="flex justify-center">
-                            <a href={`/lang?language=${language}&practice=${practice.name}`}>
+                            <Link href={`/lang?language=${language}&practice=${practice.name}`}>
                                 <button
                                 className={` ${mitr.className} w-64 text-xl mt-5 bg-[#B95DE5] text-white font-medium py-2 rounded-lg shadow-md shadow-[#ad49db] hover:bg-[#ad49db] transition-colors duration-300`}
                                 >
                                 {practice.name}
                                 </button>
-                            </a>
+                            </Link>
                         </div>
                     )
                 })

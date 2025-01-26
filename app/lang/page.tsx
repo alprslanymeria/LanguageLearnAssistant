@@ -23,7 +23,7 @@ export default function Page() {
             setIsShow(true)
         else
             setIsShow(false)
-    }, []);
+    }, [practice]);
     
     return (
         <>

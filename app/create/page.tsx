@@ -44,7 +44,7 @@ export default function Create() {
                 setIsLoading(false)
                 return
             } 
-            if(response && response.status == 500){
+            if(response && response.status == 500 ){
                 
                 setError(response.message ?? null);
                 setErrorDetails(response.details ?? null);

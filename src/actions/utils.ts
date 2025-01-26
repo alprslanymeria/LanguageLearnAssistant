@@ -32,7 +32,7 @@ export default async function GetCreateItems(language: string | null, practice: 
                         languageId: lang.id
                     },
                     include: {
-                        flashcardCategoy : true
+                        flashcardCategories : true
                     }
                 })
                 break;
@@ -44,7 +44,7 @@ export default async function GetCreateItems(language: string | null, practice: 
                         languageId: lang.id
                     },
                     include: {
-                        readingBook : true
+                        readingBooks : true
                     }
                 })
                 break;
@@ -56,7 +56,7 @@ export default async function GetCreateItems(language: string | null, practice: 
                         languageId: lang.id
                     },
                     include: {
-                        writingBook : true
+                        writingBooks : true
                     }
                 })
                 break;
@@ -68,7 +68,7 @@ export default async function GetCreateItems(language: string | null, practice: 
                         languageId: lang.id
                     },
                     include: {
-                        listeningFilm : true
+                        listeningFilms : true
                     }
                 })
                 break;
