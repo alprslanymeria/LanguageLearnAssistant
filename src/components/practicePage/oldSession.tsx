@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 //STORE
-import { GlobalStore } from "../store/globalStore";
+import { GlobalStore } from "../../store/globalStore";
 import { markazi } from "@/public/fonts";
+//TYPES
+import { oldSessionComponentPropTypes } from "@/src/types/prop";
 
-export default function OldSessionComponent({language, practice}: any) {
+export default function OldSessionComponent({language, practice}: oldSessionComponentPropTypes) {
 
     // GET OLD SESSIONS
     const {OldSessions} = GlobalStore();
@@ -37,13 +39,13 @@ export default function OldSessionComponent({language, practice}: any) {
                 <div className="container max-w-lg rounded-lg mx-auto bg-[#4D5B6C] p-5 mt-5">
                     <div>
                         {OldSessions.map((session, index) => (
-                            <Link href={`/detail/?id=${session.id}`} passHref>
+                            <Link href={`/detail/?language=${language}&practice=${practice}&id=${session.oldSessionId}`} passHref>
                                 <div 
                                     key={index}
                                     className="flex justify-between bg-white p-4 mb-3 rounded shadow-sm"
                                     >
-                                    <p className="text-gray-800">{session.createdOn}</p>
-                                    <p className="text-gray-600 m-0">Rate: {session.rate}/100</p>
+                                    <p className="text-black-800">{new Date(session.createdAt).toLocaleString()}</p>
+                                    <p className="text-black-600 m-0">Rate: {session.rate}/100</p>
                                 </div>
                             </Link>
                         ))}

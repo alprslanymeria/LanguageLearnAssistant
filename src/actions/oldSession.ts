@@ -17,6 +17,7 @@ export default async function GetOldSessions(language: string | null, practice: 
         // GET PRACTICE ID
         const prac = await prisma.practice.findFirst({
             where: {
+                languageId: lang.id,
                 name: practice
             }
         })
@@ -25,50 +26,46 @@ export default async function GetOldSessions(language: string | null, practice: 
 
         switch (practice) {
             case "flashcard":
-                OldSessions = await prisma.flashcard.findMany({
+                OldSessions = await prisma.flashcardOldSession.findMany({
                     where: {
-                        userId: userId,
-                        practiceId: prac.id,
-                        languageId: lang.id
-                    },
-                    include: {
-                        flashcardOldSessions : true
+                        flashcard: {
+                            userId: userId,
+                            practiceId: prac.id,
+                            languageId: lang.id
+                        }
                     }
                 })
                 break;
             case "reading":
-                OldSessions = await prisma.reading.findMany({
+                OldSessions = await prisma.readingOldSession.findMany({
                     where: {
-                        userId: userId,
-                        practiceId: prac.id,
-                        languageId: lang.id
-                    },
-                    include: {
-                        readingOldSessions : true
+                        reading: {
+                            userId: userId,
+                            practiceId: prac.id,
+                            languageId: lang.id
+                        }
                     }
                 })
                 break;
             case "writing":
-                OldSessions = await prisma.writing.findMany({
+                OldSessions = await prisma.writingOldSession.findMany({
                     where: {
-                        userId: userId,
-                        practiceId: prac.id,
-                        languageId: lang.id
-                    },
-                    include: {
-                        writingOldSessions : true
+                        writing: {
+                            userId: userId,
+                            practiceId: prac.id,
+                            languageId: lang.id
+                        }
                     }
                 })
                 break;
             case "listening":
-                OldSessions = await prisma.listening.findMany({
+                OldSessions = await prisma.listeningOldSession.findMany({
                     where: {
-                        userId: userId,
-                        practiceId: prac.id,
-                        languageId: lang.id
-                    },
-                    include: {
-                        listeningOldSessions : true
+                        listening: {
+                            userId: userId,
+                            practiceId: prac.id,
+                            languageId: lang.id
+                        }
                     }
                 })
                 break;
@@ -80,5 +77,57 @@ export default async function GetOldSessions(language: string | null, practice: 
         
         if(error instanceof Error) return {status: 500, message: "OldSessions verileri alınırken bir hata oluştu", details: error.message};
 
+    }
+}
+
+
+export async function SaveOldSession(row: any){
+
+    try {
+        
+        const from = row.from
+
+        switch(from){
+
+            case "flashcard":
+                await prisma.flashcardOldSession.create({
+                    data: {
+                        oldSessionId: row.OldSessionId,
+                        flashcardId: row.flashcardId,
+                        categoryId: row.categoryId,
+                        rate: row.rate
+                    }
+                })
+                break;
+            case "reading":
+                await prisma.readingOldSession.create({
+                    data: {
+                        oldSessionId: row.OldSessionId,
+                        readingId: row.readingId,
+                        bookId: row.bookId,
+                        rate: row.rate
+                    }
+                })
+                break;
+            case "writing":
+                await prisma.writingOldSession.create({
+                    data: {
+                        oldSessionId: row.OldSessionId,
+                        writingId: row.writingId,
+                        bookId: row.bookId,
+                        rate: row.rate
+                    }
+                })
+                break;
+            case "listening":
+        }
+
+    } catch (error) {
+
+        if(error instanceof Error) console.log(error.message)
+        
+        if(error instanceof Error) return {status: 500, message: "OldSessions verileri kaydedilirken bir hata oluştu", details: error.message};
+
+        
     }
 }

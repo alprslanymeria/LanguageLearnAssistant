@@ -11,8 +11,8 @@ export async function Navbar() {
 
     //SESSION ÜZERİNDEN KULLANCII BİLGİLERİ ALINIR
     const session = await auth()
-    const email : string | undefined | null = session?.user?.email
-    const userId: string | undefined | null = session?.user?.userId
+    const email  = session?.user?.email
+    const userId = session?.user?.userId
 
     return (
 

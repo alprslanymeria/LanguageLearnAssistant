@@ -1,6 +1,7 @@
 import CryptoJS from 'crypto-js'
 
-const SECRET_KEY = process.env.CRYPTO_SECRET_KEY
+const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY
+// const SECRET_KEY = "aRfiXpNLzT6ZRGN7flPJaFK9PDNafGHmAJHzGTGUGA"
 
 // ENCRYPT FUNCTION
 export function encrypt(sessionId)

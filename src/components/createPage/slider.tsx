@@ -5,24 +5,27 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 //ACTIONS
-import { CreateLiveSession } from "../actions/liveSession";
+import { CreateLiveSession } from "../../actions/liveSession";
 //STORE
-import { GlobalStore } from "../store/globalStore";
+import { GlobalStore } from "../../store/globalStore";
 //COMPONENTS
 import PracticeCardComponent from "./practiceCard";
-import ShowError from "./showError";
+import ShowError from "../utils/showError";
 //LIBRARIES
 import {encrypt} from "@/src/lib/crypto"
 //3RD PARTY
 import { v4 as uuidv4 } from 'uuid';
+// TYPES
+import { sliderComponentPropTypes } from "../../types/prop";
 
 
-export default function SliderComponent({practice, language}: any) {
+export default function SliderComponent({practice, language}: sliderComponentPropTypes) {
 
+    // HOOKS
     const router = useRouter();
 
     //STORE
-    const {Data, setSelected} = GlobalStore();
+    const {Items, setSelectedItemId, setOldSessionId} = GlobalStore();
 
     //SESSION
     const session = useSession()
@@ -39,6 +42,7 @@ export default function SliderComponent({practice, language}: any) {
 
         //SESSION ID OLUŞTUR
         const sessionId = uuidv4();
+        setOldSessionId(sessionId)
 
         //LIVESESSION İÇERİSİNE KAYDET
         const response = await CreateLiveSession(sessionId, userId)
@@ -51,24 +55,24 @@ export default function SliderComponent({practice, language}: any) {
         }
 
         //SELECTED GÜNCELLE
-        setSelected(selectedItem.id)
+        setSelectedItemId(selectedItem.id)
 
         //CREATE SAFE URL
         const encryptedSessionId = encrypt(sessionId)
         const safeUrl = encodeURIComponent(encryptedSessionId);
 
         //SESSION SAYFASINA YÖNLENDİR
-        router.push(`http://localhost:3000/session?id=${safeUrl}`);
+        router.push(`http://localhost:3000/session?id=${safeUrl}&practice=${practice}`);
     }
 
-    if(error != "") return <ShowError error={error} errorDetails={errorDetails}></ShowError> 
+    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError> 
 
     return (
 
         <>
             <div className="flex justify-center w-full">
                 <div className="carousel rounded-box flex md:flex-row flex-col space-y-4 md:space-y-0 md:space-x-4 gap-5 h-[550px] overflow-y-auto items-center px-10">
-                {Data.map((item, index) => (
+                {Items.map((item, index) => (
                     <div
                     key={index}
                     className={`carousel-item flex-shrink-0 cursor-pointer transform transition-all duration-300 ${

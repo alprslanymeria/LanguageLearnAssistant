@@ -28,7 +28,7 @@ password: z
 });
 
 
-export async function signup(prevState : any, formData : FormData)
+export async function signUpWithCredentials(prevState : any, formData : FormData)
 {
     // VALIDATION
     const result = signupSchema.safeParse(Object.fromEntries(formData));
@@ -45,14 +45,14 @@ export async function signup(prevState : any, formData : FormData)
     // IS EXISTING USER
     const hasUser = await prisma.user.findFirst({
         where: {
-        email: email,
+            email: email,
         },
     });
 
     if (hasUser != null) {
         return {
             errors: {
-            email: ["Bu e-mail adresi ile kayıtlı bir kullanıcı zaten var"],
+                email: ["Bu e-mail adresi ile kayıtlı bir kullanıcı zaten var"],
             },
         };
     }
@@ -67,7 +67,7 @@ export async function signup(prevState : any, formData : FormData)
         userId: userId,
         email: email,
         password: hashedPassword,
-        defaultLanguageId: Number(defaultLanguageId),
+        defaultLanguageId: defaultLanguageId,
         updatedAt: new Date(),
         }
     });
@@ -75,7 +75,7 @@ export async function signup(prevState : any, formData : FormData)
     redirect("/auth/login");
 }
 
-export async function signInWithCredentials(prevState : any , formData : FormData){
+export async function signInWithCredentials(prevState : any, formData : FormData){
 
     // VALIDATION
     const result = loginSchema.safeParse(Object.fromEntries(formData));

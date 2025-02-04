@@ -5,11 +5,11 @@ import { useActionState, useEffect, useState } from "react";
 import Link from 'next/link';
 // ACTIONS
 import {GetLanguages} from "@/src/actions/language"
-import {signup} from "@/src/actions/auth"
+import {signUpWithCredentials} from "@/src/actions/auth"
 // COMPONENTS
-import ShowError from "@/src/components/showError"
+import ShowError from "@/src/components/utils/showError"
 // TYPES
-import { Language } from "@/src/types/action";
+import { Language } from "@prisma/client";
 
 export default function Signup() {
 
@@ -20,7 +20,7 @@ export default function Signup() {
     const [errorDetails, setErrorDetails] = useState<string | null>(null)
 
     // FORM ACTION
-    const [state, signupAction] = useActionState(signup, undefined)
+    const [state, signupAction] = useActionState(signUpWithCredentials, undefined)
     
 
     useEffect(() => {
@@ -49,14 +49,12 @@ export default function Signup() {
         }
 
         GET()
-    }, [])
+    }, [isLoading])
 
 
-    if(isLoading)
-    return <></>
+    if(isLoading) return <></>
 
-    if(error != "")
-    return <ShowError error={error} errorDetails={errorDetails}></ShowError>
+    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
 
     return (
         <div className="flex items-center justify-center">

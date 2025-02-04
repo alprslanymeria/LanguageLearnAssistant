@@ -5,11 +5,11 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 //ACTIONS
-import { DeleteLiveSession } from "../actions/liveSession";
-import { logOut } from "../actions/auth";
+import { DeleteLiveSession } from "../../actions/liveSession";
+import { logOut } from "../../actions/auth";
 //TYPES
-import { emailPropTypes } from "../types/prop";
-import ShowError from "./showError";
+import { emailPropTypes } from "../../types/prop";
+import ShowError from "../utils/showError";
 
 export function Email({email, userId} : emailPropTypes) {
 
@@ -17,7 +17,7 @@ export function Email({email, userId} : emailPropTypes) {
     const pathName = usePathname();
 
     //STATES
-    const  [dropdownOpen, setDropdownOpen] = useState(false)
+    const  [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
     const [errorDetails, setErrorDetails] = useState<string | null>(null)
 
@@ -40,8 +40,7 @@ export function Email({email, userId} : emailPropTypes) {
         await logOut();
     }
 
-    if(error != "")
-        <ShowError error={error} errorDetails={errorDetails}></ShowError>
+    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
 
     return (
 
@@ -61,6 +60,11 @@ export function Email({email, userId} : emailPropTypes) {
                             <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-200">
                                 Logout
                             </button>
+                            <Link href="/list/rbooks" className="text-black hover:text-black-300 block">Reading Books</Link>
+                            <Link href="/list/wbooks" className="text-black hover:text-black-300 block">Writing Books</Link>
+                            <Link href="/list/lfilms" className="text-black hover:text-black-300 block">Listening Films</Link>
+                            <Link href="/list/fcategories" className="text-black hover:text-black-300 block">Flashcard Categories</Link>
+                            <Link href="/list/fwords" className="text-black hover:text-black-300 block">Flashcard Words</Link>
                         </div>
                     )}
                 </div>

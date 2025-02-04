@@ -5,11 +5,11 @@ import { useState, useEffect } from "react";
 //ACTIONS
 import { GetLanguages } from "@/src/actions/language";
 //COMPONENTS
-import InfoMessageComponent from "@/src/components/infoMessage";
-import FlagComponent from "@/src/components/flag";
-import ShowError from "@/src/components/showError";
+import InfoMessageComponent from "@/src/components/utils/infoMessage";
+import FlagComponent from "@/src/components/homePage/flag";
+import ShowError from "@/src/components/utils/showError";
 //TYPES
-import { Language } from "@/src/types/action";
+import { Language } from "@prisma/client";
 
 export default function Home() {
 
@@ -45,13 +45,11 @@ export default function Home() {
     }
 
     GET()
-  }, [])
+  }, [isLoading])
 
-  if(isLoading)
-  return <></>
+  if(isLoading) return <></>
 
-  if(error != "")
-  return <ShowError error={error} errorDetails={errorDetails}></ShowError>
+  if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
 
   return (
     <>

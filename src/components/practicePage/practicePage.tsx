@@ -3,15 +3,17 @@
 // REACT & NEXT
 import { useState, useEffect } from "react";
 //STORE
-import { GlobalStore } from "../store/globalStore"
+import { GlobalStore } from "../../store/globalStore"
 // COMPONENTS
-import InfoMessageComponent from "./infoMessage"
+import InfoMessageComponent from "../utils/infoMessage"
 import OldSessionComponent from "./oldSession"
 import { useSession } from "next-auth/react";
-import GetOldSessions from "../actions/oldSession";
-import ShowError from "./showError";
+import GetOldSessions from "../../actions/oldSession";
+import ShowError from "../utils/showError";
+//TYPES
+import { practicePagePropTypes } from "@/src/types/prop";
 
-export default function PracticePage({language, practice}: any) {
+export default function PracticePage({language, practice}: practicePagePropTypes) {
 
     //SESSION
     const session = useSession();
@@ -23,14 +25,14 @@ export default function PracticePage({language, practice}: any) {
     const [errorDetails, setErrorDetails] = useState<string | null>(null)
 
     //STORE
-    const {setData, setSelected, setOldSessions} = GlobalStore();
+    const {setItems, setSelectedItemId, setOldSessions} = GlobalStore();
     
 
     //EFFECTS
     useEffect(() => {
 
-        setData([])
-        setSelected(0)
+        setItems([])
+        setSelectedItemId(0)
 
     }, [])
 
@@ -67,8 +69,7 @@ export default function PracticePage({language, practice}: any) {
     if(isLoading)
     return <></>
         
-    if(error != "")
-    return <ShowError error={error} errorDetails={errorDetails}></ShowError>
+    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
     
     return(
         <>

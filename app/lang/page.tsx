@@ -4,8 +4,8 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation"
 //COMPONENTS
-import LanguagePage from "@/src/components/languagePage";
-import PracticePage from "@/src/components/practicePage";
+import LanguagePage from "@/src/components/languagePage/languagePage";
+import PracticePage from "@/src/components/practicePage/practicePage";
 
 export default function Page() {
 

@@ -3,23 +3,22 @@
 //REACT & NEXT
 import { useState } from "react"
 import Link from "next/link";
-import { usePathname, useRouter} from "next/navigation";
+import { usePathname} from "next/navigation";
 //ACTIONS
-import { DeleteLiveSession } from "../actions/liveSession";
-import { logOut } from "../actions/auth";
+import { DeleteLiveSession } from "../../actions/liveSession";
+import { logOut } from "../../actions/auth";
 //ASSETS
 import MenuIcon from "@/public/icons/menuIcon"
 import CloseIcon from "@/public/icons/closeIcon"
 //TYPES
-import { hamburgerMenuPropTypes } from "../types/prop";
-import ShowError from "./showError";
+import { hamburgerMenuPropTypes } from "../../types/prop";
+import ShowError from "../utils/showError";
 
 
 export function HamburgerMenu({ email, userId }: hamburgerMenuPropTypes) {
   
   //HOOKS
   const pathName = usePathname();
-  const router = useRouter();
 
   //STATES
   const [isOpen, setIsOpen] = useState(false)
@@ -44,16 +43,8 @@ export function HamburgerMenu({ email, userId }: hamburgerMenuPropTypes) {
       await logOut();
   }
 
-  const handleSignup = () => {
-    router.push('/auth/signup')
-  }
 
-  const handleLogin = () => {
-    router.push('/auth/login')
-  }
-
-  if(error != "")
-    <ShowError error={error} errorDetails={errorDetails}></ShowError>
+  if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
 
   return (
     <div className="relative">
@@ -76,19 +67,8 @@ export function HamburgerMenu({ email, userId }: hamburgerMenuPropTypes) {
         {!email && (
 
           <>
-            <button 
-              onClick={handleSignup} 
-              className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition mt-4"
-            >
-              Signup
-            </button>
-
-            <button 
-              onClick={handleLogin} 
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition mt-4"
-            >
-              Login
-            </button>
+            <Link className="bg-blue-500 text-white px-2 py-1 rounded-lg" href="/auth/login">Login</Link>
+            <Link className="bg-green-500 text-white px-2 py-1 rounded-lg" href="/auth/signup">Signup</Link>
           </>
 
         )}

@@ -9,8 +9,8 @@ import GetCreateItems from "@/src/actions/utils";
 //STORE
 import { GlobalStore } from "@/src/store/globalStore";
 //COMPONENTS
-import ShowError from "@/src/components/showError";
-import SliderComponent from "@/src/components/slider";
+import ShowError from "@/src/components/utils/showError";
+import SliderComponent from "@/src/components/createPage/slider";
 
 export default function Create() {
 
@@ -29,10 +29,12 @@ export default function Create() {
     const userId = session.data?.user.userId
 
     //STORE
-    const {setData} = GlobalStore();
+    const {setItems, setSessionData} = GlobalStore();
 
     useEffect(() => {
 
+        setSessionData({index: 0, sessionWords: [], sessionSentences: [], row: []})
+        
         // GET PRACTICES
         const GET = async () => {
 
@@ -40,7 +42,8 @@ export default function Create() {
 
             if(response && response.status == 200)
             {
-                setData(response.data);
+                console.log(response.data)
+                setItems(response.data);
                 setIsLoading(false)
                 return
             } 
@@ -62,7 +65,7 @@ export default function Create() {
 
     if(isLoading) return <></>
 
-    if(error != "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
+    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
 
     return (
 

@@ -6,20 +6,34 @@ export const GlobalStore = create<GlobalStoreState>()(
     persist(
       (set) => ({
         OldSessions: [],
-        Data: [],
-        Selected: 0,
-        SessionData: {},
+        OldSessionId: "",
+        Items: [],
+        SelectedItemId: 0,
+        SessionData: {
+            index: 0,
+            sessionWords: [],
+            selectedText: "",
+            inputText: "",
+            translatedText: "",
+            showTranslation: false,
+            sessionSentences: [],
+            row: []
+        },
 
         setOldSessions: (newOldSessions) => set((state) => ({
             OldSessions: newOldSessions
         })),
 
-        setData: (newData) => set((state) => ({
-            Data: newData
+        setOldSessionId: (newOldSessionId) => set((state) => ({
+            OldSessionId: newOldSessionId
         })),
 
-        setSelected: (newSelected) => set((state) => ({
-            Selected: newSelected
+        setItems: (newItems) => set((state) => ({
+            Items: newItems
+        })),
+
+        setSelectedItemId: (newSelectedItemId) => set((state) => ({
+            SelectedItemId: newSelectedItemId
         })),
 
         setSessionData: (newSessionData) => set((state) => ({
@@ -30,8 +44,8 @@ export const GlobalStore = create<GlobalStoreState>()(
             OldSessions: [...state.OldSessions, session]
         })),
 
-        addData: (dataItem) => set((state) => ({
-            Data: [...state.Data, dataItem]
+        addItem: (dataItem) => set((state) => ({
+            Items: [...state.Items, dataItem]
         })),
 
         updateSessionData: (key, value) => set((state) => ({
@@ -43,15 +57,15 @@ export const GlobalStore = create<GlobalStoreState>()(
 
         resetStore: () => set({
             OldSessions: [],
-            Data: [],
-            Selected: 0,
+            Items: [],
+            SelectedItemId: 0,
             SessionData: {}
         })
   
       }),
       {
         name: 'global-store',
-        storage: createJSONStorage(() => sessionStorage)
+        storage: createJSONStorage(() => localStorage)
       }
     )
   )

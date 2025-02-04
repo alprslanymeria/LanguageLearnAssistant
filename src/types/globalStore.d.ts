@@ -1,14 +1,16 @@
 export interface GlobalStoreState {
     OldSessions: any[];
-    Data: any[];
-    Selected: number;
+    OldSessionId: string;
+    Items: any[];
+    SelectedItemId: number;
     SessionData: Record<string, any>;
     setOldSessions: (newOldSessions: any[]) => void;
-    setData: (newData: any[]) => void;
-    setSelected: (newSelected: number) => void;
+    setOldSessionId: (newOldSessionId: string) => void;
+    setItems: (newItems: any[]) => void;
+    setSelectedItemId: (newSelectedItemId: number) => void;
     setSessionData: (newSessionData: Record<string, any>) => void;
     addOldSession: (session: any) => void;
-    addData: (dataItem: any) => void;
+    addItem: (dataItem: any) => void;
     updateSessionData: (key: string, value: any) => void;
     resetStore: () => void;
   }

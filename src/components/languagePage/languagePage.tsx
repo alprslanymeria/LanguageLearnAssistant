@@ -3,17 +3,18 @@
 // REACT & NEXT
 import { useState, useEffect } from "react";
 //TYPES
-import { Practice } from "../types/action";
+import { Practice } from "@prisma/client";
+import { languagePagePropTypes } from "@/src/types/prop";
 //STORE
-import { GlobalStore } from "../store/globalStore";
+import { GlobalStore } from "../../store/globalStore";
 //ACTIONS
-import GetPractices from "../actions/practice";
+import GetPractices from "../../actions/practice";
 //COMPONENTS
-import InfoMessageComponent from "./infoMessage";
+import InfoMessageComponent from "../utils/infoMessage";
 import PracticeComponent from "./practice";
-import ShowError from "./showError";
+import ShowError from "../utils/showError";
 
-export default function LanguagePage({language} : any) {
+export default function LanguagePage({language} : languagePagePropTypes) {
 
     //STATES
     const [practices, setPractices] = useState<Practice[]>([]);
@@ -58,11 +59,9 @@ export default function LanguagePage({language} : any) {
         GET()
     }, [language])
 
-    if(isLoading)
-    return <></>
+    if(isLoading) return <></>
     
-    if(error != "")
-    return <ShowError error={error} errorDetails={errorDetails}></ShowError>
+    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
     
     return (
         <>

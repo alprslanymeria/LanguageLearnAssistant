@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useState } from "react"
 //TYPES
-import { flagComponentPropTypes } from "../types/prop"
+import { flagComponentPropTypes } from "../../types/prop"
 //ASSETS
 import { mitr } from "@/public/fonts"
 

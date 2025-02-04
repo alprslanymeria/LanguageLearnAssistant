@@ -17,62 +17,131 @@ export default async function GetCreateItems(language: string | null, practice: 
         // GET PRACTICE ID
         const prac = await prisma.practice.findFirst({
             where: {
+                languageId: lang.id,
                 name: practice
             }
         })
+
+        let user;
+        let practiceForDefault;
+        let originalWriting : any
+
+        if(practice == "writing"){
+
+            //language english
+            //practice writing ise
+            //Bunun writing i --> languageId 1 - practiceId 3
+
+            //biz language defaultLanguage olanı alıyoruz --> turkish
+            //practice writing alıyoruz
+
+
+            // GET DEFAULT LANGUAGE ID
+            user = await prisma.user.findFirst({
+                where: {
+                    userId: userId
+                }
+            })
+
+            // GET PRACTICE ID
+            practiceForDefault = await prisma.practice.findFirst({
+                where: {
+                    languageId: user.defaultLanguageId,
+                    name: practice
+                }
+            })
+
+            //GET ORIGINAL WRITING
+            originalWriting = await prisma.writing.findFirst({
+
+                where: {
+                    userId: userId,
+                    practiceId: prac.id,
+                    languageId: lang.id
+                }
+            })
+
+            if(!originalWriting){
+
+                originalWriting = await prisma.writing.create({
+                    data: {
+                        userId: userId,
+                        practiceId: prac.id,
+                        languageId: lang.id
+                    }
+                })
+            }
+
+        }
+        
 
         let CreateItems = null
 
         switch (practice) {
             case "flashcard":
-                CreateItems = await prisma.flashcard.findMany({
+                CreateItems = await prisma.flashcardCategory.findMany({
                     where: {
-                        userId: userId,
-                        practiceId: prac.id,
-                        languageId: lang.id
+                        flashcard: {
+                            userId: userId,
+                            practiceId: prac.id,
+                            languageId: lang.id
+                        }
                     },
-                    include: {
-                        flashcardCategories : true
+                    include : {
+                        deckWords: true
                     }
                 })
                 break;
             case "reading":
-                CreateItems = await prisma.reading.findMany({
+                CreateItems = await prisma.readingBook.findMany({
                     where: {
-                        userId: userId,
-                        practiceId: prac.id,
-                        languageId: lang.id
+                        reading: {
+                            userId: userId,
+                            practiceId: prac.id,
+                            languageId: lang.id
+                        }
                     },
                     include: {
-                        readingBooks : true
+                        reading : true
                     }
                 })
                 break;
             case "writing":
-                CreateItems = await prisma.writing.findMany({
+                CreateItems = await prisma.writingBook.findMany({
                     where: {
-                        userId: userId,
-                        practiceId: prac.id,
-                        languageId: lang.id
+                        writing: {
+                            userId: userId,
+                            practiceId: practiceForDefault.id,
+                            languageId: user.defaultLanguageId
+                        }
                     },
-                    include: {
-                        writingBooks : true
+                    include : {
+                        writing : true
                     }
+                })
+
+                CreateItems.map((item: any) => {
+
+                    item.writingId = originalWriting.id
+                    
                 })
                 break;
             case "listening":
-                CreateItems = await prisma.listening.findMany({
+                CreateItems = await prisma.listeningFilm.findMany({
                     where: {
-                        userId: userId,
-                        practiceId: prac.id,
-                        languageId: lang.id
+                        listening: {
+                            userId: userId,
+                            practiceId: prac.id,
+                            languageId: lang.id
+                        }
                     },
-                    include: {
-                        listeningFilms : true
+                    include : {
+                        listening : true
                     }
                 })
                 break;
         }
+
 
         return {data: CreateItems, status: 200};
 

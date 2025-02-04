@@ -9,13 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google-cloud/storage": "^7.15.0",
+    "@google-cloud/translate": "^8.5.0",
     "@prisma/client": "^6.2.1",
+    "@react-pdf-viewer/core": "^3.12.0",
+    "@react-pdf-viewer/default-layout": "^3.12.0",
     "bcryptjs": "^2.4.3",
+    "canvas": "^3.1.0",
     "crypto-js": "^4.2.0",
     "next": "15.1.6",
     "next-auth": "^5.0.0-beta.25",
+    "node-vibrant": "^4.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "sharp": "^0.33.5",
+    "string-similarity": "^4.0.4",
     "uuid": "^11.0.5",
     "zod": "^3.24.1",
     "zustand": "^5.0.3"
@@ -24,6 +32,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/string-similarity": "^4.0.2",
+    "daisyui": "^4.12.23",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"

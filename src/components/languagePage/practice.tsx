@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 //TYPES
-import { practiceComponentPropTypes } from "../types/prop"
+import { practiceComponentPropTypes } from "../../types/prop"
 //ASSETS
 import { mitr } from "@/public/fonts"
 

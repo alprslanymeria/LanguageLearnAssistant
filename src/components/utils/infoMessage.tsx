@@ -3,7 +3,7 @@
 //ASSETS
 import { markazi } from "@/public/fonts"
 //TYPES
-import { infoMessageComponentPropTypes } from "../types/prop"
+import { infoMessageComponentPropTypes } from "../../types/prop"
 
 export default function InfoMessageComponent({message} : infoMessageComponentPropTypes) {
     return (
