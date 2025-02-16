@@ -3,8 +3,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 // LIBRARIES
 import { prisma } from "./lib/prisma";
-// UTILS
-import { comparePassword } from "./utils/utils";
+import { comparePassword } from "./lib/bcrypt";
 
 export const {
     handlers: {GET, POST},
@@ -21,7 +20,7 @@ export const {
         Credentials({
              async authorize(credentials) {
 
-                if(credentials == null) return null;
+                if(credentials == null) return null
 
                 try {
                     

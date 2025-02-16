@@ -1,22 +1,33 @@
 "use client"
 
-import { DeleteLiveSession } from "@/src/actions/liveSession";
-import { SaveOldSession } from "@/src/actions/oldSession";
-import { rate } from "@/src/actions/rate";
-import { SaveReadingRows, SaveWritingRows } from "@/src/actions/rows";
-import translateText from "@/src/actions/translate";
+// REACT & NEXT
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+// ACTIONS
+import { DeleteLiveSession } from "@/src/actions/liveSession"
+import { SaveOldSession } from "@/src/actions/oldSession"
+import { rate } from "@/src/actions/rate"
+import { SaveRows } from "@/src/actions/rows"
+import translateText from "@/src/actions/translate"
+// STORE
 import { GlobalStore } from "@/src/store/globalStore"
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+// COMPONENTS
+import ShowErrorComponent from "../utils/showError"
+
 
 export default function WritingFormComponent({item} : any) {
 
 
     //GLOBAL STORE
-    const {SessionData, updateSessionData, OldSessionId} = GlobalStore();
+    const {SessionData, updateSessionData, OldSessionId} = GlobalStore()
 
     //ROUTER
-    const router = useRouter();
+    const router = useRouter()
+
+    //STATES
+    const [error, setError] = useState<any>(null)
+    const [errorDetails, setErrorDetails] = useState<any>(null)
 
     //SESSION
     const session = useSession()
@@ -52,14 +63,15 @@ export default function WritingFormComponent({item} : any) {
         alert(`Benzerlik oranı: ${(similarity * 100).toFixed(2)}%`)
 
         //SAVED TO LOCAL STATE
-        const sentence = {
+        const row = {
+            from: "writing",
             OldSessionId: OldSessionId,
             selectedSentence: SessionData.selectedText,
             answer: SessionData.inputText,
             answerTranslate: SessionData.translatedText,
             similarity: similarity
         }
-        updateSessionData("sessionSentences", [...SessionData.sessionSentences, sentence])
+        updateSessionData("rows", [...SessionData.rows, row])
 
         //CLEAR STATES
         updateSessionData("selectedText", "")
@@ -73,35 +85,37 @@ export default function WritingFormComponent({item} : any) {
         try {
             
             //CALCULATE AVERAGE RATE
-        const totalRate = SessionData.sessionSentences.reduce((acc: any, item: any) => acc + item.similarity, 0)
-        const averageRate = totalRate / SessionData.sessionSentences.length
+            const totalRate = SessionData.sessionSentences.reduce((acc: any, item: any) => acc + item.similarity, 0)
+            const averageRate = totalRate / SessionData.sessionSentences.length
 
-        const row = {
-            from : "writing",
-            OldSessionId: OldSessionId,
-            writingId: item.writingId,
-            bookId: item.id,
-            rate: (averageRate * 100).toFixed(2),
-        }
+            const oldSessionRow = {
+                from : "writing",
+                OldSessionId: OldSessionId,
+                writingId: item.writingId,
+                bookId: item.id,
+                rate: (averageRate * 100).toFixed(2),
+            }
 
-        //SAVE OLD SESSION
-        await SaveOldSession(row)
+            //SAVE OLD SESSION
+            await SaveOldSession(oldSessionRow)
+                
+            //SAVE SENTENCES
+            await SaveRows(SessionData.rows)        
+
+            //DELETE LIVE SESSION
+            await DeleteLiveSession(userId)
             
-        //SAVE SENTENCES
-        await SaveWritingRows(SessionData.sessionSentences)        
-
-        //DELETE LIVE SESSION
-        await DeleteLiveSession(userId)
         } catch (error:any) {
             
-            console.log(error.message)
-            console.log(error.details)
+            setError(error.message)
+            setErrorDetails(error.details)
         }
-        
-        
+
         router.push("/")
 
     }
+
+    if(error) return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
     return (
 

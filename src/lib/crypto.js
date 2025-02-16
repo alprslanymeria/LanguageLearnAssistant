@@ -1,12 +1,12 @@
 import CryptoJS from 'crypto-js'
 
+// GET SECRET KEY
 const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY
-// const SECRET_KEY = "aRfiXpNLzT6ZRGN7flPJaFK9PDNafGHmAJHzGTGUGA"
 
 // ENCRYPT FUNCTION
 export function encrypt(sessionId)
 {
-    return CryptoJS.AES.encrypt(sessionId, SECRET_KEY).toString();
+    return CryptoJS.AES.encrypt(sessionId, SECRET_KEY).toString()
 }
 
 // DECRYPT FUNCTION

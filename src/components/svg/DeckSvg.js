@@ -1,7 +1,7 @@
 "use client"
 
-import React from 'react';
-import { markazi } from '@/public/fonts';
+import React from 'react'
+import { markazi } from '@/public/fonts'
 
 const DeckSvg = ({text, language}) => {
   return (
@@ -75,7 +75,7 @@ const DeckSvg = ({text, language}) => {
     <text className={`${markazi.className}`} x="250" y="550" fill="black" fontSize="60" fontFamily="Arial" transform="rotate(-6, 225, 550)" textAnchor="middle" dominantBaseline="middle">{text}</text>
     </svg>
 
-  );
-};
+  )
+}
 
-export default DeckSvg;
+export default DeckSvg

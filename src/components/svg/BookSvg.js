@@ -22,7 +22,7 @@ const BookSvg = ({imagePath, color}) => {
         </g>
 
         </svg>
-    );
+    )
 }
 
-export default BookSvg;
+export default BookSvg

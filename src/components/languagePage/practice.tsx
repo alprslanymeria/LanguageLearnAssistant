@@ -1,5 +1,6 @@
 "use client"
 
+// REACT & NEXT
 import Link from "next/link"
 //TYPES
 import { practiceComponentPropTypes } from "../../types/prop"
@@ -26,6 +27,5 @@ export default function PracticeComponent({practices, language} : practiceCompon
                 })
             }
         </>
-    
     )
 }

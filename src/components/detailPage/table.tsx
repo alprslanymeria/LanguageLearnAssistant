@@ -29,6 +29,14 @@ export default function TableComponent ({contents, columns, type}: tableComponen
                         </tr>
                     ))}
 
+                    {type === "listening" && contents.map((sentence: any, index : any) => (
+                        <tr key={sentence.id} className="hover:bg-gray-50">
+                            <td className="border border-gray-300 px-4 py-2">{sentence.listenedSentence}</td>
+                            <td className="border border-gray-300 px-4 py-2">{sentence.answer}</td>
+                            <td className="border border-gray-300 px-4 py-2 text-center">{(sentence.similarity * 100).toFixed(2)}%</td>
+                        </tr>
+                    ))}
+
                     {type === "flashcard" && contents.map((content : any, index : any) => (
                         <tr key={index} className="hover:bg-gray-50">
                             <td className="border border-gray-300 px-4 py-2 text-center">{content.question}</td>

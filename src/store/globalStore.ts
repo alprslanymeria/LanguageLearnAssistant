@@ -5,20 +5,40 @@ import { GlobalStoreState } from "../types/globalStore"
 export const GlobalStore = create<GlobalStoreState>()(
     persist(
       (set) => ({
+        Language: "",
+        Practice: "",
         OldSessions: [],
         OldSessionId: "",
         Items: [],
         SelectedItemId: 0,
         SessionData: {
-            index: 0,
-            sessionWords: [],
+            // Flashcard
+            wordIndex: 0,
+            // Reading || Writing
             selectedText: "",
             inputText: "",
             translatedText: "",
             showTranslation: false,
-            sessionSentences: [],
-            row: []
+            // Listening
+            lastPlayTime: 0,
+            lastPauseTime: 0,
+            subtitleJson: null,
+            textHeardByUser: "",
+            extractedText: "",
+            showAnswer: false,
+            sentences: [{sentenceStart: 0, sentenceEnd: 0}],
+            sentenceIndex: 0,
+            // All
+            rows: []
         },
+
+        setLanguage: (newLanguage) => set((state) => ({
+            Language: newLanguage
+        })),
+
+        setPractice: (newPractice) => set((state) => ({
+            Practice: newPractice
+        })),
 
         setOldSessions: (newOldSessions) => set((state) => ({
             OldSessions: newOldSessions
@@ -65,7 +85,7 @@ export const GlobalStore = create<GlobalStoreState>()(
       }),
       {
         name: 'global-store',
-        storage: createJSONStorage(() => localStorage)
+        storage: createJSONStorage(() => sessionStorage)
       }
     )
   )

@@ -1,35 +1,35 @@
 "use client"
 
 // REACT & NEXT
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 //ACTIONS
-import { GetItemById } from "@/src/actions/crud";
+import { GetItemById } from "@/src/actions/crud"
 //COMPONENTS
-import ShowError from "@/src/components/utils/showError";
-import CrudFormComponent from "@/src/components/crudForm";
-import { useSession } from "next-auth/react";
+import CrudFormComponent from "@/src/components/crudForm"
+import ShowErrorComponent from "@/src/components/utils/showError"
 
 
 export default function EditPage() {
 
     //SEARCH PARAMS
-    const searchParams = useSearchParams();
-    const id = searchParams.get("id");
-    const table = searchParams.get("table");
+    const searchParams = useSearchParams()
+    const id = searchParams.get("id")
+    const table = searchParams.get("table")
 
     //STATES
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>("")
     const [errorDetails, setErrorDetails] = useState<string | null>(null)
     //FORM STATES
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState({})
     const [formHeading, setFormHeading] = useState("")
     const [labelNames, setLabelNames] = useState<string[]>([])
     const [isHidden, setIsHidden] = useState<boolean[]>([])
 
     //SESSION
-    const session = useSession();
+    const session = useSession()
     const userId = session.data?.user.userId
 
     //FUNCTIONS
@@ -40,35 +40,34 @@ export default function EditPage() {
             case "rbooks":
                 setFormData({languageId: item.reading.languageId, input1: item.name, file1: item.imageUrl, file2: item.sourceUrl})
                 setFormHeading("Reading Book Edit")
-                setLabelNames(["Language", "", "Book Name", "", "Book Image", "Book Pdf"])
-                setIsHidden([true, false, true, false, true, true])
-                break;
+                setLabelNames(["Language", "", "Book Name", "", "Book Image", "Book Pdf" ,""])
+                setIsHidden([true, false, true, false, true, true, false])
+                break
             case "wbooks":
                 setFormData({languageId: item.writing.languageId, input1: item.name, file1: item.imageUrl, file2: item.sourceUrl})
                 setFormHeading("Writing Book Edit")
-                setLabelNames(["Language", "", "Book Name", "", "Book Image", "Book Pdf"])
-                setIsHidden([true, false, true, false, true, true])
-                break;
+                setLabelNames(["Language", "", "Book Name", "", "Book Image", "Book Pdf", ""])
+                setIsHidden([true, false, true, false, true, true, false])
+                break
             case "lfilms":
-                setFormData({languageId: item.listening.languageId, input1: item.name, file1: item.imageUrl, file2: item.sourceUrl})
+                setFormData({languageId: item.listening.languageId, input1: item.name, file1: item.imageUrl, file2: item.sourceUrl, file3: item.strUrl})
                 setFormHeading("Film Edit")
-                setLabelNames(["Language","", "Film Name", "", "Film Image", "Film Video"])
-                setIsHidden([true, false, true, false, true, true])
-                break;
+                setLabelNames(["Language","", "Film Name", "", "Film Image", "Film Video", "Subtitle File"])
+                setIsHidden([true, false, true, false, true, true, true])
+                break
             case "fcategories":
                 setFormData({languageId: item.flashcard.languageId, input1: item.name})
                 setFormHeading("Flashcard Category Edit")
-                setLabelNames(["Deck", "", "Category", "", "", ""])
-                setIsHidden([true, false, true, false, false, false])
-                break;
+                setLabelNames(["Deck", "", "Category", "", "", "", ""])
+                setIsHidden([true, false, true, false, false, false, false])
+                break
             case "fwords":
                 setFormData({languageId: item.category.flashcard.languageId, input1: item.question, input2: item.answer, categoryId: item.categoryId, categories: categories})
                 setFormHeading("Word Edit")
-                setLabelNames(["Language", "Deck", "Word", "Answer", "", ""])
-                setIsHidden([true,true, true, true, false, false])
-                break;
+                setLabelNames(["Language", "Deck", "Word", "Answer", "", "", ""])
+                setIsHidden([true,true, true, true, false, false, false])
+                break
         }
-
     }
 
     //EFFECTS
@@ -83,11 +82,11 @@ export default function EditPage() {
                 handlerFormData(response.data, response.categories)
                 setIsLoading(false)
                 
-                return;
+                return
             }
 
-            setError(response?.message ?? null);
-            setErrorDetails(response?.details ?? null);
+            setError(response?.message ?? null)
+            setErrorDetails(response?.details ?? null)
             setIsLoading(false)
         }
 
@@ -98,7 +97,7 @@ export default function EditPage() {
 
     if(isLoading) return <></>
     
-    if(error != "") return <ShowError error={error} errorDetails={errorDetails}/>
+    if(error != "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
     return (
 
@@ -113,5 +112,5 @@ export default function EditPage() {
             userId={userId}
             type="Edit">
         </CrudFormComponent>
-    );
+    )
 }

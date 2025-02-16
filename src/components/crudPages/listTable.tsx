@@ -6,13 +6,16 @@ import { useRouter } from "next/navigation"
 // COMPONENTS
 import EditIcon from "@/src/components/svg/Edit"
 import DeleteIcon from "@/src/components/svg/Delete"
-import ShowError from "../utils/showError"
+import ShowErrorComponent from "../utils/showError"
 //ACTIONS
 import { DeleteById } from "../../actions/crud"
 //TYPES
 import { listTableComponentPropTypes } from "../../types/prop"
 
-export default function ListTable({width, columnNames, contents, items, table} : listTableComponentPropTypes) {
+//BASE
+const BASE = process.env.NEXT_PUBLIC_BASE_URL
+
+export default function ListTableComponent({width, columnNames, contents, items, table} : listTableComponentPropTypes) {
 
     //HOOKS
     const router = useRouter()
@@ -23,15 +26,9 @@ export default function ListTable({width, columnNames, contents, items, table} :
 
 
     //FUNCTIONS
-    const handleCreate = () => {
+    const handleCreate = () => router.push(`${BASE}/add?table=${table}`)
 
-        router.push(`http://localhost:3000/add?table=${table}`)
-    }
-
-    const handleEdit = (id : any) => {
-
-        router.push(`http://localhost:3000/edit?id=${id}&table=${table}`)
-    }
+    const handleEdit = (id : any) => router.push(`${BASE}/edit?id=${id}&table=${table}`)
 
     const handleDelete = async (id: any) => {
 
@@ -43,7 +40,7 @@ export default function ListTable({width, columnNames, contents, items, table} :
         setErrorDetails(response?.details ?? null);
     }
 
-    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}/>
+    if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
     return (
 
@@ -99,6 +96,5 @@ export default function ListTable({width, columnNames, contents, items, table} :
                 </div>
             </div>
         </div>
-
-    );
+    )
 }

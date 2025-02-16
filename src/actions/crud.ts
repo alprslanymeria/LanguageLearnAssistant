@@ -231,6 +231,7 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
     const input2 = formData.get("input2")
     const file1 = formData.get("file1")
     const file2 = formData.get("file2")
+    const file3 = formData.get("file3")
 
     try {
 
@@ -244,11 +245,14 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
 
         let oldFile1Url : string;
         let oldFile2Url : string;
+        let oldFile3Url : string;
         let bufferForFile1: ArrayBuffer;
         let bufferForFile2 : ArrayBuffer;
+        let bufferForFile3 : ArrayBuffer;
         let existingRecord : any;
         let file1Url: string;
         let file2Url: string;
+        let file3Url: string;
         let leftSideColor : string;
 
         // GET LEFT SIDE COLOR FOR IMAGE
@@ -323,6 +327,11 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
             bufferForFile1 = await (file1 as File).arrayBuffer()
             bufferForFile2 = await (file2 as File).arrayBuffer()
             await getLeftSideColor(bufferForFile1)
+
+            if(file3 != null)
+            {
+                bufferForFile3 = await (file3 as File).arrayBuffer()
+            }
         }
 
 
@@ -333,6 +342,8 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
                 // CREATE UNIQUE NAME FOR FILES
                 const file1Name = `${Date.now()}_${(file1 as File).name}`;
                 const file2Name = `${Date.now()}_${(file2 as File).name}`;
+                let file3Name : any;
+                if(file3 != null) file3Name = `${Date.now()}_${(file3 as File).name}`;
 
                 // UPLOAD FILES TO GOOGLE CLOUD STORAGE
                 const file1Upload = imageBucket.file(file1Name).createWriteStream({
@@ -345,9 +356,20 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
                     metadata: { contentType: (file2 as File).type }
                 });
 
+                let file3Upload : any;
+
+                if(file3 != null)
+                {
+                    file3Upload = imageBucket.file(file3Name).createWriteStream({
+                        resumable: false,
+                        metadata: { contentType: (file3 as File).type }
+                    })
+                }
+
                 // WRITE FILES TO GOOGLE CLOUD STORAGE
                 file1Upload.end(Buffer.from(bufferForFile1))
                 file2Upload.end(Buffer.from(bufferForFile2))
+                if(file3 != null) file3Upload.end(Buffer.from(bufferForFile3))
 
                 // WAIT
                 await new Promise((resolve, reject) => {
@@ -355,11 +377,18 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
                     file1Upload.on('error', reject);
                     file2Upload.on('finish', resolve);
                     file2Upload.on('error', reject);
+
+                    if(file3 != null)
+                    {
+                        file3Upload.on('finish', resolve);
+                        file3Upload.on('error', reject);
+                    }
                 });
 
                 // GET FILE URL'S
                 file1Url = imageBucket.file(file1Name).publicUrl();
                 file2Url = imageBucket.file(file2Name).publicUrl();
+                if(file3 != null) file3Url = imageBucket.file(file3Name).publicUrl();
             }
 
             let practice: any;
@@ -499,7 +528,8 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
                                     create: {
                                         name: input1,
                                         imageUrl: file1Url,
-                                        sourceUrl: file2Url
+                                        sourceUrl: file2Url,
+                                        strUrl: file3Url
                                     }
                                 }
                             }
@@ -513,7 +543,8 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
                             listeningId: listening.id,
                             name: input1,
                             imageUrl: file1Url,
-                            sourceUrl: file2Url
+                            sourceUrl: file2Url,
+                            strUrl: file3Url
                         }
                     })
 
@@ -585,6 +616,8 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
                 await getExistingRecord();
                 oldFile1Url = existingRecord.imageUrl;
                 oldFile2Url = existingRecord.sourceUrl;
+
+                if(file3 != null && table == "lfilms") oldFile3Url = existingRecord.strUrl;
             }
 
             if(file1 != null && file2 != null && (table == "rbooks" || table == "wbooks" || table == "lfilms"))
@@ -592,6 +625,8 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
                 // CREATE UNIQUE NAME FOR FILES
                 const file1Name = `${Date.now()}_${(file1 as File).name}`;
                 const file2Name = `${Date.now()}_${(file2 as File).name}`;
+                let file3Name : any
+                if(file3 != null) file3Name = `${Date.now()}_${(file3 as File).name}`;
 
                 // UPLOAD FILES TO GOOGLE CLOUD STORAGE
                 const file1Upload = imageBucket.file(file1Name).createWriteStream({
@@ -604,9 +639,20 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
                     metadata: { contentType: (file2 as File).type }
                 });
 
+                let file3Upload: any
+
+                if(file3 != null)
+                {
+                    file3Upload = imageBucket.file(file3Name).createWriteStream({
+                        resumable: false,
+                        metadata: { contentType: (file3 as File).type }
+                    })
+                }
+
                 // WRITE FILES TO GOOGLE CLOUD STORAGE
                 file1Upload.end(Buffer.from(bufferForFile1))
                 file2Upload.end(Buffer.from(bufferForFile2))
+                if(file3 != null) file3Upload.end(Buffer.from(bufferForFile3))
 
                 // WAIT
                 await new Promise((resolve, reject) => {
@@ -614,12 +660,19 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
                     file1Upload.on('error', reject);
                     file2Upload.on('finish', resolve);
                     file2Upload.on('error', reject);
+
+                    if(file3 != null)
+                    {
+                        file3Upload.on('finish', resolve);
+                        file3Upload.on('error', reject);
+                    }
+
                 });
 
                 // GET FILE URL'S
                 file1Url = imageBucket.file(file1Name).publicUrl();
                 file2Url = imageBucket.file(file2Name).publicUrl();
-
+                if(file3 != null) file3Url = imageBucket.file(file3Name).publicUrl();
             }
 
             let practice;
@@ -770,7 +823,8 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
                                 listeningId: newListening.id,
                                 name: input1,
                                 imageUrl: file1Url,
-                                sourceUrl: file2Url
+                                sourceUrl: file2Url,
+                                strUrl: file3Url
                             }
                         })
 
@@ -783,14 +837,12 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
                             listeningId: listening.id,
                             name: input1,
                             imageUrl: file1Url,
-                            sourceUrl: file2Url
+                            sourceUrl: file2Url,
+                            strUrl: file3Url
                         }
                     })
                     break;
                 case "fwords":
-                    //languageId geliyor --> flashcard güncellenir languageId alanı değiştirilir yoksa yeni bir tane oluşturulur
-                    //categoryId geliyor --> flashcardCategory güncellenir
-                    //itemId geliyor
                     practice = await prisma.practice.findFirst({
                         where: {
                             languageId: languageId,
@@ -918,6 +970,15 @@ export async function AddOrUpdate(prevState : any, formData: FormData){
                     const oldFile2Name = oldFile2Url.split('/').pop() ?? "";
                     const isExist = await imageBucket.file(oldFile2Name).exists();
                         await imageBucket.file(oldFile2Name).delete();
+                }
+
+                if(file3 != null)
+                {
+                    if (oldFile3Url) {
+                        const oldFile3Name = oldFile3Url.split('/').pop() ?? "";
+                        const isExist = await imageBucket.file(oldFile3Name).exists();
+                            await imageBucket.file(oldFile3Name).delete();
+                    }
                 }
             }
 

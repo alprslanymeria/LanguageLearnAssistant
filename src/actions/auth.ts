@@ -7,17 +7,19 @@ import { redirect } from "next/navigation";
 import {z} from "zod";
 import { v4 as uuidv4 } from "uuid"
 // UTILS
-import { hashPassword } from "@/src/utils/utils";
+import { hashPassword } from "@/src/lib/bcrypt";
 // LIBRARIES
 import {prisma} from "@/src/lib/prisma";
 
+
+// ZOD SCHEMAS
 const signupSchema = z.object({
     email: z.string().email({ message: "Hatalı E-mail formatı girdiniz" }).trim(),
     password: z
       .string()
       .min(8, { message: "Şifre minimum 8 karakter uzunluğunda olmalıdır" })
       .trim(),
-  });
+  })
 
 const loginSchema = z.object({
 email: z.string().email({ message: "Hatalı E-mail formatı girdiniz" }).trim(),
@@ -25,66 +27,67 @@ password: z
     .string()
     .min(8, { message: "Şifre minimum 8 karakter uzunluğunda olmalıdır" })
     .trim()
-});
+})
 
 
+// ACTIONS
 export async function signUpWithCredentials(prevState : any, formData : FormData)
 {
     // VALIDATION
-    const result = signupSchema.safeParse(Object.fromEntries(formData));
+    const result = signupSchema.safeParse(Object.fromEntries(formData))
 
     if(!result.success)
     {
         return {
             errors: result.error.flatten().fieldErrors,
-        };
+        }
     }
 
-    const { email, password} = result.data;
+    const { email, password} = result.data
 
     // IS EXISTING USER
     const hasUser = await prisma.user.findFirst({
         where: {
             email: email,
         },
-    });
+    })
 
     if (hasUser != null) {
         return {
             errors: {
                 email: ["Bu e-mail adresi ile kayıtlı bir kullanıcı zaten var"],
             },
-        };
+        }
     }
 
     // SIGNUP
-    const hashedPassword = await hashPassword(password);
-    const defaultLanguageId = formData.get("defaultLanguageId");
-    const userId = uuidv4();
+    const hashedPassword = await hashPassword(password)
+    const defaultLanguageId = formData.get("defaultLanguageId")
+    const userId = uuidv4()
 
     await prisma.user.create({
         data: {
-        userId: userId,
-        email: email,
-        password: hashedPassword,
-        defaultLanguageId: defaultLanguageId,
-        updatedAt: new Date(),
+            userId: userId,
+            email: email,
+            password: hashedPassword,
+            defaultLanguageId: defaultLanguageId,
+            updatedAt: new Date(),
         }
     });
 
-    redirect("/auth/login");
+    redirect("/auth/login")
 }
 
 export async function signInWithCredentials(prevState : any, formData : FormData){
 
     // VALIDATION
-    const result = loginSchema.safeParse(Object.fromEntries(formData));
+    const result = loginSchema.safeParse(Object.fromEntries(formData))
 
     if(!result.success)
     {
         return {
             errors: result.error.flatten().fieldErrors,
-        };
+        }
     }
 
     const { email, password} = result.data;
@@ -92,10 +95,10 @@ export async function signInWithCredentials(prevState : any, formData : FormData
     // SIGN IN VIA NEXT AUTH
     try {
         
-    await signIn("credentials", {
-        email: email,
-        password: password,
-        redirect: false,
+        await signIn("credentials", {
+            email: email,
+            password: password,
+            redirect: false,
     })
 
     } catch (error) {
@@ -104,7 +107,7 @@ export async function signInWithCredentials(prevState : any, formData : FormData
 
     }
 
-    redirect("/");
+    redirect("/")
     
 }
 

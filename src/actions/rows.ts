@@ -3,18 +3,18 @@
 //LIBRARIES
 import { prisma } from "../lib/prisma"
 
-export async function GetReadingRowsById(language: string | null, practice: string | null, userId: string | null | undefined, id: any){
+export async function GetRowsById(language: string | null, practice: string | null, userId: string | null | undefined, id: any){
 
     try {
         
-        // GET LANGUAGE ID
+        //GET LANGUAGE ID
         const lang = await prisma.language.findFirst({
             where: {
                 name: language
             }
         })
 
-        // GET PRACTICE ID
+        //GET PRACTICE ID
         const prac = await prisma.practice.findFirst({
             where: {
                 languageId: lang.id,
@@ -22,281 +22,202 @@ export async function GetReadingRowsById(language: string | null, practice: stri
             }
         })
 
-        // GET ROWS
-        const infos = await prisma.readingOldSession.findFirst({
-            where: {
-                oldSessionId: id,
-                reading: {
-                    userId: userId,
-                    practiceId: prac.id,  
-                    languageId: lang.id
-                }  
-            },
-            select: {
-                readingSessionRows: true,
-                bookId: true
-            }
-        })
 
-        const rows = infos.readingSessionRows
-        const bookId = infos.bookId
+        let oldSession = null
+        let item = null
+        let rows = null
+
+        switch(practice){
+
+            case "reading":
+                //GET OLD SESSION
+                oldSession = await prisma.readingOldSession.findFirst({
+                    where: {
+                        oldSessionId: id,
+                        reading: {
+                            userId: userId,
+                            practiceId: prac.id,  
+                            languageId: lang.id
+                        }  
+                    },
+                    select: {
+                        readingSessionRows: true,
+                        bookId: true
+                    }
+                })
+
+                //GET ROWS
+                rows = oldSession.readingSessionRows
+
+                //GET ITEM
+                item = await prisma.readingBook.findFirst({
+                    where: {
+                        id: oldSession.bookId
+                    }
+                })
+
+                break;
+            case "writing":
+                //GET OLD SESSION
+                oldSession = await prisma.writingOldSession.findFirst({
+                    where: {
+                        oldSessionId: id,
+                        writing: {
+                            userId: userId,
+                            practiceId: prac.id,  
+                            languageId: lang.id
+                        }  
+                    },
+                    select: {
+                        writingSessionRows: true,
+                        bookId: true
+                    }
+                })
         
+                //GET ROWS
+                rows = oldSession.writingSessionRows
 
-        //GET BOOK INFO
-        const book = await prisma.readingBook.findFirst({
-            where: {
-                id: bookId
-            }
-        })
-
-        return {data: rows, book:book, status: 200}
-
-    } catch (error) {
+                //GET ITEM
+                item = await prisma.writingBook.findFirst({
+                    where: {
+                        id: oldSession.bookId
+                    }
+                })
+                break;
+            case "listening":
+                //GET OLD SESSION
+                oldSession = await prisma.listeningOldSession.findFirst({
+                    where: {
+                        oldSessionId: id,
+                        listening: {
+                            userId: userId,
+                            practiceId: prac.id,  
+                            languageId: lang.id
+                        }  
+                    },
+                    select: {
+                        listeningSessionRows: true,
+                        filmId: true
+                    }
+                })
         
-        if(error instanceof Error) return {status: 500, message: "Reading Session Rows verileri alınırken bir hata oluştu", details: error.message};
-    }
-}
+                //GET ROWS
+                rows = oldSession.listeningSessionRows
 
-export async function GetWritingRowsById(language: string | null, practice: string | null, userId: string | null | undefined, id: any){
+                //GET ITEM
+                item = await prisma.listeningFilm.findFirst({
+                    where: {
+                        id: oldSession.filmId
+                    }
+                })
 
-    try {
-        
-        // GET LANGUAGE ID
-        const lang = await prisma.language.findFirst({
-            where: {
-                name: language
-            }
-        })
+                break;
+            case "flashcard":
+                // GET OLD SESSION  
+                oldSession = await prisma.flashcardOldSession.findFirst({
+                    where: {
+                        oldSessionId: id,
+                        flashcard: {
+                            userId: userId,
+                            practiceId: prac.id,  
+                            languageId: lang.id
+                        }  
+                    },
+                    select: {
+                        flashcardSessionRows: true,
+                        categoryId: true
+                    }
+                })
 
-        // GET PRACTICE ID
-        const prac = await prisma.practice.findFirst({
-            where: {
-                languageId: lang.id,
-                name: practice
-            }
-        })
+                //GET ROWS
+                rows = oldSession.flashcardSessionRows
 
-        // GET ROWS
-        const infos = await prisma.writingOldSession.findFirst({
-            where: {
-                oldSessionId: id,
-                writing: {
-                    userId: userId,
-                    practiceId: prac.id,  
-                    languageId: lang.id
-                }  
-            },
-            select: {
-                writingSessionRows: true,
-                bookId: true
-            }
-        })
-
-        const rows = infos.writingSessionRows
-        const bookId = infos.bookId
-        
-
-        //GET BOOK INFO
-        const book = await prisma.writingBook.findFirst({
-            where: {
-                id: bookId
-            }
-        })
-
-        return {data: rows, book:book, status: 200}
-
-    } catch (error) {
-        
-        if(error instanceof Error) return {status: 500, message: "Writing Session Rows verileri alınırken bir hata oluştu", details: error.message};
-
-    }
-}
-
-export async function GetListeningRowsById(language: string | null, practice: string | null, userId: string | null | undefined, id: any){
-
-    try {
-        
-        // GET LANGUAGE ID
-        const lang = await prisma.language.findFirst({
-            where: {
-                name: language
-            }
-        })
-
-        // GET PRACTICE ID
-        const prac = await prisma.practice.findFirst({
-            where: {
-                languageId: lang.id,
-                name: practice
-            }
-        })
-
-        // GET ROWS   
-        const infos = await prisma.listeningOldSession.findFirst({
-            where: {
-                oldSessionId: id,
-                listening: {
-                    userId: userId,
-                    practiceId: prac.id,  
-                    languageId: lang.id
-                }  
-            },
-            select: {
-                listeningSessionRows: true,
-                filmId: true
-            }
-        })
-
-        const rows = infos.listeningSessionRows
-        const filmId = infos.filmId
-        
-
-        //GET FILM INFO
-        const film = await prisma.listeningFilm.findFirst({
-            where: {
-                id: filmId
-            }
-        })
-
-        return {data: rows, film:film, status: 200}     
-
-    } catch (error) {
-        
-        if(error instanceof Error) return {status: 500, message: "Listening Session Rows verileri alınırken bir hata oluştu", details: error.message};
-
-    }
-}
-
-export async function GetFlashcardRowsById(language: string | null, practice: string | null, userId: string | null | undefined, id: any){
-
-    try {
-        
-        // GET LANGUAGE ID
-        const lang = await prisma.language.findFirst({
-            where: {
-                name: language
-            }
-        })
-
-        // GET PRACTICE ID
-        const prac = await prisma.practice.findFirst({
-            where: {
-                languageId: lang.id,
-                name: practice
-            }
-        })
-
-        // GET ROWS   
-        const infos = await prisma.flashcardOldSession.findFirst({
-            where: {
-                oldSessionId: id,
-                flashcard: {
-                    userId: userId,
-                    practiceId: prac.id,  
-                    languageId: lang.id
-                }  
-            },
-            select: {
-                flashcardSessionRows: true,
-                categoryId: true
-            }
-        })
-
-        const rows = infos.flashcardSessionRows
-        const categoryId = infos.categoryId
-        
-
-        //GET FILM INFO
-        const category = await prisma.flashcardCategory.findFirst({
-            where: {
-                id: categoryId
-            }
-        })
-
-        return {data: rows, category:category, status: 200}
-        
-
-    } catch (error) {
-        
-        if(error instanceof Error) return {status: 500, message: "Flashcard Session Rows verileri alınırken bir hata oluştu", details: error.message};
-
-    }
-}
-
-
-export async function SaveFlashcardRows(rows : any){
-
-    try {
-        
-        for(const row of rows){
-
-            await prisma.flashcardSessionRow.create({
-                data: {
-                    oldSessionId: row.OldSessionId,
-                    question: row.question,
-                    answer: row.answer,
-                    status: row.status
-                }
-            })
+                //GET ITEM
+                item = await prisma.flashcardCategory.findFirst({
+                    where: {
+                        id: oldSession.categoryId
+                    }
+                })
+                break;
         }
 
-        return {status: 200}
+        return {data: rows, item:item, status: 200}
+
 
     } catch (error) {
         
-        if(error instanceof Error) return {status: 500, message: "Flashcard Session Rows kaydedilirken bir hata oluştu", details: error.message};
+        if(error instanceof Error) return {status: 500, message: "Session Rows verileri alınırken bir hata oluştu", details: error.message};
     }
 }
 
-export async function SaveReadingRows(rows : any){
+export async function SaveRows(rows: any) {
 
     try {
         
-        for(const row of rows){
+        const practice = rows[0].from
+
+        switch(practice){
+
+            case "reading":
+                for(const row of rows){
             
-            await prisma.readingSessionRow.create({
-                data: {
-                    oldSessionId: row.OldSessionId,
-                    selectedSentence: row.selectedSentence,
-                    answer: row.answer,
-                    answerTranslate: row.answerTranslate,
-                    similarity: row.similarity
+                    await prisma.readingSessionRow.create({
+                        data: {
+                            oldSessionId: row.OldSessionId,
+                            selectedSentence: row.selectedSentence,
+                            answer: row.answer,
+                            answerTranslate: row.answerTranslate,
+                            similarity: row.similarity
+                        }
+                    })
                 }
-            })
-        }
-
-        return {status: 200}
-
-    } catch (error) {
-
-        if(error instanceof Error) return {status: 500, message: "Reading Session Rows kaydedilirken bir hata oluştu", details: error.message};
-        
-    }
-}
-
-
-export async function SaveWritingRows(rows : any){
-
-    try {
-        
-        for(const row of rows){
+                break;
+            case "writing":
+                for(const row of rows){
             
-            await prisma.writingSessionRow.create({
-                data: {
-                    oldSessionId: row.OldSessionId,
-                    selectedSentence: row.selectedSentence,
-                    answer: row.answer,
-                    answerTranslate: row.answerTranslate,
-                    similarity: row.similarity
+                    await prisma.writingSessionRow.create({
+                        data: {
+                            oldSessionId: row.OldSessionId,
+                            selectedSentence: row.selectedSentence,
+                            answer: row.answer,
+                            answerTranslate: row.answerTranslate,
+                            similarity: row.similarity
+                        }
+                    })
                 }
-            })
+                break;
+            case "listening":
+                for(const row of rows){
+            
+                    await prisma.listeningSessionRow.create({
+                        data: {
+                            oldSessionId: row.OldSessionId,
+                            listenedSentence: row.listenedSentence,
+                            answer: row.answer,
+                            similarity: row.similarity
+                        }
+                    })
+                }
+                break;
+            case "flashcard":
+                for(const row of rows){
+
+                    await prisma.flashcardSessionRow.create({
+                        data: {
+                            oldSessionId: row.OldSessionId,
+                            question: row.question,
+                            answer: row.answer,
+                            status: row.status
+                        }
+                    })
+                }
+                break;
         }
 
-        return {status: 200}
 
     } catch (error) {
-
-        if(error instanceof Error) return {status: 500, message: "Writing Session Rows kaydedilirken bir hata oluştu", details: error.message};
         
+        if(error instanceof Error) return {status: 500, message: "Session Rows kaydedilirken bir hata oluştu", details: error.message}
     }
+
 }

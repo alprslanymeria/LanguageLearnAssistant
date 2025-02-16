@@ -1,30 +1,30 @@
 "use client"
 
 // REACT & NEXT
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
+import { useSession } from "next-auth/react"
 //ACTIONS
-import { GetFlashcardRowsById, GetListeningRowsById, GetReadingRowsById, GetWritingRowsById } from "@/src/actions/rows";
+import { GetRowsById } from "@/src/actions/rows"
 //COMPONENTS
-import BookSvg from "@/src/components/svg/BookSvg";
-import DeckSvg from "@/src/components/svg/DeckSvg";
-import FilmSvg from "@/src/components/svg/FilmSvg";
-import TableComponent from "@/src/components/detailPage/table";
-import ShowError from "@/src/components/utils/showError";
+import BookSvg from "@/src/components/svg/BookSvg"
+import DeckSvg from "@/src/components/svg/DeckSvg"
+import FilmSvg from "@/src/components/svg/FilmSvg"
+import TableComponent from "@/src/components/detailPage/table"
+import ShowErrorComponent from "@/src/components/utils/showError"
 
 
-export default function Detail() {
+export default function DetailPage() {
 
     //SEARCH PARAMS
-    const searchParams = useSearchParams();
-    const id = searchParams.get("id");
-    const language = searchParams.get("language");
-    const practice = searchParams.get("practice");
+    const searchParams = useSearchParams()
+    const language = searchParams.get("language")
+    const practice = searchParams.get("practice")
+    const id = searchParams.get("id")
 
     //SESSION
-    const session = useSession();
-    const userId = session.data?.user.userId;
+    const session = useSession()
+    const userId = session.data?.user.userId
 
     //STATES
     const [contents, setContents] = useState<any>(null)
@@ -40,61 +40,19 @@ export default function Detail() {
 
             let response = null
 
-            switch (practice) {
-                case "flashcard":
-                    response = await GetFlashcardRowsById(language, practice, userId, id)
-                    if(response && response.status == 200)
-                    {
-                        setContents(response.data)
-                        setItem(response.category)
-                        setIsLoading(false)
-                        break;
-                    }
-                    setIsLoading(false)
-                    setError(response?.message ?? null);
-                    setErrorDetails(response?.details ?? null);
-                    break;
-                case "reading":
-                    response = await GetReadingRowsById(language, practice, userId, id)
-                    if(response && response.status == 200)
-                    {
-                        setContents(response.data)
-                        setItem(response.book)
-                        setIsLoading(false)
-                        break;
-                    }
-                    setIsLoading(false)
-                    setError(response?.message ?? null);
-                    setErrorDetails(response?.details ?? null);
-                    break;
-                case "writing":
-                    response = await GetWritingRowsById(language, practice, userId, id)
-                    if(response && response.status == 200)
-                    {
-                        setContents(response.data)
-                        setItem(response.book)
-                        setIsLoading(false)
-                        break;
-                    }
-                    setIsLoading(false)
-                    setError(response?.message ?? null);
-                    setErrorDetails(response?.details ?? null);
-                    break;
-                case "listening":
-                    response = await GetListeningRowsById(language, practice, userId, id)
-                    if(response && response.status == 200)
-                    {
-                        setContents(response.data)
-                        setItem(response.film)
-                        setIsLoading(false)
-                        break;
-                    }
-                    setIsLoading(false)
-                    setError(response?.message ?? null);
-                    setErrorDetails(response?.details ?? null);
-                    break;
+            response = await GetRowsById(language, practice, userId, id)
+
+            if(response && response.status == 200)
+            {
+                setContents(response.data)
+                setItem(response.item)
+                setIsLoading(false)
+                return
             }
-            
+
+            setIsLoading(false)
+            setError(response?.message ?? null)
+            setErrorDetails(response?.details ?? null)  
         }
 
         GET()
@@ -103,7 +61,7 @@ export default function Detail() {
 
     if(isLoading) return <></>
 
-    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}/>
+    if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
     return(
 
@@ -114,7 +72,7 @@ export default function Detail() {
                  ? <DeckSvg language={language} text={item.name}/>
                  : practice == 'listening'
                  ? <FilmSvg imagePath={item.imageUrl} index={0}/>
-                 : <BookSvg imagePath={item.imageUrl} color={item.leftColor}></BookSvg>
+                 : <BookSvg imagePath={item.imageUrl} color={item.leftColor}/>
                  }
                  
             </div>
@@ -124,8 +82,10 @@ export default function Detail() {
                 ? <TableComponent contents={contents} type="book" columns={["Sentence", "Answer", "Translate", "Similarity"]}/>
                 :practice == "flashcard" 
                 ?  <TableComponent contents={contents} type="flashcard" columns={["Question", "Answer", "Status"]}/>
+                :practice == "listening"
+                ?  <TableComponent contents={contents} type="listening" columns={["Listened Sentence", "Answer", "Similarity"]}/>
                 : <p></p>}
             </div>
         </div>
-    );
+    )
 }

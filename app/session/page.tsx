@@ -1,23 +1,20 @@
 "use client"
 
-import FlashcardSession from "@/src/components/sessionPage/FlashcardSession";
-import ListeningSession from "@/src/components/sessionPage/ListeningSession";
-import ReadingSession from "@/src/components/sessionPage/ReadingSession";
-import WritingSession from "@/src/components/sessionPage/WritingSession";
-import { GlobalStore } from "@/src/store/globalStore";
-import { useSearchParams } from "next/navigation";
-import { useState,  useEffect, JSX } from "react";
+// REACT & NEXT
+import { useState,  useEffect, JSX } from "react"
+// COMPONENTS
+import FlashcardSessionComponent from "@/src/components/sessionPage/FlashcardSession"
+import ListeningSessionComponent from "@/src/components/sessionPage/ListeningSession"
+import ReadingSessionComponent from "@/src/components/sessionPage/ReadingSession"
+import WritingSessionComponent from "@/src/components/sessionPage/WritingSession"
+// STORE
+import { GlobalStore } from "@/src/store/globalStore"
 
 
 export default function SessionPage(){
 
-    //SEARCH PARAMS
-    const searchParams = useSearchParams();
-    const practice = searchParams.get("practice");
-
     //GLOBAL STORE
-    const Items = GlobalStore(state => state.Items)
-    const SelectedItemId = GlobalStore(state => state.SelectedItemId)
+    const {Items, SelectedItemId, Practice} = GlobalStore()
 
     //STATES
     const [item, setItem] = useState<any>(null)
@@ -25,26 +22,26 @@ export default function SessionPage(){
 
     //COMPONENT MAP
     const componentMap: Record<string, JSX.Element> = {
-        reading: <ReadingSession item={item}/>,
-        writing: <WritingSession item={item}/>,
-        listening: <ListeningSession item={item}/>,
-        flashcard: <FlashcardSession item={item}/>,
+        reading: <ReadingSessionComponent item={item}/>,
+        writing: <WritingSessionComponent item={item}/>,
+        listening: <ListeningSessionComponent item={item}/>,
+        flashcard: <FlashcardSessionComponent item={item}/>,
     };
 
     //GET SELECTED ITEM
     useEffect(() => {
 
         //SET ACTIVE COMPONENT
-        if(practice == "reading") setActiveComponent("reading")
-        if(practice == "writing") setActiveComponent("writing")
-        if(practice == "listening") setActiveComponent("listening")
-        if(practice == "flashcard") setActiveComponent("flashcard")
+        if(Practice == "reading") setActiveComponent("reading")
+        if(Practice == "writing") setActiveComponent("writing")
+        if(Practice == "listening") setActiveComponent("listening")
+        if(Practice == "flashcard") setActiveComponent("flashcard")
 
         //GET SELECTED ITEM
         const selectedItem = Items.find(item => item.id === SelectedItemId)
         setItem(selectedItem)
 
-    }, [practice])
+    }, [Practice])
 
 
     return (
@@ -53,5 +50,5 @@ export default function SessionPage(){
         <div>
             {componentMap[activeComponent] || <div></div>}
         </div>
-    );
+    )
 }

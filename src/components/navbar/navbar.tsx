@@ -1,13 +1,13 @@
 //ASSETS
 import {neuton} from '@/public/fonts'
 //COMPONENTS
-import { Email } from './email'
-import { HamburgerMenu } from './hamurgerMenu'
+import { EmailComponent } from './email'
+import { MenuComponent } from './menu'
 //NEXT AUTH
 import { auth } from '@/src/Auth'
 
 
-export async function Navbar() {
+export async function NavbarComponent() {
 
     //SESSION ÜZERİNDEN KULLANCII BİLGİLERİ ALINIR
     const session = await auth()
@@ -23,11 +23,11 @@ export async function Navbar() {
                 </p>
 
                 <div className='hidden md:block'>
-                    <Email email={email} userId={userId}></Email>
+                    <EmailComponent email={email} userId={userId}/>
                 </div>
 
                 <div className='md:hidden'>
-                    <HamburgerMenu email={email} userId={userId}></HamburgerMenu>
+                    <MenuComponent email={email} userId={userId}/>
                 </div>
             </div>
         </nav>

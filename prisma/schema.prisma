@@ -41,6 +41,7 @@ model Language {
   listenings            Listening[]
   writings              Writing[]
   readings              Reading[]
+  user                  User[]
 
 }
 
@@ -168,6 +169,7 @@ model ListeningFilm {
   name                  String
   imageUrl              String
   sourceUrl             String
+  strUrl                String?
 
   //REFERANS ALDIKLARI
   listening             Listening @relation(fields: [listeningId], references: [id])

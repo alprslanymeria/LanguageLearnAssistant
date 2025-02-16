@@ -23,8 +23,8 @@ export type emailPropTypes = {
     userId : string | undefined | null
 }
 
-//hamburgerMenu.tsx
-export type hamburgerMenuPropTypes = {
+//menu.tsx
+export type menuPropTypes = {
     email : string | undefined | null 
     userId : string | undefined | null
 }
@@ -59,17 +59,9 @@ export type oldSessionComponentPropTypes = {
     practice : string | null 
 }
 
-//slider.tsx
-export type sliderComponentPropTypes = {
-    practice : string | null
-    language : string | null
-}
-
 //practiceCard.tsx
 export type practiceCardComponentPropTypes = {
     item : any
-    practice : string | null
-    language : string | null
     index : number
 }
 

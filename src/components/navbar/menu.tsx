@@ -3,22 +3,23 @@
 //REACT & NEXT
 import { useState } from "react"
 import Link from "next/link";
-import { usePathname} from "next/navigation";
+import { usePathname} from "next/navigation"
 //ACTIONS
-import { DeleteLiveSession } from "../../actions/liveSession";
-import { logOut } from "../../actions/auth";
+import { DeleteLiveSession } from "../../actions/liveSession"
+import { logOut } from "../../actions/auth"
 //ASSETS
 import MenuIcon from "@/public/icons/menuIcon"
 import CloseIcon from "@/public/icons/closeIcon"
 //TYPES
-import { hamburgerMenuPropTypes } from "../../types/prop";
-import ShowError from "../utils/showError";
+import { menuPropTypes } from "../../types/prop"
+//COMPONENTS
+import ShowErrorComponent from "../utils/showError"
 
 
-export function HamburgerMenu({ email, userId }: hamburgerMenuPropTypes) {
+export function MenuComponent({ email, userId }: menuPropTypes) {
   
   //HOOKS
-  const pathName = usePathname();
+  const pathName = usePathname()
 
   //STATES
   const [isOpen, setIsOpen] = useState(false)
@@ -34,17 +35,17 @@ export function HamburgerMenu({ email, userId }: hamburgerMenuPropTypes) {
 
         if(response?.status == 500)
         {
-            setError(response.message ?? null);
-            setErrorDetails(response.details ?? null);
+            setError(response.message ?? null)
+            setErrorDetails(response.details ?? null)
         }
 
       } 
     
-      await logOut();
+      await logOut()
   }
 
 
-  if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
+  if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
   return (
     <div className="relative">
@@ -52,8 +53,8 @@ export function HamburgerMenu({ email, userId }: hamburgerMenuPropTypes) {
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen 
-        ? ( <CloseIcon></CloseIcon>) 
-        : ( <MenuIcon></MenuIcon>)
+        ? ( <CloseIcon/>) 
+        : ( <MenuIcon/>)
         }
       </button>
 

@@ -1,22 +1,24 @@
 "use client"
 
 // REACT & NEXT
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"
 //STORE
 import { GlobalStore } from "../../store/globalStore"
+//ACTIONS
+import GetOldSessions from "../../actions/oldSession"
 // COMPONENTS
 import InfoMessageComponent from "../utils/infoMessage"
 import OldSessionComponent from "./oldSession"
-import { useSession } from "next-auth/react";
-import GetOldSessions from "../../actions/oldSession";
-import ShowError from "../utils/showError";
+import ShowErrorComponent from "../utils/showError"
+// NEXT-AUTH
+import { useSession } from "next-auth/react"
 //TYPES
-import { practicePagePropTypes } from "@/src/types/prop";
+import { practicePagePropTypes } from "@/src/types/prop"
 
-export default function PracticePage({language, practice}: practicePagePropTypes) {
+export default function PracticePageComponent({language, practice}: practicePagePropTypes) {
 
     //SESSION
-    const session = useSession();
+    const session = useSession()
     const userId = session.data?.user.userId
 
     //STATES
@@ -25,8 +27,7 @@ export default function PracticePage({language, practice}: practicePagePropTypes
     const [errorDetails, setErrorDetails] = useState<string | null>(null)
 
     //STORE
-    const {setItems, setSelectedItemId, setOldSessions} = GlobalStore();
-    
+    const {setItems, setSelectedItemId, setOldSessions} = GlobalStore()
 
     //EFFECTS
     useEffect(() => {
@@ -36,7 +37,6 @@ export default function PracticePage({language, practice}: practicePagePropTypes
 
     }, [])
 
-
     useEffect(() => {
 
         const GET = async () => {
@@ -45,31 +45,29 @@ export default function PracticePage({language, practice}: practicePagePropTypes
 
             if(response && response.status == 200)
             {
-                setOldSessions(response.data);
+                setOldSessions(response.data)
                 setIsLoading(false)
                 return
             } 
             if(response && response.status == 500){
                 
-                setError(response.message ?? null);
-                setErrorDetails(response.details ?? null);
+                setError(response.message ?? null)
+                setErrorDetails(response.details ?? null)
                 setIsLoading(false)
                 return
             }
 
             setIsLoading(false)
-            setError('An unknown error occurred');
-
+            setError('An unknown error occurred')
         }
 
-        GET();
+        GET()
 
     }, [language, practice, userId])
 
-    if(isLoading)
-    return <></>
+    if(isLoading) return <></>
         
-    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
+    if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
     
     return(
         <>

@@ -1,31 +1,31 @@
 "use client"
 
 // REACT & NEXT
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 //ACTIONS
-import { CreateLiveSession } from "../../actions/liveSession";
+import { CreateLiveSession } from "../../actions/liveSession"
 //STORE
-import { GlobalStore } from "../../store/globalStore";
+import { GlobalStore } from "../../store/globalStore"
 //COMPONENTS
-import PracticeCardComponent from "./practiceCard";
-import ShowError from "../utils/showError";
+import PracticeCardComponent from "./practiceCard"
+import ShowErrorComponent from "../utils/showError"
 //LIBRARIES
 import {encrypt} from "@/src/lib/crypto"
 //3RD PARTY
-import { v4 as uuidv4 } from 'uuid';
-// TYPES
-import { sliderComponentPropTypes } from "../../types/prop";
+import { v4 as uuidv4 } from 'uuid'
 
+//BASE
+const BASE = process.env.NEXT_PUBLIC_BASE_URL
 
-export default function SliderComponent({practice, language}: sliderComponentPropTypes) {
+export default function SliderComponent() {
 
     // HOOKS
-    const router = useRouter();
+    const router = useRouter()
 
     //STORE
-    const {Items, setSelectedItemId, setOldSessionId} = GlobalStore();
+    const {Items, setSelectedItemId, setOldSessionId, Language, Practice} = GlobalStore()
 
     //SESSION
     const session = useSession()
@@ -41,7 +41,7 @@ export default function SliderComponent({practice, language}: sliderComponentPro
     const chooseHandler = async () => {
 
         //SESSION ID OLUŞTUR
-        const sessionId = uuidv4();
+        const sessionId = uuidv4()
         setOldSessionId(sessionId)
 
         //LIVESESSION İÇERİSİNE KAYDET
@@ -59,13 +59,13 @@ export default function SliderComponent({practice, language}: sliderComponentPro
 
         //CREATE SAFE URL
         const encryptedSessionId = encrypt(sessionId)
-        const safeUrl = encodeURIComponent(encryptedSessionId);
+        const safeUrl = encodeURIComponent(encryptedSessionId)
 
         //SESSION SAYFASINA YÖNLENDİR
-        router.push(`http://localhost:3000/session?id=${safeUrl}&practice=${practice}`);
+        router.push(`${BASE}/session?id=${safeUrl}`)
     }
 
-    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError> 
+    if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
     return (
 
@@ -76,8 +76,8 @@ export default function SliderComponent({practice, language}: sliderComponentPro
                     <div
                     key={index}
                     className={`carousel-item flex-shrink-0 cursor-pointer transform transition-all duration-300 ${
-                        practice === 'listening'
-                        ? 'w-[200px] sm:w-[300px] md:w-[400px] flex flex-col'
+                        Practice === 'listening'
+                        ? 'w-[200px] sm:w-[250px] md:w-[300px] flex flex-col'
                         : 'w-[200px] h-[324px] sm:w-[250px] sm:h-[406px] md:w-[300px] md:h-[487px] relative'
                     } ${
                         selectedItem === item
@@ -86,7 +86,7 @@ export default function SliderComponent({practice, language}: sliderComponentPro
                     }`}
                     onClick={() => setSelectedItem(item)}
                     >
-                        <PracticeCardComponent index={index} item={item} practice={practice} language={language}/>
+                        <PracticeCardComponent index={index} item={item}/>
                     </div>
                 ))}
                 </div>
@@ -101,5 +101,5 @@ export default function SliderComponent({practice, language}: sliderComponentPro
                 </button>
             </div>
         </>
-    );
+    )
 }

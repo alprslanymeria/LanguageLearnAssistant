@@ -1,20 +1,20 @@
 "use client"
 
 // REACT & NEXT
-import { useActionState, useEffect, useState } from "react";
-import Link from 'next/link';
+import { useActionState, useEffect, useState } from "react"
+import Link from 'next/link'
 // ACTIONS
 import {GetLanguages} from "@/src/actions/language"
 import {signUpWithCredentials} from "@/src/actions/auth"
 // COMPONENTS
-import ShowError from "@/src/components/utils/showError"
+import ShowErrorComponent from "@/src/components/utils/showError"
 // TYPES
 import { Language } from "@prisma/client";
 
-export default function Signup() {
+export default function Page() {
 
     // STATES
-    const [languages, setLanguages] = useState<Language[]>([]);
+    const [languages, setLanguages] = useState<Language[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>("")
     const [errorDetails, setErrorDetails] = useState<string | null>(null)
@@ -28,24 +28,24 @@ export default function Signup() {
         // GET LANGUAGES
         const GET = async () => {
 
-            const response = await GetLanguages();
+            const response = await GetLanguages()
 
             if(response && response.status == 200)
             {
-                setLanguages(response.data);
+                setLanguages(response.data)
                 setIsLoading(false)
                 return
             } 
             if(response && response.status == 500){
                 
-                setError(response.message ?? null);
-                setErrorDetails(response.details ?? null);
+                setError(response.message ?? null)
+                setErrorDetails(response.details ?? null)
                 setIsLoading(false)
                 return
             }
 
             setIsLoading(false)
-            setError('An unknown error occurred');
+            setError('An unknown error occurred')
         }
 
         GET()
@@ -54,7 +54,7 @@ export default function Signup() {
 
     if(isLoading) return <></>
 
-    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
+    if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
     return (
         <div className="flex items-center justify-center">
@@ -110,5 +110,5 @@ export default function Signup() {
                 </div>
             </div>
         </div>        
-    );
+    )
 }

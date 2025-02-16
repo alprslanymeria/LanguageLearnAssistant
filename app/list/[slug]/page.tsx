@@ -1,24 +1,24 @@
 "use client"
 
 // REACT & NEXT
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react"
+import Image from "next/image"
+import { useSession } from "next-auth/react"
 // ACTIONS
-import { GetAllFCategories, GetAllFWords, GetAllLFilms, GetAllRBooks, GetAllWBooks } from "@/src/actions/list";4
+import { GetAllFCategories, GetAllFWords, GetAllLFilms, GetAllRBooks, GetAllWBooks } from "@/src/actions/list"
 // COMPONENTS
-import ListTable from "@/src/components/crudPages/listTable";
-import ShowError from "@/src/components/utils/showError";
-import { useParams, useRouter } from "next/navigation";
+import ListTableComponent from "@/src/components/crudPages/listTable"
+import ShowErrorComponent from "@/src/components/utils/showError"
+import { useParams } from "next/navigation"
 
-export default function List() {
+export default function ListPage() {
 
     // GET SLUG
     const params = useParams()
     const slug = params.slug
 
     // SESSION
-    const session = useSession();
+    const session = useSession()
     const userId = session.data?.user.userId
 
     // STATES
@@ -49,13 +49,13 @@ export default function List() {
                         setColumnNames(["Name", "Image"])
                         setContents([
                                         (item: any) => <span>{item.name}</span>,
-                                        (item: any) => <Image alt="" width={100} height={100} src={item.imageUrl}></Image>
+                                        (item: any) => <Image alt="" width={100} height={100} src={item.imageUrl}/>
                                     ])
                     }
-                    setError(response?.message ?? null);
-                    setErrorDetails(response?.details ?? null);
+                    setError(response?.message ?? null)
+                    setErrorDetails(response?.details ?? null)
                     setIsLoading(false)
-                    break;
+                    break
                 case "wbooks":
                     response = await GetAllWBooks(userId)
                     if(response?.status === 200)
@@ -66,13 +66,13 @@ export default function List() {
                         setColumnNames(["Name", "Image"])
                         setContents([
                                         (item: any) => <span>{item.name}</span>,
-                                        (item: any) => <Image alt="" width={100} height={100} src={item.imageUrl}></Image>
+                                        (item: any) => <Image alt="" width={100} height={100} src={item.imageUrl}/>
                                     ])
                     }
-                    setError(response?.message ?? null);
-                    setErrorDetails(response?.details ?? null);
+                    setError(response?.message ?? null)
+                    setErrorDetails(response?.details ?? null)
                     setIsLoading(false)
-                    break;
+                    break
                 case "lfilms":
                     response = await GetAllLFilms(userId)
                     if(response?.status === 200)
@@ -83,13 +83,13 @@ export default function List() {
                         setColumnNames(["Name", "Image"])
                         setContents([
                                         (item: any) => <span>{item.name}</span>,
-                                        (item: any) => <Image alt="" width={100} height={100} src={item.imageUrl}></Image>
+                                        (item: any) => <Image alt="" width={100} height={100} src={item.imageUrl}/>
                                     ])
                     }
-                    setError(response?.message ?? null);
-                    setErrorDetails(response?.details ?? null);
+                    setError(response?.message ?? null)
+                    setErrorDetails(response?.details ?? null)
                     setIsLoading(false)
-                    break;
+                    break
                 case "fcategories":
                     response = await GetAllFCategories(userId)
                     if(response?.status === 200)
@@ -102,10 +102,10 @@ export default function List() {
                                         (item: any) => <span className="text-gray-800">{item.name}</span>
                                     ])
                     }
-                    setError(response?.message ?? null);
-                    setErrorDetails(response?.details ?? null);
+                    setError(response?.message ?? null)
+                    setErrorDetails(response?.details ?? null)
                     setIsLoading(false)
-                    break;
+                    break
                 case "fwords":
                     response = await GetAllFWords(userId)
                     if(response?.status === 200)
@@ -119,14 +119,14 @@ export default function List() {
                                         (item: any) => <span className="text-gray-800">{item.answer}</span>
                                     ])
                     }
-                    setError(response?.message ?? null);
-                    setErrorDetails(response?.details ?? null);
+                    setError(response?.message ?? null)
+                    setErrorDetails(response?.details ?? null)
                     setIsLoading(false)
-                    break;
+                    break
                 default:
                     setError("Invalid slug")
                     setIsLoading(false)
-                    break;
+                    break
             }
         }
 
@@ -136,11 +136,11 @@ export default function List() {
 
     if(isLoading) return <></>
 
-    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}/>
+    if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
     return (
 
-        <ListTable  width={500} columnNames={columnNames} items={items} contents={contents} table={table}/>
+        <ListTableComponent  width={500} columnNames={columnNames} items={items} contents={contents} table={table}/>
 
-    );
+    )
 }

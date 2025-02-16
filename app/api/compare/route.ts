@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/src/lib/prisma";
+import { NextRequest, NextResponse } from "next/server"
+import { prisma } from "@/src/lib/prisma"
 
 export async function GET(req: NextRequest){
 
     try {
         
-        const sessionId = req.nextUrl.searchParams.get('sessionId');
-        const userId = req.nextUrl.searchParams.get('userId');
+        const sessionId = req.nextUrl.searchParams.get('sessionId')
+        const userId = req.nextUrl.searchParams.get('userId')
 
         const isExist = await prisma.liveSession.findFirst({
 
@@ -19,7 +19,6 @@ export async function GET(req: NextRequest){
         if(!isExist) return NextResponse.json(isExist, {status: 404})
 
         return NextResponse.json(isExist, {status: 200})
-
 
     } catch (error) {
         

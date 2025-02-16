@@ -1,16 +1,18 @@
 "use client"
 
-import Link from "next/link";
-//STORE
-import { GlobalStore } from "../../store/globalStore";
-import { markazi } from "@/public/fonts";
-//TYPES
-import { oldSessionComponentPropTypes } from "@/src/types/prop";
+// REACT & NEXT
+import Link from "next/link"
+// STORE
+import { GlobalStore } from "../../store/globalStore"
+// ASSETS
+import { markazi } from "@/public/fonts"
+// TYPES
+import { oldSessionComponentPropTypes } from "@/src/types/prop"
 
 export default function OldSessionComponent({language, practice}: oldSessionComponentPropTypes) {
 
     // GET OLD SESSIONS
-    const {OldSessions} = GlobalStore();
+    const {OldSessions} = GlobalStore()
 
     return(
 
@@ -54,8 +56,5 @@ export default function OldSessionComponent({language, practice}: oldSessionComp
                 : null
             }
         </>
-
-    );
+    )
 }
-
-

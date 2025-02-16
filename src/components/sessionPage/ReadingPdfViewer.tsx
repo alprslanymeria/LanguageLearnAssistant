@@ -1,24 +1,23 @@
 "use client"
 
+// REACT & NEXT
 import { useState, useEffect } from "react"
+// COMPONENTS
+import ShowErrorComponent from "../utils/showError"
+// PDF VİEWER
 import { Viewer , Worker } from "@react-pdf-viewer/core"
-import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
-import '@react-pdf-viewer/core/lib/styles/index.css';
-import '@react-pdf-viewer/default-layout/lib/styles/index.css';
-import TableComponent from "../detailPage/table"
-import { GlobalStore } from "@/src/store/globalStore"
-import ReadingFormComponent from "./ReadingFormComponent"
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout'
+import '@react-pdf-viewer/core/lib/styles/index.css'
+import '@react-pdf-viewer/default-layout/lib/styles/index.css'
 
-export default function ReadingPdfViewer({item} : any) {
+export default function ReadingPdfViewerComponent({item} : any) {
 
-    const defaultLayoutPluginInstance = defaultLayoutPlugin();
+    const defaultLayoutPluginInstance = defaultLayoutPlugin()
 
     //STATES
     const [pdfData, setPdfData] = useState<any>(null)
-
-    //STORE
-    const {SessionData} = GlobalStore();
-
+    const [error , setError] = useState<any>(null)
+    
     //GET PDF DATA
     useEffect(() => {
 
@@ -32,7 +31,7 @@ export default function ReadingPdfViewer({item} : any) {
                 setPdfData(base64Data)
 
             } catch (error) {
-                console.error('Error fetching PDF:', error);
+                setError(error)
             }
         }
 
@@ -56,28 +55,22 @@ export default function ReadingPdfViewer({item} : any) {
 
     }
 
+    if(error) return <ShowErrorComponent error={error} errorDetails={""}/>
+
     return (
 
         <>
-            <div className="flex flex-col items-center lg:flex-row lg:items-start gap-8 bg-gray-50">
-                <div className="w-[300px] sm:w-[400px] md:w-[600px] lg:w-1/2 bg-white overflow-hidden">
-                    <div className="h-[600px] overflow-y-auto">
-                        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-                            {pdfData && 
-                            
-                                <Viewer 
-                                    fileUrl={pdfData} 
-                                    plugins={[defaultLayoutPluginInstance]}
-                                />}
-                        </Worker>
-                    </div>
+            <div className="w-[300px] sm:w-[400px] md:w-[600px] lg:w-1/2 bg-white overflow-hidden">
+                <div className="h-[600px] overflow-y-auto">
+                    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                        {pdfData && 
+                            <Viewer 
+                                fileUrl={pdfData} 
+                                plugins={[defaultLayoutPluginInstance]}
+                            />}
+                    </Worker>
                 </div>
-                <ReadingFormComponent item={item}/>
-            </div>
-            <div>
-                <TableComponent type="book" columns={["Selected", "Answer" ,"Translate", "Similarity"]} contents={SessionData.sessionSentences}/>
             </div>
         </>
-
     )
 }

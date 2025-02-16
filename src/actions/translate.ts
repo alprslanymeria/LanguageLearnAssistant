@@ -50,8 +50,8 @@ export default async function translateText(inputText: any, languageId: any, pra
     }
 
     let [translations] = await translate.translate(inputText, target)
-    translations = Array.isArray(translations) ? translations[0] : translations;
+    translations = Array.isArray(translations) ? translations[0] : translations
 
-    return translations;
+    return translations
 
 }

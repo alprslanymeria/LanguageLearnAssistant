@@ -1,23 +1,23 @@
 "use client"
 
 // REACT & NEXT
-import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
 //ACTIONS
-import GetCreateItems from "@/src/actions/utils";
+import GetCreateItems from "@/src/actions/utils"
 //STORE
-import { GlobalStore } from "@/src/store/globalStore";
+import { GlobalStore } from "@/src/store/globalStore"
 //COMPONENTS
-import ShowError from "@/src/components/utils/showError";
-import SliderComponent from "@/src/components/createPage/slider";
+import SliderComponent from "@/src/components/createPage/slider"
+import ShowErrorComponent from "@/src/components/utils/showError"
 
-export default function Create() {
+export default function CreatePage() {
 
     //SEARCH PARAMS
-    const searchParams = useSearchParams();
-    const language = searchParams.get("language");
-    const practice = searchParams.get("practice");
+    const searchParams = useSearchParams()
+    const language = searchParams.get("language")
+    const practice = searchParams.get("practice")
 
     //STATES
     const [isLoading, setIsLoading] = useState(true)
@@ -29,13 +29,22 @@ export default function Create() {
     const userId = session.data?.user.userId
 
     //STORE
-    const {setItems, setSessionData} = GlobalStore();
+    const {setItems, setSessionData, setLanguage, setPractice} = GlobalStore()
 
     useEffect(() => {
 
-        setSessionData({index: 0, sessionWords: [], sessionSentences: [], row: []})
+        //UPDATE GLOBAL STORE
+        setSessionData(
+        {  index: 0, sessionWords: [], sessionSentences: [], row: [],
+            selectedText: "", inputText: "", translatedText: "", showTranslation: false,
+            lastPlayTime: 0, lastPauseTime: 0, subtitleJson: null,textHeardByUser: "", extractedText: "",showAnswer: false, 
+            sentences: [{sentenceStart: 0, sentenceEnd: 0}], sentenceIndex: 0, listeningSentences: []
+        })
+        setLanguage(language)
+        setPractice(practice)
+
         
-        // GET PRACTICES
+        // GET CREATE ITEMS
         const GET = async () => {
 
             const response = await GetCreateItems(language, practice, userId)
@@ -43,20 +52,20 @@ export default function Create() {
             if(response && response.status == 200)
             {
                 console.log(response.data)
-                setItems(response.data);
+                setItems(response.data)
                 setIsLoading(false)
                 return
             } 
             if(response && response.status == 500 ){
                 
-                setError(response.message ?? null);
-                setErrorDetails(response.details ?? null);
+                setError(response.message ?? null)
+                setErrorDetails(response.details ?? null)
                 setIsLoading(false)
                 return
             }
 
             setIsLoading(false)
-            setError('An unknown error occurred');
+            setError('An unknown error occurred')
         }
 
         GET()
@@ -65,12 +74,12 @@ export default function Create() {
 
     if(isLoading) return <></>
 
-    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
+    if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
     return (
 
         <>
-            <SliderComponent practice={practice} language={language}></SliderComponent>
+            <SliderComponent/>
         </>
-    );
+    )
 }

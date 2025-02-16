@@ -1,14 +1,15 @@
 "use client"
 
 // REACT & NEXT
-import { useActionState, useState } from "react";
+import { useActionState, useState } from "react"
 //COMPONENTS
 import FileIcon from "@/src/components/svg/FileUpload"
+import ShowErrorComponent from "./utils/showError"
 //ACTIONS
-import { AddOrUpdate } from "../actions/crud";
+import { AddOrUpdate } from "../actions/crud"
 //TYPES
-import { crudFormComponentPropTypes } from "../types/prop";
-import ShowError from "./utils/showError";
+import { crudFormComponentPropTypes } from "../types/prop"
+
 
 export default function CrudFormComponent({formHeading, labelNames, isHidden, formData, setFormData, table, itemId, userId, type} : crudFormComponentPropTypes) {
 
@@ -21,42 +22,35 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
     //FUNCTIONS
     const handleFileChange1 = (e: any) => {
 
-        const file = e.target.files[0];
-        const maxSize = 50 * 1024 * 1024;
+        const file = e.target.files[0]
+        const maxSize = 50 * 1024 * 1024
         const allowedTypes = [
         'image/png', 
-        'image/jpeg', 
-        'application/pdf',
-        'video/mp4',
-        'video/quicktime',
-        'video/x-msvideo',
-        'video/webm'
-        ];
+        'image/jpeg',
+        ]
 
         if (file) {
             if (file.size > maxSize) {
-                setFileError('Dosya boyutu 50MB\'dan küçük olmalıdır');
-                return;
+                setFileError('Dosya boyutu 50MB\'dan küçük olmalıdır')
+                return
             }
 
             if (!allowedTypes.includes(file.type)) {
-                setFileError('Sadece PNG, JPG, PDF, MP4, MOV, AVI ve WebM dosyaları yükleyebilirsiniz');
-                return;
+                setFileError('Sadece PNG ve JPG dosyaları yükleyebilirsiniz')
+                return
             }
 
-            setFileError('');
-            setFormData({ ...formData, file1: file });
+            setFileError('')
+            setFormData({ ...formData, file1: file })
         }
 
     }
 
     const handleFileChange2 = (e : any) => {
         
-        const file = e.target.files[0];
-        const maxSize = 50 * 1024 * 1024;
+        const file = e.target.files[0]
+        const maxSize = 50 * 1024 * 1024
         const allowedTypes = [
-        'image/png', 
-        'image/jpeg', 
         'application/pdf',
         'video/mp4',
         'video/quicktime',
@@ -66,21 +60,47 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
 
         if (file) {
             if (file.size > maxSize) {
-                setFileError('Dosya boyutu 50MB\'dan küçük olmalıdır');
-                return;
+                setFileError('Dosya boyutu 50MB\'dan küçük olmalıdır')
+                return
             }
 
             if (!allowedTypes.includes(file.type)) {
-                setFileError('Sadece PNG, JPG, PDF, MP4, MOV, AVI ve WebM dosyaları yükleyebilirsiniz');
-                return;
+                setFileError('Sadece PDF, MP4, MOV, AVI ve WebM dosyaları yükleyebilirsiniz')
+                return
             }
 
-            setFileError('');
-            setFormData({ ...formData, file2: file });
+            setFileError('')
+            setFormData({ ...formData, file2: file })
         }
     }
 
-    if(state?.status === 500) return <ShowError error={state.message} errorDetails={state.stackDetails}></ShowError>
+    const handleFileChange3 = (e : any) => {
+      
+      const file = e.target.files[0]
+        const maxSize = 50 * 1024 * 1024
+        const allowedTypes = [
+          'text/srt',
+          'text/vtt',
+          'text/plain'
+        ]
+
+        if (file) {
+            if (file.size > maxSize) {
+                setFileError('Dosya boyutu 50MB\'dan küçük olmalıdır')
+                return
+            }
+
+            if (!allowedTypes.includes(file.type)) {
+                setFileError('Sadece STR ve VTT dosyaları yükleyebilirsiniz')
+                return
+            }
+
+            setFileError('')
+            setFormData({ ...formData, file3: file })
+        }
+    }
+
+    if(state?.status === 500) return <ShowErrorComponent error={state.message} errorDetails={state.stackDetails}/>
 
     return (
     
@@ -91,10 +111,10 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
               <form action={formAction} className="space-y-6">
     
                 {/* Hidden Areas */}
-                <input type='hidden' name='type' value={type}></input>
-                <input type='hidden' name='table' value={table ?? ""}></input>
-                <input type='hidden' name='itemId' value={itemId ?? ""}></input>
-                <input type='hidden' name='userId' value={userId ?? ""}></input>
+                <input type='hidden' name='type' value={type}/>
+                <input type='hidden' name='table' value={table ?? ""}/>
+                <input type='hidden' name='itemId' value={itemId ?? ""}/>
+                <input type='hidden' name='userId' value={userId ?? ""}/>
     
     
                 {/* LANGUAGE OPTIONS*/}
@@ -143,7 +163,6 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
     
                     </select>
                 </div>}
-    
     
                 {/* INPUT 1 */}
                 {isHidden.at(2) &&
@@ -209,14 +228,14 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
                                 type="file"
                                 // value={formData.file1}
                                 className="sr-only"
-                                accept=".png,.jpg,.jpeg,.pdf,.mp4,.mov,.avi,.webm"
+                                accept=".png,.jpg,.jpeg"
                                 onChange={handleFileChange1}
                             />
                             </label>
                             <p className="pl-1">or drag and drop</p>
                         </div>
                         <p className="text-xs text-gray-500">
-                            PNG, JPG, PDF, MP4, MOV, AVI, WebM (max 50MB)
+                            PNG, JPG, JPEG (max 50MB)
                         </p>
                         {fileError && (
                             <p className="text-xs text-red-500 mt-1">{fileError}</p>
@@ -254,14 +273,14 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
                                 type="file"
                                 // value={formData.file2}
                                 className="sr-only"
-                                accept=".png,.jpg,.jpeg,.pdf,.mp4,.mov,.avi,.webm"
+                                accept=".pdf,.mp4,.mov,.avi,.webm"
                                 onChange={handleFileChange2}
                             />
                             </label>
                             <p className="pl-1">or drag and drop</p>
                         </div>
                         <p className="text-xs text-gray-500">
-                            PNG, JPG, PDF, MP4, MOV, AVI, WebM (max 50MB)
+                            PDF, MP4, MOV, AVI, WebM (max 50MB)
                         </p>
                         {fileError && (
                             <p className="text-xs text-red-500 mt-1">{fileError}</p>
@@ -269,6 +288,51 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
                         {formData.file2 && (
                             <p className="text-xs text-green-500 mt-1">
                             Seçilen dosya: {formData.file2.name}
+                            </p>
+                        )}
+                    </div>
+                  </div>
+                </div>}
+
+                {/* FILE 3*/}
+                {isHidden.at(6) &&
+                <div>
+                  <label 
+                    htmlFor="file" 
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    {labelNames.at(6)}
+                  </label>
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-gray-400 transition-colors">
+                    <div className="space-y-1 flex flex-col items-center">
+                        <FileIcon></FileIcon>
+                        <div className="flex text-sm text-gray-600">
+                            <label
+                            htmlFor="file3"
+                            className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                            >
+                            <span>Choose File</span>
+                            <input
+                                id="file3"
+                                name="file3"
+                                type="file"
+                                // value={formData.file3}
+                                className="sr-only"
+                                accept=".str,.vtt"
+                                onChange={handleFileChange3}
+                            />
+                            </label>
+                            <p className="pl-1">or drag and drop</p>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                            STR , VTT (max 50MB)
+                        </p>
+                        {fileError && (
+                            <p className="text-xs text-red-500 mt-1">{fileError}</p>
+                        )}
+                        {formData.file3 && (
+                            <p className="text-xs text-green-500 mt-1">
+                            Seçilen dosya: {formData.file3.name}
                             </p>
                         )}
                     </div>
@@ -287,5 +351,5 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
             </div>
           </div>
         </div>
-      );
+      )
 }

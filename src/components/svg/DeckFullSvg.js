@@ -1,7 +1,7 @@
 "use client"
 
-import React from 'react';
-import { markazi } from '@/public/fonts';
+import React from 'react'
+import { markazi } from '@/public/fonts'
 
 
 const DeckFullSvg = ({ text1, text2, language, category }) => {
@@ -77,7 +77,7 @@ const DeckFullSvg = ({ text1, text2, language, category }) => {
 
     </svg>
 
-  );
-};
+  )
+}
 
-export default DeckFullSvg;
+export default DeckFullSvg

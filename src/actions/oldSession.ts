@@ -120,6 +120,14 @@ export async function SaveOldSession(row: any){
                 })
                 break;
             case "listening":
+                await prisma.listeningOldSession.create({
+                    data: {
+                        oldSessionId: row.OldSessionId,
+                        listeningId: row.listeningId,
+                        filmId: row.filmId,
+                        rate: row.rate
+                    }
+                })
         }
 
     } catch (error) {

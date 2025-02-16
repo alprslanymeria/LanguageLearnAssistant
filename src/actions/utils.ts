@@ -28,14 +28,6 @@ export default async function GetCreateItems(language: string | null, practice: 
 
         if(practice == "writing"){
 
-            //language english
-            //practice writing ise
-            //Bunun writing i --> languageId 1 - practiceId 3
-
-            //biz language defaultLanguage olanı alıyoruz --> turkish
-            //practice writing alıyoruz
-
-
             // GET DEFAULT LANGUAGE ID
             user = await prisma.user.findFirst({
                 where: {
@@ -150,5 +142,4 @@ export default async function GetCreateItems(language: string | null, practice: 
         if(error instanceof Error) return {status: 500, message: "Create Items verileri alınırken bir hata oluştu", details: error.message};
         
     }
-
 }

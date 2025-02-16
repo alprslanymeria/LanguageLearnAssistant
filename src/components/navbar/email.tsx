@@ -1,20 +1,21 @@
 "use client"
 
 //REACT & NEXT
-import { useState } from "react";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
+import { useState } from "react"
+import { usePathname } from "next/navigation"
+import Link from "next/link"
 //ACTIONS
-import { DeleteLiveSession } from "../../actions/liveSession";
-import { logOut } from "../../actions/auth";
+import { DeleteLiveSession } from "../../actions/liveSession"
+import { logOut } from "../../actions/auth"
 //TYPES
-import { emailPropTypes } from "../../types/prop";
-import ShowError from "../utils/showError";
+import { emailPropTypes } from "../../types/prop"
+//COMPONENTS
+import ShowErrorComponent from "../utils/showError"
 
-export function Email({email, userId} : emailPropTypes) {
+export function EmailComponent({email, userId} : emailPropTypes) {
 
     //HOOKS
-    const pathName = usePathname();
+    const pathName = usePathname()
 
     //STATES
     const  [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
@@ -32,15 +33,15 @@ export function Email({email, userId} : emailPropTypes) {
             
             if(response?.status == 500)
             {
-                setError(response.message ?? null);
-                setErrorDetails(response.details ?? null);
+                setError(response.message ?? null)
+                setErrorDetails(response.details ?? null)
             }
         } 
         
-        await logOut();
+        await logOut()
     }
 
-    if(error && error !== "") return <ShowError error={error} errorDetails={errorDetails}></ShowError>
+    if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
     return (
 
@@ -70,6 +71,5 @@ export function Email({email, userId} : emailPropTypes) {
                 </div>
             )}
         </div>
-    );
-
+    )
 }

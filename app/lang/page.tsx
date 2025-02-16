@@ -1,21 +1,21 @@
 "use client"
 
 // REACT & NEXT
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 //COMPONENTS
-import LanguagePage from "@/src/components/languagePage/languagePage";
-import PracticePage from "@/src/components/practicePage/practicePage";
+import LanguagePageComponent from "@/src/components/languagePage/languagePage"
+import PracticePageComponent from "@/src/components/practicePage/practicePage"
 
-export default function Page() {
+export default function ChoosePage() {
 
     //GET SEARCH PARAMS
-    const searchParams = useSearchParams();
-    const language = searchParams.get("language");
-    const practice = searchParams.get("practice");
+    const searchParams = useSearchParams()
+    const language = searchParams.get("language")
+    const practice = searchParams.get("practice")
 
-    //True ise language göster
-    const [isShow, setIsShow] = useState(true);
+    //IF TRUE SHOW LANGUAGE PAGE COMPONENT
+    const [isShow, setIsShow] = useState(true)
 
     useEffect(() => {
 
@@ -23,13 +23,13 @@ export default function Page() {
             setIsShow(true)
         else
             setIsShow(false)
-    }, [practice]);
+    }, [practice])
     
     return (
         <>
-        {isShow
-        ? <LanguagePage language={language}/>
-        : <PracticePage language={language} practice={practice}/>}
+            {isShow
+            ? <LanguagePageComponent language={language}/>
+            : <PracticePageComponent language={language} practice={practice}/>}
         </>
     )
 }

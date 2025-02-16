@@ -1,22 +1,34 @@
 "use client"
 
-import { DeleteLiveSession } from "@/src/actions/liveSession";
-import { SaveOldSession } from "@/src/actions/oldSession";
-import { rate } from "@/src/actions/rate";
-import { SaveReadingRows } from "@/src/actions/rows";
-import translateText from "@/src/actions/translate";
+// REACT & NEXT
+import { useState } from "react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+// STORE
 import { GlobalStore } from "@/src/store/globalStore"
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+// COMPONENTS
+import ShowErrorComponent from "../utils/showError"
+// ACTIONS
+import { rate } from "@/src/actions/rate"
+import { SaveRows } from "@/src/actions/rows"
+import translateText from "@/src/actions/translate"
+import { SaveOldSession } from "@/src/actions/oldSession"
+import { DeleteLiveSession } from "@/src/actions/liveSession"
+
+
 
 export default function ReadingFormComponent({item} : any) {
 
 
     //GLOBAL STORE
-    const {SessionData, updateSessionData, OldSessionId} = GlobalStore();
+    const {SessionData, updateSessionData, OldSessionId} = GlobalStore()
 
     //ROUTER
-    const router = useRouter();
+    const router = useRouter()
+
+    //STATES
+    const [error, setError] = useState<any>(null)
+    const [errorDetails, setErrorDetails] = useState<any>(null)
 
     //SESSION
     const session = useSession()
@@ -52,14 +64,15 @@ export default function ReadingFormComponent({item} : any) {
         alert(`Benzerlik oranı: ${(similarity * 100).toFixed(2)}%`)
 
         //SAVED TO LOCAL STATE
-        const sentence = {
+        const row = {
+            from : "reading",
             OldSessionId: OldSessionId,
             selectedSentence: SessionData.selectedText,
             answer: SessionData.inputText,
             answerTranslate: SessionData.translatedText,
             similarity: similarity
         }
-        updateSessionData("sessionSentences", [...SessionData.sessionSentences, sentence])
+        updateSessionData("rows", [...SessionData.rows, row])
 
         //CLEAR STATES
         updateSessionData("selectedText", "")
@@ -73,36 +86,36 @@ export default function ReadingFormComponent({item} : any) {
         try {
             
             //CALCULATE AVERAGE RATE
-        const totalRate = SessionData.sessionSentences.reduce((acc: any, item: any) => acc + item.similarity, 0)
-        const averageRate = totalRate / SessionData.sessionSentences.length
+            const totalRate = SessionData.sessionSentences.reduce((acc: any, item: any) => acc + item.similarity, 0)
+            const averageRate = totalRate / SessionData.sessionSentences.length
 
-        const row = {
-            from : "reading",
-            OldSessionId: OldSessionId,
-            readingId: item.readingId,
-            bookId: item.id,
-            rate: (averageRate * 100).toFixed(2),
-        }
+            const oldSessionRow = {
+                from : "reading",
+                OldSessionId: OldSessionId,
+                readingId: item.readingId,
+                bookId: item.id,
+                rate: (averageRate * 100).toFixed(2),
+            }
 
-        //SAVE OLD SESSION
-        await SaveOldSession(row)
-            
-        //SAVE SENTENCES
-        await SaveReadingRows(SessionData.sessionSentences)
+            //SAVE OLD SESSION
+            await SaveOldSession(oldSessionRow)
+                
+            //SAVE SENTENCES
+            await SaveRows(SessionData.rows)
         
+            //DELETE LIVE SESSION
+            await DeleteLiveSession(userId)
 
-        //DELETE LIVE SESSION
-        await DeleteLiveSession(userId)
         } catch (error:any) {
             
-            console.log(error.message)
-            console.log(error.details)
+            setError(error.message)
+            setErrorDetails(error.details)
         }
         
-        
         router.push("/")
-
     }
+
+    if(error) return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
     return (
 
@@ -139,7 +152,7 @@ export default function ReadingFormComponent({item} : any) {
                     }
                     
                     {/* //BUTTONS */}
-                    <div>
+                    <div className='flex flex-wrap gap-4 justify-around'>
                         <button onClick={handleTextSelection} className="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Select Text</button>
                         <button onClick={handleTranslate} className="w-full lg:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Translate</button>
                         <button onClick={calculateRate} className="w-full lg:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Calculate</button>
