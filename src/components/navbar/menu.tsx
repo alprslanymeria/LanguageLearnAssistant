@@ -68,8 +68,8 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
         {!email && (
 
           <>
-            <Link className="bg-blue-500 text-white px-2 py-1 rounded-lg" href="/auth/login">Login</Link>
-            <Link className="bg-green-500 text-white px-2 py-1 rounded-lg" href="/auth/signup">Signup</Link>
+            <Link className="bg-blue-500 text-white p-2 m-2 rounded-lg" href="/auth/login">Login</Link>
+            <Link className="bg-green-500 text-white p-2 m-2 rounded-lg" href="/auth/signup">Signup</Link>
           </>
 
         )}
@@ -80,25 +80,25 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
 
           <>
             <div className="bg-gray-800 p-4 rounded-lg mb-4">
-              <p className="text-white text-lg truncate">{email}</p>
+              <p className="text-[#F4CC15] text-lg truncate">{email}</p>
             </div>
 
             <nav className="flex-grow">
-              <ul className="space-y-4">
-                <li>
-                  <Link href="/list/rbooks" className="text-white hover:text-gray-300 block">Reading Books</Link>
-                </li>
-                <li>
-                  <Link href="/list/wbooks" className="text-white hover:text-gray-300 block">Writing Books</Link>
-                </li>
-                <li>
-                  <Link href="/list/lfilms" className="text-white hover:text-gray-300 block">Listening Films</Link>
-                </li>
+              <ul className="space-y-4 text-center">
                 <li>
                   <Link href="/list/fcategories" className="text-white hover:text-gray-300 block">Flashcard Categories</Link>
                 </li>
                 <li>
                   <Link href="/list/fwords" className="text-white hover:text-gray-300 block">Flashcard Words</Link>
+                </li>
+                <li>
+                  <Link href="/list/lfilms" className="text-white hover:text-gray-300 block">Listening Films</Link>
+                </li>
+                <li>
+                  <Link href="/list/rbooks" className="text-white hover:text-gray-300 block">Reading Books</Link>
+                </li>
+                <li>
+                  <Link href="/list/wbooks" className="text-white hover:text-gray-300 block">Writing Books</Link>
                 </li>
               </ul>
             </nav>

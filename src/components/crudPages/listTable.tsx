@@ -51,12 +51,12 @@ export default function ListTableComponent({width, columnNames, contents, items,
                         <thead>
                             <tr className="bg-gray-100 text-gray-700">
 
-                                {columnNames.map((name : any) => (
-                                    <th className="px-4 py-2 text-center">{name}</th>
+                                {columnNames.map((name : any , index: any) => (
+                                    <th key={index} className="px-4 py-2 text-center">{name}</th>
                                 ))}
 
                                 {/* CREATE BUTTON */}
-                                <th className="px-4 py-2 text-left" style={{ width: '75px' }} colSpan={2}>
+                                <th className="px-4 py-2 text-center" style={{ width: '75px' }} colSpan={2}>
                                     <button 
                                         onClick={() => handleCreate()} 
                                         className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300"
@@ -72,8 +72,8 @@ export default function ListTableComponent({width, columnNames, contents, items,
                                 items.map((item : any, index : any) => (
                                     <tr key={index} className="hover:bg-gray-50">
 
-                                        {contents.map((content : any) => (
-                                            <td className="px-4 py-2 border-b text-center">{content(item)}</td>
+                                        {contents.map((content : any, index: any) => (
+                                            <td key={index} className="px-4 py-2 border-b text-center">{content(item)}</td>
                                         ))}
 
                                         <td className="px-4 py-2 border-b text-center">

@@ -35,10 +35,14 @@ export default function CreatePage() {
 
         //UPDATE GLOBAL STORE
         setSessionData(
-        {  index: 0, sessionWords: [], sessionSentences: [], row: [],
-            selectedText: "", inputText: "", translatedText: "", showTranslation: false,
-            lastPlayTime: 0, lastPauseTime: 0, subtitleJson: null,textHeardByUser: "", extractedText: "",showAnswer: false, 
-            sentences: [{sentenceStart: 0, sentenceEnd: 0}], sentenceIndex: 0, listeningSentences: []
+        {  wordIndex: 0,
+           selectedText: "", 
+           inputText: "", 
+           translatedText: "", 
+           showTranslation: false,
+           lastPlayTime: 0, lastPauseTime: 0, subtitleJson: null, textHeardByUser: "", extractedText: "", showAnswer: false, 
+           sentences: [{sentenceStart: 0, sentenceEnd: 0}], sentenceIndex: 0, 
+           rows: []
         })
         setLanguage(language)
         setPractice(practice)

@@ -58,14 +58,14 @@ export function EmailComponent({email, userId} : emailPropTypes) {
                     </button>
                     {dropdownOpen && (
                         <div className="absolute right-0 bg-white border shadow-lg rounded-lg w-40 mt-2">
-                            <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-200">
+                            <Link href="/list/fcategories" className="hover:bg-gray-200 text-center text-black hover:text-black-300 block p-1">Flashcard Categories</Link>
+                            <Link href="/list/fwords" className="hover:bg-gray-200 text-center text-black hover:text-black-300 block p-1">Flashcard Words</Link>
+                            <Link href="/list/lfilms" className="hover:bg-gray-200 text-center text-black hover:text-black-300 block p-1">Listening Films</Link>
+                            <Link href="/list/rbooks" className="hover:bg-gray-200 text-center text-black hover:text-black-300 block p-1">Reading Books</Link>
+                            <Link href="/list/wbooks" className="hover:bg-gray-200 text-center text-black hover:text-black-300 block p-1">Writing Books</Link>
+                            <button onClick={handleLogout} className="w-full text-center px-4 py-2 text-red-500 hover:bg-gray-200">
                                 Logout
                             </button>
-                            <Link href="/list/rbooks" className="text-black hover:text-black-300 block">Reading Books</Link>
-                            <Link href="/list/wbooks" className="text-black hover:text-black-300 block">Writing Books</Link>
-                            <Link href="/list/lfilms" className="text-black hover:text-black-300 block">Listening Films</Link>
-                            <Link href="/list/fcategories" className="text-black hover:text-black-300 block">Flashcard Categories</Link>
-                            <Link href="/list/fwords" className="text-black hover:text-black-300 block">Flashcard Words</Link>
                         </div>
                     )}
                 </div>

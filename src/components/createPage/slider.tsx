@@ -67,6 +67,19 @@ export default function SliderComponent() {
 
     if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
+    //CHECK LENGTH
+    if(Items.length === 0)
+    {
+        alert("No items found")
+
+        setTimeout(() => {
+            
+            router.push(`${BASE}/`)
+
+        }, 1000)
+    }
+        
+
     return (
 
         <>

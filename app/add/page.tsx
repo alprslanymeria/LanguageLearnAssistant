@@ -54,7 +54,7 @@ export default function AddPage() {
                 break
             case "fcategories":
                 setFormHeading("Create Deck Category")
-                setLabelNames(["Deck","", "Category", "", "", "", ""])
+                setLabelNames(["Language","", "Category", "", "", "", ""])
                 setIsHidden([true,false, true, false, false, false, false])
                 setIsLoading(false)
                 break

@@ -8,13 +8,13 @@ const DeckSvg = ({text, language}) => {
 
     <svg className='w-[200px] h-[324px] sm:w-[250px] sm:h-[406px] md:w-[300px] md:h-[487px]' viewBox="0 0 442 628" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M439 580L78.5 625L3 580V60.5L387.5 3L439 60.5V580Z" fill="#D9D9D9"/>
-    <path d="M78.5 120L439 60.5M78.5 120L3 60.5M78.5 120V625M78.5 625L439 580V60.5M78.5 625L3 580V60.5M439 60.5L387.5 3L3 60.5" stroke="black" stroke-width="5"/>
-    <path d="M103.5 373.75V148L415 92V325.5M103.5 373.75V599.5L415 559V325.5M103.5 373.75L156 365.618C237.499 254.044 281.725 246.965 358 334.329L415 325.5" stroke="white" stroke-width="10"/>
-    <path d="M104 373.5V148L416 92V325.75M104 373.5V599L416 559.5V325.75M104 373.5L156.5 365.465C238.143 250.37 281.769 248.437 356.5 334.856L416 325.75" stroke="#FF0000" stroke-width="3"/>
-    <path d="M14 572.5V94L62.5 134V604.5L14 572.5Z" stroke="white" stroke-width="10"/>
-    <path d="M13 573V95L64 135.5V604.5L13 573Z" stroke="#FF0000" stroke-width="3"/>
-    <path d="M76.5 106L28.5 67.5L383 14L414 51L76.5 106Z" stroke="white" stroke-width="10"/>
-    <path d="M77.5 106L31.5 68.5L382 12.5L410.5 50L77.5 106Z" stroke="#FF0000" stroke-width="3"/>
+    <path d="M78.5 120L439 60.5M78.5 120L3 60.5M78.5 120V625M78.5 625L439 580V60.5M78.5 625L3 580V60.5M439 60.5L387.5 3L3 60.5" stroke="black" strokeWidth="5"/>
+    <path d="M103.5 373.75V148L415 92V325.5M103.5 373.75V599.5L415 559V325.5M103.5 373.75L156 365.618C237.499 254.044 281.725 246.965 358 334.329L415 325.5" stroke="white" strokeWidth="10"/>
+    <path d="M104 373.5V148L416 92V325.75M104 373.5V599L416 559.5V325.75M104 373.5L156.5 365.465C238.143 250.37 281.769 248.437 356.5 334.856L416 325.75" stroke="#FF0000" strokeWidth="3"/>
+    <path d="M14 572.5V94L62.5 134V604.5L14 572.5Z" stroke="white" strokeWidth="10"/>
+    <path d="M13 573V95L64 135.5V604.5L13 573Z" stroke="#FF0000" strokeWidth="3"/>
+    <path d="M76.5 106L28.5 67.5L383 14L414 51L76.5 106Z" stroke="white" strokeWidth="10"/>
+    <path d="M77.5 106L31.5 68.5L382 12.5L410.5 50L77.5 106Z" stroke="#FF0000" strokeWidth="3"/>
 
     {language === 'english' && <>
       

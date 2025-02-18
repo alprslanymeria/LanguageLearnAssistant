@@ -29,24 +29,19 @@ export default function HomePage() {
         if(response && response.status == 200)
         {
             setLanguages(response.data)
-            setIsLoading(false)
-            return
         } 
         if(response && response.status == 500){
             
             setError(response.message ?? null)
             setErrorDetails(response.details ?? null)
-            setIsLoading(false)
-            return
         }
 
         setIsLoading(false)
-        setError('An unknown error occurred')
     }
 
     GET()
 
-  }, [isLoading])
+  }, [])
 
   if(isLoading) return <></>
 

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/src/Auth"
 import { decrypt } from "@/src/lib/crypto"
 
-const BASE = process.env.NEXT_PUBLIC_API_URL
+const BASE = process.env.NEXT_PUBLIC_BASE_URL
 
 const protectedRoutes = ["/create", "/session", "/lang", "/detail", "/list", "/edit", "/add"]
 const publicRoutes = ["/auth", "/auth/login", "/auth/signup"]

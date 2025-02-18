@@ -132,6 +132,7 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
                       value={formData.languageId}
                       name='languageId'
                       onChange={(e) => setFormData({...formData, languageId: e.target.value})}
+                      required
                     >
                       <option value={1}>English</option>
                       <option value={2}>Turkish</option>
@@ -156,6 +157,7 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
                       value={formData.categoryId}
                       name='wordCategoryId'
                       onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
+                      required
                     >
                       {formData.categories.map( (category : any) => (
                         <option value={category.id}>{category.name}</option>
@@ -181,6 +183,7 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
                       value={formData.input1}
                       name='input1'
                       onChange={(e) => setFormData({...formData, input1: e.target.value})}
+                      required
                     />
                 </div>}
     
@@ -201,6 +204,7 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
                       value={formData.input2}
                       name='input2'
                       onChange={(e) => setFormData({...formData, input2: e.target.value})}
+                      required
                     />
                 </div>}
     
@@ -230,6 +234,7 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
                                 className="sr-only"
                                 accept=".png,.jpg,.jpeg"
                                 onChange={handleFileChange1}
+                                required
                             />
                             </label>
                             <p className="pl-1">or drag and drop</p>
@@ -275,6 +280,7 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
                                 className="sr-only"
                                 accept=".pdf,.mp4,.mov,.avi,.webm"
                                 onChange={handleFileChange2}
+                                required
                             />
                             </label>
                             <p className="pl-1">or drag and drop</p>
@@ -320,6 +326,7 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
                                 className="sr-only"
                                 accept=".str,.vtt"
                                 onChange={handleFileChange3}
+                                required
                             />
                             </label>
                             <p className="pl-1">or drag and drop</p>

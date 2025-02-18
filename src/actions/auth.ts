@@ -62,7 +62,7 @@ export async function signUpWithCredentials(prevState : any, formData : FormData
 
     // SIGNUP
     const hashedPassword = await hashPassword(password)
-    const defaultLanguageId = formData.get("defaultLanguageId")
+    const defaultLanguageId = Number(formData.get("defaultLanguageId"))
     const userId = uuidv4()
 
     await prisma.user.create({

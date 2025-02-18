@@ -41,9 +41,8 @@ export default function OldSessionComponent({language, practice}: oldSessionComp
                 <div className="container max-w-lg rounded-lg mx-auto bg-[#4D5B6C] p-5 mt-5">
                     <div>
                         {OldSessions.map((session, index) => (
-                            <Link href={`/detail/?language=${language}&practice=${practice}&id=${session.oldSessionId}`} passHref>
+                            <Link key={index} href={`/detail/?language=${language}&practice=${practice}&id=${session.oldSessionId}`} passHref>
                                 <div 
-                                    key={index}
                                     className="flex justify-between bg-white p-4 mb-3 rounded shadow-sm"
                                     >
                                     <p className="text-black-800">{new Date(session.createdAt).toLocaleString()}</p>

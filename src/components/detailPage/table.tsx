@@ -14,13 +14,13 @@ export default function TableComponent ({contents, columns, type}: tableComponen
             <table className="table-auto w-full border-collapse border border-gray-300">
                 <thead>
                     <tr className="bg-gray-100">
-                        {columns.map((column : any) => (
-                            <th className="border border-gray-300 px-4 py-2">{column}</th>
+                        {columns.map((column : any, index: any) => (
+                            <th key={index} className="border border-gray-300 px-4 py-2">{column}</th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
-                    {type === "book" && contents.map((sentence: any, index : any) => (
+                    {type === "book" && contents.map((sentence: any) => (
                         <tr key={sentence.id} className="hover:bg-gray-50">
                             <td className="border border-gray-300 px-4 py-2">{sentence.selectedSentence}</td>
                             <td className="border border-gray-300 px-4 py-2">{sentence.answer}</td>
@@ -29,7 +29,7 @@ export default function TableComponent ({contents, columns, type}: tableComponen
                         </tr>
                     ))}
 
-                    {type === "listening" && contents.map((sentence: any, index : any) => (
+                    {type === "listening" && contents.map((sentence: any) => (
                         <tr key={sentence.id} className="hover:bg-gray-50">
                             <td className="border border-gray-300 px-4 py-2">{sentence.listenedSentence}</td>
                             <td className="border border-gray-300 px-4 py-2">{sentence.answer}</td>

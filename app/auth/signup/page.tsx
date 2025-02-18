@@ -89,8 +89,8 @@ export default function Page() {
                             
                             {
                                 languages.length > 0 &&
-                                languages.map((language) => (
-                                    <option value={language.id}>{language.name}</option>
+                                languages.map((language, index) => (
+                                    <option key={index} value={language.id}>{language.name}</option>
                                 ))
                             }
 
