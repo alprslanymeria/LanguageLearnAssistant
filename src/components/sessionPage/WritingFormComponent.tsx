@@ -59,7 +59,7 @@ export default function WritingFormComponent({item} : any) {
         }
 
         //CALCULATE SIMILARITY
-        const similarity = await rate(SessionData.selectedText, SessionData.translatedText.at(0))
+        const similarity = await rate(SessionData.selectedText, SessionData.translatedText)
         alert(`Benzerlik oranı: ${(similarity * 100).toFixed(2)}%`)
 
         //SAVED TO LOCAL STATE
@@ -85,8 +85,8 @@ export default function WritingFormComponent({item} : any) {
         try {
             
             //CALCULATE AVERAGE RATE
-            const totalRate = SessionData.sessionSentences.reduce((acc: any, item: any) => acc + item.similarity, 0)
-            const averageRate = totalRate / SessionData.sessionSentences.length
+            const totalRate = SessionData.rows.reduce((acc: any, item: any) => acc + item.similarity, 0)
+            const averageRate = totalRate / SessionData.rows.length
 
             const oldSessionRow = {
                 from : "writing",

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
 import { auth } from "@/src/Auth"
 import { decrypt } from "@/src/lib/crypto"
 
@@ -11,22 +11,22 @@ const passRoutes = ["/api", "/_next", "/favicon.ico"]
 export default async function middleware(req){
 
     //GET PATH
-    const path = req.nextUrl.pathname;
+    const path = req.nextUrl.pathname
 
     //PATH CHECK
-    const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route));
-    const isPublicRoute = publicRoutes.some(route => path.startsWith(route));
-    const isPassRoute = passRoutes.some(route => path.startsWith(route));
+    const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route))
+    const isPublicRoute = publicRoutes.some(route => path.startsWith(route))
+    const isPassRoute = passRoutes.some(route => path.startsWith(route))
 
-    if(isPassRoute) return NextResponse.next();
+    if(isPassRoute) return NextResponse.next()
 
     //GET SESSION
     const session = await auth()
 
-    if(path.startsWith("/session" && session))
+    if(path.startsWith("/session") && session)
     {
         // GET SESSION ID & USER ID
-        const encryptedSessionId = req.nextUrl.searchParams.get("id");
+        const encryptedSessionId = req.nextUrl.searchParams.get("id")
         const sessionId = decrypt(encryptedSessionId)
         const userId = session.user.userId
 
@@ -45,9 +45,9 @@ export default async function middleware(req){
     }
 
 
-    if(isProtectedRoute && !session) return NextResponse.redirect(`${BASE}/auth/login`);
+    if(isProtectedRoute && !session) return NextResponse.redirect(`${BASE}/auth/login`)
 
-    if(isPublicRoute && session) return NextResponse.redirect(`${BASE}`);
+    if(isPublicRoute && session) return NextResponse.redirect(`${BASE}`)
 
-    return NextResponse.next();
+    return NextResponse.next()
 }

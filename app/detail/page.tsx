@@ -66,7 +66,7 @@ export default function DetailPage() {
     return(
 
         <div className="container max-w-screen-xl mx-auto flex flex-col md:flex-row px-4 gap-10">
-            <div className="relative h-[450px] flex w-[300px] items-center justify-center self-center">
+            <div className="relative h-[487px] flex w-[300px] items-center justify-center self-center">
 
                 {practice == 'flashcard'
                  ? <DeckSvg language={language} text={item.name}/>

@@ -42,7 +42,7 @@ export default function ListeningFormComponent({item} : any) {
         }
 
         //CALCULATE SIMILARITY
-        const similarity = await rate(SessionData.extractedText, SessionData.textHeardByUser.at(0))
+        const similarity = await rate(SessionData.extractedText, SessionData.textHeardByUser)
         alert(`Benzerlik oranı: ${(similarity * 100).toFixed(2)}%`)
 
         //SAVED TO LOCAL STATE
@@ -66,8 +66,8 @@ export default function ListeningFormComponent({item} : any) {
         try {
                     
             //CALCULATE AVERAGE RATE
-            const totalRate = SessionData.listeningSentences.reduce((acc: any, item: any) => acc + item.similarity, 0)
-            const averageRate = totalRate / SessionData.listeningSentences.length
+            const totalRate = SessionData.rows.reduce((acc: any, item: any) => acc + item.similarity, 0)
+            const averageRate = totalRate / SessionData.rows.length
 
             const oldSessionRow = {
                 from : "listening",

@@ -13,6 +13,7 @@ export async function NavbarComponent() {
     const session = await auth()
     const email  = session?.user?.email
     const userId = session?.user?.userId
+    console.log(userId)
 
     return (
 

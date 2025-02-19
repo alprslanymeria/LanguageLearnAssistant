@@ -100,12 +100,17 @@ export default function GameComponent({item} : any) {
     //HANDLE CLOSE BUTTON
     const handleCloseClick = async () => {
 
+        //CALCULATE AVERAGE RATE
+        const totalRows = SessionData.rows.length
+        const successfulRows = SessionData.rows.filter((item: any) => item.status === true).length
+        const successRate = totalRows > 0 ? (successfulRows / totalRows) * 100 : 0
+
         const oldSessionRow = {
             from : "flashcard",
             OldSessionId: OldSessionId,
             flashcardId: item.flashcardId,
             categoryId: item.id,
-            rate: 0,
+            rate: successRate.toFixed(2),
         }
 
         try {
