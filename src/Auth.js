@@ -62,5 +62,6 @@ export const {
             session.user.email = token.email
             return session
         }
-    }
+    },
+    trustHost: true
 })
