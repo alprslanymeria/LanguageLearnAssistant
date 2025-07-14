@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     }
   },
   images: {
-    domains: ['storage.googleapis.com']
+    remotePatterns: [new URL('https://storage.googleapis.com')]
   }
 };
 
