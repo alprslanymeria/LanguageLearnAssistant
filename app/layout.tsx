@@ -2,7 +2,7 @@
 import type { Metadata } from "next"
 import { SessionProvider } from "next-auth/react"
 // ASSETS
-import "@/public/globals.css"
+import "@/styles/globals.css"
 // COMPONENTS
 import { NavbarComponent } from "../src/components/navbar/navbar"
 // TYPES
