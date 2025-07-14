@@ -7,7 +7,7 @@ import { useActionState } from "react"
 import { signInWithCredentials } from "@/src/actions/auth"
 
 
-export default function LoginPage() {
+export default function Page() {
 
     // FORM ACTION
     const [state, loginAction] = useActionState(signInWithCredentials, undefined)

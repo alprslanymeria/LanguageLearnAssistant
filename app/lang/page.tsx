@@ -1,13 +1,22 @@
 "use client"
 
 // REACT & NEXT
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 //COMPONENTS
 import LanguagePageComponent from "@/src/components/languagePage/languagePage"
 import PracticePageComponent from "@/src/components/practicePage/practicePage"
 
-export default function ChoosePage() {
+export default function Page(){
+
+    return (
+        <Suspense fallback={<div>Yükleniyor...</div>}>
+            <LangPage/>
+        </Suspense>
+    )
+}
+
+function LangPage() {
 
     //GET SEARCH PARAMS
     const searchParams = useSearchParams()

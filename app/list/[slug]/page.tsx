@@ -11,7 +11,7 @@ import ListTableComponent from "@/src/components/crudPages/listTable"
 import ShowErrorComponent from "@/src/components/utils/showError"
 import { useParams } from "next/navigation"
 
-export default function ListPage() {
+export default function Page() {
 
     // GET SLUG
     const params = useParams()

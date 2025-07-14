@@ -11,7 +11,7 @@ import WritingSessionComponent from "@/src/components/sessionPage/WritingSession
 import { GlobalStore } from "@/src/store/globalStore"
 
 
-export default function SessionPage(){
+export default function Page(){
 
     //GLOBAL STORE
     const {Items, SelectedItemId, Practice} = GlobalStore()

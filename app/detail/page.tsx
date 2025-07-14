@@ -1,7 +1,7 @@
 "use client"
 
 // REACT & NEXT
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 //ACTIONS
@@ -14,7 +14,17 @@ import TableComponent from "@/src/components/detailPage/table"
 import ShowErrorComponent from "@/src/components/utils/showError"
 
 
-export default function DetailPage() {
+export default function Page(){
+
+    return (
+        <Suspense fallback={<div>Yükleniyor...</div>}>
+            <DetailPage/>
+        </Suspense>
+    )
+}
+
+
+function DetailPage() {
 
     //SEARCH PARAMS
     const searchParams = useSearchParams()

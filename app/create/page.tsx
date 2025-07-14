@@ -2,7 +2,7 @@
 
 // REACT & NEXT
 import { useSearchParams } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSession } from "next-auth/react"
 //ACTIONS
 import GetCreateItems from "@/src/actions/utils"
@@ -12,7 +12,16 @@ import { GlobalStore } from "@/src/store/globalStore"
 import SliderComponent from "@/src/components/createPage/slider"
 import ShowErrorComponent from "@/src/components/utils/showError"
 
-export default function CreatePage() {
+export default function Page(){
+
+    return (
+        <Suspense fallback={<div>Yükleniyor...</div>}>
+            <CreatePage/>
+        </Suspense>
+    )
+}
+
+function CreatePage() {
 
     //SEARCH PARAMS
     const searchParams = useSearchParams()

@@ -2,7 +2,7 @@
 
 // REACT & NEXT
 import { useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 //ACTIONS
 import { GetItemById } from "@/src/actions/crud"
@@ -10,8 +10,17 @@ import { GetItemById } from "@/src/actions/crud"
 import CrudFormComponent from "@/src/components/crudForm"
 import ShowErrorComponent from "@/src/components/utils/showError"
 
+export default function Page(){
 
-export default function EditPage() {
+    return (
+        <Suspense fallback={<div>Yükleniyor...</div>}>
+            <EditPage/>
+        </Suspense>
+    )
+}
+
+
+function EditPage() {
 
     //SEARCH PARAMS
     const searchParams = useSearchParams()
