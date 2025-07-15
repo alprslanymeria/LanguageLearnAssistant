@@ -76,7 +76,10 @@ export const GlobalStore = create<GlobalStoreState>()(
         })),
 
         resetStore: () => set({
+            Language: "",
+            Practice: "",
             OldSessions: [],
+            OldSessionId: "",
             Items: [],
             SelectedItemId: 0,
             SessionData: {}

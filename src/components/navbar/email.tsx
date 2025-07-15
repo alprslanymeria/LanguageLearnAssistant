@@ -11,6 +11,7 @@ import { logOut } from "../../actions/auth"
 import { emailPropTypes } from "../../types/prop"
 //COMPONENTS
 import ShowErrorComponent from "../utils/showError"
+import { GlobalStore } from "@/src/store/globalStore"
 
 export function EmailComponent({email, userId} : emailPropTypes) {
 
@@ -21,6 +22,9 @@ export function EmailComponent({email, userId} : emailPropTypes) {
     const  [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
     const [errorDetails, setErrorDetails] = useState<string | null>(null)
+
+    //STORE
+    const {resetStore} = GlobalStore()
 
     //FUNCTIONS
     const handleLogout = async () => {
@@ -37,6 +41,8 @@ export function EmailComponent({email, userId} : emailPropTypes) {
                 setErrorDetails(response.details ?? null)
             }
         } 
+
+        resetStore()
         
         await logOut()
     }

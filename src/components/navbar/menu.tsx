@@ -14,6 +14,7 @@ import CloseIcon from "@/public/icons/closeIcon"
 import { menuPropTypes } from "../../types/prop"
 //COMPONENTS
 import ShowErrorComponent from "../utils/showError"
+import { GlobalStore } from "@/src/store/globalStore";
 
 
 export function MenuComponent({ email, userId }: menuPropTypes) {
@@ -25,6 +26,9 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
   const [isOpen, setIsOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [errorDetails, setErrorDetails] = useState<string | null>(null)
+
+  //STORE
+  const {resetStore} = GlobalStore()
 
   //FUNCTIONS
   const handleLogout = async () => {
@@ -40,6 +44,8 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
         }
 
       } 
+
+      resetStore()
     
       await logOut()
   }
