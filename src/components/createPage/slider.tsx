@@ -40,6 +40,12 @@ export default function SliderComponent() {
     //FUNCTIONS
     const chooseHandler = async () => {
 
+        // ITEM SEÇİLİ Mİ KONTROL ET
+        if (!selectedItem) {
+            alert("Lütfen bir item seçiniz.")
+            return
+        }
+
         //SESSION ID OLUŞTUR
         const sessionId = uuidv4()
         setOldSessionId(sessionId)
