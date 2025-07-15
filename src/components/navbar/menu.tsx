@@ -48,9 +48,10 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
   if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       <button
         onClick={() => setIsOpen(!isOpen)}
+        className="p-2"
       >
         {isOpen 
         ? ( <CloseIcon/>) 
@@ -60,17 +61,17 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
 
       {/* MENU */}
       <div
-        className={`fixed top-0 left-0 h-full bg-gray-900 w-64 p-4 transform ${
+        className={`fixed top-0 left-0 h-full w-64 bg-gray-900 bg-opacity-95 backdrop-blur-md shadow-xl transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 z-50 flex flex-col`}
+        } transition-transform duration-300 ease-in-out flex flex-col p-5`}
       >
 
         {!email && (
 
-          <>
-            <Link className="bg-blue-500 text-white p-2 m-2 rounded-lg" href="/auth/login">Login</Link>
-            <Link className="bg-green-500 text-white p-2 m-2 rounded-lg" href="/auth/signup">Signup</Link>
-          </>
+          <div className="space-y-3 mt-10">
+            <Link className="block bg-blue-500 hover:bg-blue-600 text-white text-center py-2 rounded-lg transition" href="/auth/login">Login</Link>
+            <Link className="block bg-green-500 hover:bg-green-600 text-white text-center py-2 rounded-lg transition" href="/auth/signup">Signup</Link>
+          </div>
 
         )}
         
@@ -79,33 +80,33 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
         {email && (
 
           <>
-            <div className="bg-gray-800 p-4 rounded-lg mb-4">
-              <p className="text-[#F4CC15] text-lg truncate">{email}</p>
+            <div className="bg-gray-800 p-4 rounded-xl mb-6 shadow-inner">
+              <p className="text-[#F4CC15] text-md font-semibold truncate text-center">{email}</p>
             </div>
 
             <nav className="flex-grow">
-              <ul className="space-y-4 text-center">
+              <ul className="space-y-4 text-left text-white text-sm font-medium">
                 <li>
-                  <Link href="/list/fcategories" className="text-white hover:text-gray-300 block">Flashcard Categories</Link>
+                  <Link href="/list/fcategories" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">📚 Flashcard Categories</Link>
                 </li>
                 <li>
-                  <Link href="/list/fwords" className="text-white hover:text-gray-300 block">Flashcard Words</Link>
+                  <Link href="/list/fwords" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">📝 Flashcard Words</Link>
                 </li>
                 <li>
-                  <Link href="/list/lfilms" className="text-white hover:text-gray-300 block">Listening Films</Link>
+                  <Link href="/list/lfilms" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">🎧 Listening Films</Link>
                 </li>
                 <li>
-                  <Link href="/list/rbooks" className="text-white hover:text-gray-300 block">Reading Books</Link>
+                  <Link href="/list/rbooks" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">📖 Reading Books</Link>
                 </li>
                 <li>
-                  <Link href="/list/wbooks" className="text-white hover:text-gray-300 block">Writing Books</Link>
+                  <Link href="/list/wbooks" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">✍️ Writing Books</Link>
                 </li>
               </ul>
             </nav>
 
             <button 
               onClick={handleLogout} 
-              className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition mt-4"
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 mt-6 rounded-lg transition"
             >
               Logout
             </button>
