@@ -13,12 +13,12 @@ model User {
   email                   String
   password                String
   refreshToken            String?
-  defaultLanguageId       Int
+  nativeLanguageId        Int
   createdAt               DateTime @default(now())
   updatedAt               DateTime
 
   //REFERANS ALDIKLARI
-  language                Language @relation(fields: [defaultLanguageId], references: [id])
+  language                Language @relation(fields: [nativeLanguageId], references: [id])
 
   //REFERANS VERDİKLERİ
   liveSession             LiveSession?

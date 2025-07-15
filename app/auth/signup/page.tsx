@@ -84,8 +84,8 @@ export default function Page() {
                         {state?.errors?.password && <p className="text-sm text-red-500">{state.errors.password}</p>}
                     </div>
                     <div>
-                        <label htmlFor="defaultLanguageId" className="block text-sm font-medium text-gray-700">Default Language</label>
-                        <select name="defaultLanguageId" id="defaultLanguageId" className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <label htmlFor="nativeLanguageId" className="block text-sm font-medium text-gray-700">Native Language</label>
+                        <select name="nativeLanguageId" id="nativeLanguageId" className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                             
                             {
                                 languages.length > 0 &&
