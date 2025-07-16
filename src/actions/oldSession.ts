@@ -33,6 +33,9 @@ export default async function GetOldSessions(language: string | null, practice: 
                             practiceId: prac.id,
                             languageId: lang.id
                         }
+                    },
+                    orderBy: {
+                        createdAt: "desc"
                     }
                 })
                 break;
@@ -44,6 +47,9 @@ export default async function GetOldSessions(language: string | null, practice: 
                             practiceId: prac.id,
                             languageId: lang.id
                         }
+                    },
+                    orderBy: {
+                        createdAt: "desc"
                     }
                 })
                 break;
@@ -55,6 +61,9 @@ export default async function GetOldSessions(language: string | null, practice: 
                             practiceId: prac.id,
                             languageId: lang.id
                         }
+                    },
+                    orderBy: {
+                        createdAt: "desc"
                     }
                 })
                 break;
@@ -66,6 +75,9 @@ export default async function GetOldSessions(language: string | null, practice: 
                             practiceId: prac.id,
                             languageId: lang.id
                         }
+                    },
+                    orderBy: {
+                        createdAt: "desc"
                     }
                 })
                 break;
