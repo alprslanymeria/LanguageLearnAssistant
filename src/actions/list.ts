@@ -75,6 +75,9 @@ export async function GetAllFCategories(userId : string | null | undefined) {
                 flashcard : {
                     userId: userId
                 }
+            },
+            include: {
+                flashcard: true
             }
         })
 

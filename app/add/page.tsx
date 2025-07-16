@@ -26,7 +26,7 @@ function AddPage() {
     const table = searchParams.get("table")
 
     //FORM STATES
-    const [formData, setFormData] = useState({categories: []})
+    const [formData, setFormData] = useState({categories: [], languageId: "1"})
     const [formHeading, setFormHeading] = useState("")
     const [labelNames, setLabelNames] = useState<string[]>([])
     const [isHidden, setIsHidden] = useState<boolean[]>([])
@@ -83,7 +83,7 @@ function AddPage() {
             const response = await GetAllFCategories(userId)
             
             if(response?.status == 200){
-                setFormData({categories: response.data})
+                setFormData({...formData, categories: response.data})
                 setIsLoading(false)
                 return
             }

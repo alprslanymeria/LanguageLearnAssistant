@@ -159,8 +159,9 @@ export default function CrudFormComponent({formHeading, labelNames, isHidden, fo
                       onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
                       required
                     >
-                      {formData.categories.map( (category : any) => (
-                        <option value={category.id}>{category.name}</option>
+                      {formData.categories
+                        .filter((category: any) => String(category.flashcard.languageId) === String(formData.languageId))
+                        .map( (category : any) => ( <option key={category.id} value={category.id}>{category.name}</option>
                       ))}
     
                     </select>
