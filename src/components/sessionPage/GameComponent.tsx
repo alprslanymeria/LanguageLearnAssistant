@@ -32,6 +32,7 @@ export default function GameComponent({item} : any) {
     //STATES
     const [error, setError] = useState<any>(null)
     const [errorDetails, setErrorDetails] = useState<any>(null)
+    const [shuffledWords, setShuffledWords] = useState<any[]>([])
 
     //BUTTONS
     const [showNextButton, setShowNextButton] = useState(false)
@@ -55,10 +56,24 @@ export default function GameComponent({item} : any) {
 
         GET()
 
+        // SHUFFLE DECK
+        const shuffled = [...item.deckWords].sort(() => Math.random() - 0.5)
+        setShuffledWords(shuffled)
+
         setText1(item.deckWords.at(SessionData.wordIndex).question)
         setText2(item.deckWords.at(SessionData.wordIndex).answer)
 
     }, [])
+
+    useEffect(() => {
+
+        if(shuffledWords.length > 0)
+        {
+            setText1(shuffledWords[SessionData.wordIndex].question)
+            setText2(shuffledWords[SessionData.wordIndex].answer)
+        }
+
+    }, [shuffledWords])
 
     //HANDLE YES || NO BUTTON
     const handleClick = (status : boolean) => {
@@ -83,15 +98,15 @@ export default function GameComponent({item} : any) {
     //HANDLE NEXT BUTTON
     const handleNextClick = () => {
 
-        if(SessionData.wordIndex == item.deckWords.length)
+        if(SessionData.wordIndex == shuffledWords.length)
         {
             alert("All words are done")
             setShowCloseButton(true)
             return
         }
 
-        setText1(item.deckWords.at(SessionData.wordIndex).question)
-        setText2(item.deckWords.at(SessionData.wordIndex).answer)
+        setText1(shuffledWords[SessionData.wordIndex].question)
+        setText2(shuffledWords[SessionData.wordIndex].answer)
         setIsShow(!isShow)
         setShowNextButton(false)
 
