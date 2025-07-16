@@ -93,19 +93,19 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
             <nav className="flex-grow">
               <ul className="space-y-4 text-left text-white text-sm font-medium">
                 <li>
-                  <Link href="/list/fcategories" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">📚 Flashcard Categories</Link>
+                  <Link href="/list?table=fcategories" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">📚 Flashcard Categories</Link>
                 </li>
                 <li>
-                  <Link href="/list/fwords" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">📝 Flashcard Words</Link>
+                  <Link href="/list?table=fwords" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">📝 Flashcard Words</Link>
                 </li>
                 <li>
-                  <Link href="/list/lfilms" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">🎧 Listening Films</Link>
+                  <Link href="/list?table=lfilms" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">🎧 Listening Films</Link>
                 </li>
                 <li>
-                  <Link href="/list/rbooks" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">📖 Reading Books</Link>
+                  <Link href="/list?table=rbooks" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">📖 Reading Books</Link>
                 </li>
                 <li>
-                  <Link href="/list/wbooks" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">✍️ Writing Books</Link>
+                  <Link href="/list?table=wbooks" className="block hover:bg-gray-800 rounded-md px-3 py-2 transition">✍️ Writing Books</Link>
                 </li>
               </ul>
             </nav>

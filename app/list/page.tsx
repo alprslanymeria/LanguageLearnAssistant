@@ -1,7 +1,7 @@
 "use client"
 
 // REACT & NEXT
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import Image from "next/image"
 import { useSession } from "next-auth/react"
 // ACTIONS
@@ -9,13 +9,28 @@ import { GetAllFCategories, GetAllFWords, GetAllLFilms, GetAllRBooks, GetAllWBoo
 // COMPONENTS
 import ListTableComponent from "@/src/components/crudPages/listTable"
 import ShowErrorComponent from "@/src/components/utils/showError"
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 
-export default function Page() {
+export default function Page(){
+
+    return (
+        <Suspense fallback={<div>Yükleniyor...</div>}>
+            <ListPage/>
+        </Suspense>
+    )
+}
+
+function ListPage() {
 
     // GET SLUG
-    const params = useParams()
-    const slug = params.slug
+    // const params = useParams()
+    // const slug = params.slug
+
+    //SEARCH PARAMS
+    const searchParams = useSearchParams()
+    const slug = searchParams.get("table")
+    console.log(`SLUG: ${slug}`)
+
 
     // SESSION
     const session = useSession()

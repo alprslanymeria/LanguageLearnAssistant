@@ -26,6 +26,8 @@ export function EmailComponent({email, userId} : emailPropTypes) {
     //STORE
     const {resetStore} = GlobalStore()
 
+    const table = "fcategories"
+
     //FUNCTIONS
     const handleLogout = async () => {
 
@@ -71,11 +73,11 @@ export function EmailComponent({email, userId} : emailPropTypes) {
 
                 {dropdownOpen && (
                     <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 transition-all duration-200 animate-fade-in">
-                    <Link href="/list/fcategories" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold">📚 Flashcard Categories</Link>
-                    <Link href="/list/fwords" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold">📝 Flashcard Words</Link>
-                    <Link href="/list/lfilms" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold">🎧 Listening Films</Link>
-                    <Link href="/list/rbooks" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold">📖 Reading Books</Link>
-                    <Link href="/list/wbooks" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold">✍️ Writing Books</Link>
+                    <Link href="/list?table=fcategories" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold">📚 Flashcard Categories</Link>
+                    <Link href="/list?table=fwords" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold">📝 Flashcard Words</Link>
+                    <Link href="/list?table=lfilms" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold">🎧 Listening Films</Link>
+                    <Link href="/list?table=rbooks" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold">📖 Reading Books</Link>
+                    <Link href="/list?table=wbooks" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold">✍️ Writing Books</Link>
                     <button
                         onClick={handleLogout}
                         className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100 font-semibold"
