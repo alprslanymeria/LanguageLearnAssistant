@@ -26,7 +26,8 @@ export function EmailComponent({email, userId} : emailPropTypes) {
     //STORE
     const {resetStore} = GlobalStore()
 
-    const table = "fcategories"
+    //VARIABLES
+    const isAuthPage = pathName === "/auth/login" || pathName === "/auth/signup"
 
     //FUNCTIONS
     const handleLogout = async () => {
@@ -55,10 +56,12 @@ export function EmailComponent({email, userId} : emailPropTypes) {
 
         <div className="flex items-center space-x-4">
             {email == null ? (
-                <>
-                <Link className="bg-blue-500 text-white px-3 py-1 rounded-lg shadow hover:bg-blue-600 transition" href="/auth/login">Login</Link>
-                <Link className="bg-green-500 text-white px-3 py-1 rounded-lg shadow hover:bg-green-600 transition" href="/auth/signup">Signup</Link>
-                </>
+                !isAuthPage && (
+                    <>
+                        <Link className="bg-blue-500 text-white px-3 py-1 rounded-lg shadow hover:bg-blue-600 transition" href="/auth/login">Login</Link>
+                        <Link className="bg-green-500 text-white px-3 py-1 rounded-lg shadow hover:bg-green-600 transition" href="/auth/signup">Signup</Link>
+                    </>
+                )
             ) : (
                 <div className="relative">
                 <button
@@ -89,32 +92,5 @@ export function EmailComponent({email, userId} : emailPropTypes) {
                 </div>
             )}
             </div>
-
-        // <div className="flex items-center space-x-4">
-        //     {email == null ? (
-        //         <>
-        //             <Link className="bg-blue-500 text-white px-2 py-1 rounded-lg" href="/auth/login">Login</Link>
-        //             <Link className="bg-green-500 text-white px-2 py-1 rounded-lg" href="/auth/signup">Signup</Link>
-        //         </>
-        //     ) : (
-        //         <div className="relative">
-        //             <button onClick={() => setDropdownOpen(!dropdownOpen)} className="text-black px-2 py-1 rounded-lg">
-        //                 {email}
-        //             </button>
-        //             {dropdownOpen && (
-        //                 <div className="absolute right-0 bg-white border shadow-lg rounded-lg w-40 mt-2">
-        //                     <Link href="/list/fcategories" className="hover:bg-gray-200 text-center text-black hover:text-black-300 block p-1">Flashcard Categories</Link>
-        //                     <Link href="/list/fwords" className="hover:bg-gray-200 text-center text-black hover:text-black-300 block p-1">Flashcard Words</Link>
-        //                     <Link href="/list/lfilms" className="hover:bg-gray-200 text-center text-black hover:text-black-300 block p-1">Listening Films</Link>
-        //                     <Link href="/list/rbooks" className="hover:bg-gray-200 text-center text-black hover:text-black-300 block p-1">Reading Books</Link>
-        //                     <Link href="/list/wbooks" className="hover:bg-gray-200 text-center text-black hover:text-black-300 block p-1">Writing Books</Link>
-        //                     <button onClick={handleLogout} className="w-full text-center px-4 py-2 text-red-500 hover:bg-gray-200">
-        //                         Logout
-        //                     </button>
-        //                 </div>
-        //             )}
-        //         </div>
-        //     )}
-        // </div>
     )
 }
