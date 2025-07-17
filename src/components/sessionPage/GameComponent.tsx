@@ -157,15 +157,19 @@ export default function GameComponent({item} : any) {
             </div>
 
             <div className="flex flex-row md:flex-col my-6 md:my-0 justify-center gap-5 items-center md:items-center h-full ml-4">
-                {showCloseButton ? <button onClick={handleCloseClick} className="h-full px-4 py-2 bg-yellow-500 text-white rounded min-w-[70px]">Close</button> 
-                    
-                    : showNextButton ? <button onClick={handleNextClick} className="h-full px-4 py-2 bg-blue-500 text-white rounded min-w-[70px]">Next</button> 
-                    :
+                {showNextButton ? (
                     <>
-                        <button onClick={()=> handleClick(true)} className="h-1/2 px-4 py-2 bg-green-500 text-white rounded min-w-[70px]">YES</button>
+                        <button onClick={handleNextClick} className="h-full px-4 py-2 bg-blue-500 text-white rounded min-w-[70px]">Next</button>
+                        <button onClick={handleCloseClick} className="h-full px-4 py-2 bg-yellow-500 text-white rounded min-w-[70px]">Close</button>
+                    </>
+                    ) : showCloseButton ? (
+                    <button onClick={handleCloseClick} className="h-full px-4 py-2 bg-yellow-500 text-white rounded min-w-[70px]">Close</button>
+                    ) : (
+                    <>
+                        <button onClick={() => handleClick(true)} className="h-1/2 px-4 py-2 bg-green-500 text-white rounded min-w-[70px]">YES</button>
                         <button onClick={() => handleClick(false)} className="h-1/2 px-4 py-2 bg-red-500 text-white rounded min-w-[70px]">NO</button>
                     </>
-                }
+                )}
             </div>
 
         </div>
