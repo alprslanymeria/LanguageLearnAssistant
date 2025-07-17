@@ -55,7 +55,9 @@ export default function FlagComponent({languages} : flagComponentPropTypes) {
         <>
             <div className="flex flex-wrap justify-center gap-10">
                 {
-                    languages.map((language, index) => {
+                    languages
+                    .slice(0, 4)
+                    .map((language, index) => {
                         return(
                             <div key={index} className="m-2">
                                 <Image 
