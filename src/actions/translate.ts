@@ -12,7 +12,7 @@ const translate = new Translate({
 })
 
 
-export default async function translateText(inputText: any, languageId: any, practiceId: any, userId: any){
+export default async function translateText(selectedText: any, languageId: any, practiceId: any, userId: any){
 
     let target = ''
 
@@ -27,15 +27,6 @@ export default async function translateText(inputText: any, languageId: any, pra
 
     if(practice.name == 'reading' || practice.name == 'listening')
     {
-        if(languageId == "1") target = "en"
-        if(languageId == "2") target = "tr"
-        if(languageId == "3") target = "de"
-        if(languageId == "4") target = "ru"
-    }
-
-
-    if(practice.name == 'writing')
-    {
         //GET USER DEFAULT LANGUAGE
         const user = await prisma.user.findFirst({
             where: {
@@ -43,13 +34,26 @@ export default async function translateText(inputText: any, languageId: any, pra
             }
         })
 
-        if(user.defaultLanguageId == 1) target = "en"
-        if(user.defaultLanguageId == 2) target = "tr"
-        if(user.defaultLanguageId == 3) target = "de"
-        if(user.defaultLanguageId == 4) target = "ru"
+        if(user.nativeLanguageId == 1) target = "en"
+        if(user.nativeLanguageId == 2) target = "tr"
+        if(user.nativeLanguageId == 3) target = "de"
+        if(user.nativeLanguageId == 4) target = "ru"
+
     }
 
-    let [translations] = await translate.translate(inputText, target)
+    if(practice.name == 'writing')
+    {
+        //GET TARGET LANGUAGE
+        if(languageId == "1") target = "en"
+        if(languageId == "2") target = "tr"
+        if(languageId == "3") target = "de"
+        if(languageId == "4") target = "ru"
+    }
+
+    console.log(`PRACTICE: ${practice.name}`)
+    console.log(`TARGET LANGUAGE: ${target}`)
+
+    let [translations] = await translate.translate(selectedText, target)
     translations = Array.isArray(translations) ? translations[0] : translations
 
     return translations
