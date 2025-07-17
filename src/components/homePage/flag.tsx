@@ -8,27 +8,45 @@ import { useState } from "react"
 import { flagComponentPropTypes } from "../../types/prop"
 //ASSETS
 import { mitr } from "@/public/fonts"
+import { useSession } from "next-auth/react"
+import { CheckLanguageId } from "@/src/actions/language"
 
 
 export default function FlagComponent({languages} : flagComponentPropTypes) {
 
     //STATES
     const [selected, setSelected] = useState<string>("")
+    const [selectedId, setSelectedId] = useState<number>(0)
     const router = useRouter()
+
+    //SESSION
+    const session = useSession()
+    const userId = session.data?.user.userId
 
 
     //HANDLE CLICK
     const handleClick = (language : any) => {
         setSelected(language.name)
+        setSelectedId(language.id)
     }
 
     // HANDLE START BUTTON
-    const handleStart = () => {
+    const handleStart = async () => {
+
+        //CHECK NATIVE LANGUAGE ID
+        const response = await CheckLanguageId(userId, selectedId)
+
+        if(response?.data == true) {
+            alert("Native Language Çalışılamaz, Lütfen başka dil seçiniz.")
+            return
+        }
+
+
         if (!selected) {
             alert("Lütfen bir dil seçiniz.")
             return
         }
-        router
+
         router.push(`/lang?language=${selected}`)
     }
 

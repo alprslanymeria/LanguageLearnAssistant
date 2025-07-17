@@ -45,3 +45,23 @@ export async function GetLanguageName(flashcardId : any) {
         if(error instanceof Error) return {status: 500, message: "Language ismi verisi alınırken bir hata oluştu", details: error.message}
     }
 }
+
+export async function CheckLanguageId(userId: any, languageId: number) {
+
+    try {
+
+        const user = await prisma.user.findFirst({
+            where: {
+                userId: userId
+            }
+        })
+
+        if(user.nativeLanguageId == languageId) return {data: true, status: 200};
+
+        return {data: false, status: 200};
+
+    } catch (error) {
+        
+        if(error instanceof Error) return {status: 500, message: "nativeLanguageId ile languageId karşılaştırılırken bir sorun oluştu", details: error.message};
+    }
+}
