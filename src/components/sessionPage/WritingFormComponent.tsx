@@ -20,7 +20,7 @@ export default function WritingFormComponent({item} : any) {
 
 
     //GLOBAL STORE
-    const {SessionData, updateSessionData, OldSessionId} = GlobalStore()
+    const {SessionData, updateSessionData, OldSessionId, Language, Practice} = GlobalStore()
 
     //ROUTER
     const router = useRouter()
@@ -38,13 +38,12 @@ export default function WritingFormComponent({item} : any) {
 
         const selected = window.getSelection()?.toString()
         updateSessionData("selectedText", selected)
-        updateSessionData("showTranslation", true)
 
     }
 
     const handleTranslate = async () => {
 
-        const translations = await translateText(SessionData.inputText, item.writing.languageId, item.writing.practiceId, userId)
+        const translations = await translateText(SessionData.selectedText, userId, Language, Practice)
         updateSessionData("translatedText", translations)
         updateSessionData("showTranslation", true)
     }
@@ -52,14 +51,14 @@ export default function WritingFormComponent({item} : any) {
     const calculateRate = async () => {
 
         //CHECK
-        if(SessionData.selectedText == "" || SessionData.translatedText == "")
+        if(SessionData.inputText == "" || SessionData.translatedText == "")
         {
             alert("Gerekli alanları doldurunuz!")
             return
         }
 
         //CALCULATE SIMILARITY
-        const similarity = await rate(SessionData.selectedText, SessionData.translatedText)
+        const similarity = await rate(SessionData.inputText, SessionData.translatedText)
         alert(`Benzerlik oranı: ${(similarity * 100).toFixed(2)}%`)
 
         //SAVED TO LOCAL STATE
@@ -127,17 +126,21 @@ export default function WritingFormComponent({item} : any) {
                     <textarea
                         readOnly={true}
                         value={SessionData.selectedText}
-                        placeholder="Selected text will appear here"
+                        placeholder="Please choose text"
                         className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
 
                     {/* //SECOND TEXT AREA */}
-                    <textarea
-                        value={SessionData.inputText}
-                        onChange={(e) => updateSessionData("inputText", e.target.value)}
-                        placeholder="Type your text here"
-                        className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                    {SessionData.selectedText && (
+
+                        <textarea
+                            value={SessionData.inputText}
+                            onChange={(e) => updateSessionData("inputText", e.target.value)}
+                            placeholder="Your Answer"
+                            className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />)
+                    }
+                    
 
                     {/* //THIRD TEXT AREA */}
                     {SessionData.showTranslation && 
@@ -145,7 +148,7 @@ export default function WritingFormComponent({item} : any) {
                         <textarea
                             readOnly={true}
                             value={SessionData.translatedText}
-                            placeholder="Translation will appear here"
+                            placeholder="Translation"
                             className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     
@@ -153,10 +156,14 @@ export default function WritingFormComponent({item} : any) {
                     
                     {/* //BUTTONS */}
                     <div className='flex flex-wrap gap-4 justify-around'>
-                        <button onClick={handleTextSelection} className="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Select Text</button>
-                        <button onClick={handleTranslate} className="w-full lg:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Translate</button>
-                        <button onClick={calculateRate} className="w-full lg:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Calculate</button>
-                        <button onClick={closeAndSave} className="w-full lg:w-auto bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Close & Save</button>
+                        <button onClick={handleTextSelection} className="w-full lg:flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Select Text</button>
+                        {SessionData.inputText && (
+                            <button onClick={handleTranslate} className="w-full lg:flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Translate</button>
+                        )}
+                        {SessionData.showTranslation && (
+                            <button onClick={calculateRate} className="w-full lg:flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Calculate</button>
+                        )}
+                        <button onClick={closeAndSave} className="w-full lg:flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Close & Save</button>
                     </div>
 
                 </div>

@@ -28,7 +28,7 @@ export default async function GetCreateItems(language: string | null, practice: 
 
         if(practice == "writing"){
 
-            // GET DEFAULT LANGUAGE ID
+            // GET NATIVE LANGUAGE ID
             user = await prisma.user.findFirst({
                 where: {
                     userId: userId
@@ -38,7 +38,7 @@ export default async function GetCreateItems(language: string | null, practice: 
             // GET PRACTICE ID
             practiceForDefault = await prisma.practice.findFirst({
                 where: {
-                    languageId: user.defaultLanguageId,
+                    languageId: user.nativeLanguageId,
                     name: practice
                 }
             })
@@ -104,7 +104,7 @@ export default async function GetCreateItems(language: string | null, practice: 
                         writing: {
                             userId: userId,
                             practiceId: practiceForDefault.id,
-                            languageId: user.defaultLanguageId
+                            languageId: user.nativeLanguageId
                         }
                     },
                     include : {

@@ -21,7 +21,7 @@ export default function ReadingFormComponent({item} : any) {
 
 
     //GLOBAL STORE
-    const {SessionData, updateSessionData, OldSessionId} = GlobalStore()
+    const {SessionData, updateSessionData, OldSessionId, Language, Practice} = GlobalStore()
 
     //ROUTER
     const router = useRouter()
@@ -43,7 +43,7 @@ export default function ReadingFormComponent({item} : any) {
 
     const handleTranslate = async () => {
 
-        const translations = await translateText(SessionData.selectedText, item.reading.languageId, item.reading.practiceId, userId)
+        const translations = await translateText(SessionData.selectedText, userId, Language, Practice)
         updateSessionData("translatedText", translations)
         updateSessionData("showTranslation", true)
     }
@@ -155,14 +155,14 @@ export default function ReadingFormComponent({item} : any) {
                     
                     {/* //BUTTONS */}
                     <div className='flex flex-wrap gap-4 justify-around'>
-                        <button onClick={handleTextSelection} className="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Select Text</button>
+                        <button onClick={handleTextSelection} className="w-full lg:flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Select Text</button>
                         {SessionData.inputText && (
-                            <button onClick={handleTranslate} className="w-full lg:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Translate</button>
+                            <button onClick={handleTranslate} className="w-full lg:flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Translate</button>
                         )}
                         {SessionData.showTranslation && (
-                            <button onClick={calculateRate} className="w-full lg:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Calculate</button>
+                            <button onClick={calculateRate} className="w-full lg:flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Calculate</button>
                         )}
-                        <button onClick={closeAndSave} className="w-full lg:w-auto bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Close & Save</button>
+                        <button onClick={closeAndSave} className="w-full lg:flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Close & Save</button>
                     </div>
                 </div>
             </div>
