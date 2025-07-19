@@ -31,6 +31,11 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
   const {resetStore} = GlobalStore()
 
   //FUNCTIONS
+  const handleIconClick = async () => {
+
+      setIsOpen(!isOpen)
+  }
+
   const handleLogout = async () => {
 
       if(pathName.startsWith('/session')){
@@ -56,7 +61,7 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
   return (
     <div className="relative z-50">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleIconClick}
         className="p-2"
       >
         {isOpen 
