@@ -93,3 +93,14 @@ export type crudFormComponentPropTypes = {
     userId: string | null | undefined
     type: string
 }
+
+//alertComponent.tsx
+type AlertType = "info" | "success" | "warning" | "error";
+
+export type AlertProps = {
+  type?: AlertType;
+  message: string;
+  title?: string;
+  duration?: number;
+  onClose?: () => void;
+}
