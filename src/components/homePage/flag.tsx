@@ -10,6 +10,9 @@ import { flagComponentPropTypes } from "../../types/prop"
 import { mitr } from "@/public/fonts"
 import { useSession } from "next-auth/react"
 import { CheckLanguageId } from "@/src/actions/language"
+//COMPONENTS
+import ShowErrorComponent from "../utils/showError"
+import AlertComponent from "../utils/alertComponent"
 
 
 export default function FlagComponent({languages} : flagComponentPropTypes) {
@@ -17,6 +20,10 @@ export default function FlagComponent({languages} : flagComponentPropTypes) {
     //STATES
     const [targetLanguage, setTargetLanguage] = useState<string>("")
     const [targetLanguageId, setTargetLanguageId] = useState<number>(0)
+    const [error, setError] = useState<string | null>("")
+    const [errorDetails, setErrorDetails] = useState<string | null>(null)
+    const [showAlert, setShowAlert] = useState(false)
+    const [alertMessage, setAlertMessage] = useState<string>("")
     const router = useRouter()
 
     //SESSION
@@ -24,31 +31,51 @@ export default function FlagComponent({languages} : flagComponentPropTypes) {
     const userId = session.data?.user.userId
 
 
-    //HANDLE CLICK
+    //HANDLE FLAG CLICK
     const handleFlagClick = async (language : any) => {
         setTargetLanguage(language.name)
         setTargetLanguageId(language.id)
     }
 
-    // HANDLE START BUTTON
+    // HANDLE START CLICK
     const handleStartClick = async () => {
+
+        //CHECK USER LOGGED IN
+        if(userId == null || userId == undefined) {
+            
+            setAlertMessage("Lütfen giriş yapınız!")
+            setShowAlert(true)
+            return
+        }
 
         //CHECK IS SELECTED
         if (!targetLanguage) {
-            alert("Lütfen bir dil seçiniz.")
+
+            setAlertMessage("Lütfen bir dil seçiniz!")
+            setShowAlert(true)
             return
         }
 
         //CHECK NATIVE LANGUAGE ID
         const response = await CheckLanguageId(userId, targetLanguageId)
-
-        if(response?.data == true) {
-            alert("Native Language Çalışılamaz, Lütfen başka dil seçiniz.")
-            return
+ 
+        if(response && response.status == 500) {
+            
+            setError(response.message ?? null)
+            setErrorDetails(response.details ?? null)
+            return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
         }
 
+        if(response?.data == true) {
+            
+            setAlertMessage("Native Language Çalışılamaz, Lütfen başka dil seçiniz.")
+            setShowAlert(true)
+            return
+        }
+        
         router.push(`/lang?language=${targetLanguage}`)
     }
+
 
     return (
         
@@ -80,6 +107,18 @@ export default function FlagComponent({languages} : flagComponentPropTypes) {
                 >
                 BAŞLA
                 </button>
+            </div>
+
+            <div className="flex justify-center mt-6">
+                {showAlert && (
+                    <AlertComponent
+                        type="warning"
+                        title="Warning"
+                        message={alertMessage}
+                        duration={3000}
+                        onClose={() => setShowAlert(false)}
+                    />
+                )}
             </div>
         </>
     )
