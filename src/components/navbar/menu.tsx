@@ -15,6 +15,7 @@ import { menuPropTypes } from "../../types/prop"
 //COMPONENTS
 import ShowErrorComponent from "../utils/showError"
 import { GlobalStore } from "@/src/store/globalStore";
+import AlertComponent from "../utils/alertComponent";
 
 
 export function MenuComponent({ email, userId }: menuPropTypes) {
@@ -26,6 +27,8 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
   const [isOpen, setIsOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [errorDetails, setErrorDetails] = useState<string | null>(null)
+  const [showAlert, setShowAlert] = useState(false)
+  const [alertMessage, setAlertMessage] = useState<string>("")
 
   //STORE
   const {resetStore} = GlobalStore()
@@ -38,6 +41,7 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
 
   const handleLogout = async () => {
 
+      // CHECK IF REQUEST COME FROM /SESSION
       if(pathName.startsWith('/session')){
 
         const response = await DeleteLiveSession(userId)
@@ -46,7 +50,12 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
         {
             setError(response.message ?? null)
             setErrorDetails(response.details ?? null)
+
+            return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
         }
+
+        setAlertMessage("Mevcut session silinecektir!")
+        setShowAlert(true)
 
       } 
 
@@ -54,9 +63,6 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
     
       await logOut()
   }
-
-
-  if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
   return (
     <div className="relative z-50">
@@ -125,6 +131,19 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
         )}
           
       </div>
+
+      <div className="flex justify-center mt-6">
+          {showAlert && (
+              <AlertComponent
+                  type="warning"
+                  title="Warning"
+                  message={alertMessage}
+                  duration={3000}
+                  onClose={() => setShowAlert(false)}
+              />
+          )}
+      </div>
+
     </div>
   )
 }
