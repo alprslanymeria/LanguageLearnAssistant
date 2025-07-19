@@ -30,6 +30,11 @@ export function EmailComponent({email, userId} : emailPropTypes) {
     const isAuthPage = pathName === "/auth/login" || pathName === "/auth/signup"
 
     //FUNCTIONS
+    const handleDropdownClick = async () => {
+
+        setDropdownOpen(!dropdownOpen)
+    }
+
     const handleLogout = async () => {
 
         setDropdownOpen(false)
@@ -65,7 +70,7 @@ export function EmailComponent({email, userId} : emailPropTypes) {
             ) : (
                 <div className="relative">
                 <button
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    onClick={handleDropdownClick}
                     className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-black px-3 py-1 rounded-lg shadow transition"
                 >
                     {email}
