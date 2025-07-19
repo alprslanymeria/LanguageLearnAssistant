@@ -26,15 +26,15 @@ export default function HomePage() {
 
         const response = await GetLanguages()
 
-        if(response && response.status == 200)
-        {
-            setLanguages(response.data)
-        } 
         if(response && response.status == 500){
             
             setError(response.message ?? null)
             setErrorDetails(response.details ?? null)
+
+            return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
         }
+
+        setLanguages(response!.data)
 
         setIsLoading(false)
     }
@@ -44,8 +44,6 @@ export default function HomePage() {
   }, [])
 
   if(isLoading) return <></>
-
-  if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
   return (
     <>

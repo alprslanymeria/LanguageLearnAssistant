@@ -12,6 +12,7 @@ import { emailPropTypes } from "../../types/prop"
 //COMPONENTS
 import ShowErrorComponent from "../utils/showError"
 import { GlobalStore } from "@/src/store/globalStore"
+import AlertComponent from "../utils/alertComponent"
 
 export function EmailComponent({email, userId} : emailPropTypes) {
 
@@ -19,9 +20,11 @@ export function EmailComponent({email, userId} : emailPropTypes) {
     const pathName = usePathname()
 
     //STATES
-    const  [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
+    const [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
     const [errorDetails, setErrorDetails] = useState<string | null>(null)
+    const [showAlert, setShowAlert] = useState(false)
+    const [alertMessage, setAlertMessage] = useState<string>("")
 
     //STORE
     const {resetStore} = GlobalStore()
@@ -47,15 +50,18 @@ export function EmailComponent({email, userId} : emailPropTypes) {
             {
                 setError(response.message ?? null)
                 setErrorDetails(response.details ?? null)
+
+                return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
             }
+
+            setAlertMessage("Mevcut session silinecektir!")
+            setShowAlert(true)
         } 
 
         resetStore()
         
         await logOut()
     }
-
-    if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
 
     return (
 
@@ -96,6 +102,19 @@ export function EmailComponent({email, userId} : emailPropTypes) {
                 )}
                 </div>
             )}
+
+            <div className="flex justify-center mt-6">
+                {showAlert && (
+                    <AlertComponent
+                        type="warning"
+                        title="Warning"
+                        message={alertMessage}
+                        duration={3000}
+                        onClose={() => setShowAlert(false)}
+                    />
+                )}
             </div>
+
+        </div>
     )
 }
