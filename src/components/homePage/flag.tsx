@@ -15,8 +15,8 @@ import { CheckLanguageId } from "@/src/actions/language"
 export default function FlagComponent({languages} : flagComponentPropTypes) {
 
     //STATES
-    const [selected, setSelected] = useState<string>("")
-    const [selectedId, setSelectedId] = useState<number>(0)
+    const [targetLanguage, setTargetLanguage] = useState<string>("")
+    const [targetLanguageId, setTargetLanguageId] = useState<number>(0)
     const router = useRouter()
 
     //SESSION
@@ -26,28 +26,28 @@ export default function FlagComponent({languages} : flagComponentPropTypes) {
 
     //HANDLE CLICK
     const handleFlagClick = async (language : any) => {
-        setSelected(language.name)
-        setSelectedId(language.id)
+        setTargetLanguage(language.name)
+        setTargetLanguageId(language.id)
     }
 
     // HANDLE START BUTTON
     const handleStartClick = async () => {
 
         //CHECK IS SELECTED
-        if (!selected) {
+        if (!targetLanguage) {
             alert("Lütfen bir dil seçiniz.")
             return
         }
 
         //CHECK NATIVE LANGUAGE ID
-        const response = await CheckLanguageId(userId, selectedId)
+        const response = await CheckLanguageId(userId, targetLanguageId)
 
         if(response?.data == true) {
             alert("Native Language Çalışılamaz, Lütfen başka dil seçiniz.")
             return
         }
 
-        router.push(`/lang?language=${selected}`)
+        router.push(`/lang?language=${targetLanguage}`)
     }
 
     return (
@@ -65,7 +65,7 @@ export default function FlagComponent({languages} : flagComponentPropTypes) {
                                     alt={language.name}
                                     width={100} 
                                     height={100} 
-                                    className={`object-contain ${selected === language.name ? "border-4 border-blue-500 rounded-full": ""}`}
+                                    className={`object-contain ${targetLanguage === language.name ? "border-4 border-blue-500 rounded-full": ""}`}
                                     onClick={() => handleFlagClick(language)}
                                 />
                             </div>
