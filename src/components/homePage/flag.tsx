@@ -33,17 +33,17 @@ export default function FlagComponent({languages} : flagComponentPropTypes) {
     // HANDLE START BUTTON
     const handleStart = async () => {
 
+        //CHECK IS SELECTED
+        if (!selected) {
+            alert("Lütfen bir dil seçiniz.")
+            return
+        }
+
         //CHECK NATIVE LANGUAGE ID
         const response = await CheckLanguageId(userId, selectedId)
 
         if(response?.data == true) {
             alert("Native Language Çalışılamaz, Lütfen başka dil seçiniz.")
-            return
-        }
-
-
-        if (!selected) {
-            alert("Lütfen bir dil seçiniz.")
             return
         }
 
