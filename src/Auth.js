@@ -17,6 +17,7 @@ export const {
     },
     providers: [
 
+        //WORKS ON SignIn() CALL
         Credentials({
              async authorize(credentials) {
 
@@ -47,6 +48,7 @@ export const {
         })
     ],
     callbacks: {
+        // WORKS AFTER USER LOGIN FOR CREATE TOKEN
         async jwt({token, user}) {
             
             if (user) {
@@ -56,6 +58,7 @@ export const {
             return token
 
         },
+        // WORKS ON AUTH CALL
         async session({session, token}) {
 
             session.user.userId = token.userId
