@@ -120,9 +120,9 @@ export default function ListeningFormComponent({item} : any) {
 
             {/* //BUTTONS */}
             <div className='flex flex-wrap gap-4 justify-around'>
-                <button onClick={handleShowAnswer} className="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Show Answer</button>
-                <button onClick={calculateRate} className="w-full lg:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Calculate</button>
-                <button onClick={closeAndSave} className="w-full lg:w-auto bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Close & Save</button>
+                <button onClick={handleShowAnswer} className="w-full lg:flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Show Answer</button>
+                <button onClick={calculateRate} className="w-full lg:flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Calculate</button>
+                <button onClick={closeAndSave} className="w-full lg:flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Close & Save</button>
             </div>
         </div>
     )
