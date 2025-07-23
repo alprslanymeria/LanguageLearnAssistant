@@ -52,7 +52,7 @@ export async function CheckLanguageId(userId: any, languageId: number) {
 
         const user = await prisma.user.findFirst({
             where: {
-                userId: userId
+                id: userId
             }
         })
 

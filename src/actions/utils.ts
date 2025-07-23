@@ -31,7 +31,7 @@ export default async function GetCreateItems(language: string | null, practice: 
             // GET NATIVE LANGUAGE ID
             user = await prisma.user.findFirst({
                 where: {
-                    userId: userId
+                    id: userId
                 }
             })
 

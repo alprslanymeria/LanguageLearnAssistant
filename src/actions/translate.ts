@@ -21,7 +21,7 @@ export default async function translateText(selectedText: any, userId: any, lang
         //GET USER DEFAULT LANGUAGE
         const user = await prisma.user.findFirst({
             where: {
-                userId: userId
+                id: userId
             }
         })
 
