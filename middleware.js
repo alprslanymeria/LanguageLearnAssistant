@@ -28,7 +28,7 @@ export default async function middleware(req){
         // GET SESSION ID & USER ID
         const encryptedSessionId = req.nextUrl.searchParams.get("id")
         const sessionId = decrypt(encryptedSessionId)
-        const userId = session.user.userId
+        const userId = session.user.id
 
         // COMPARE SESSION ID & USER ID
         const response = await fetch(`${BASE}/api/compare?sessionId=${sessionId}&userId=${userId}`,{
@@ -44,6 +44,14 @@ export default async function middleware(req){
 
     }
 
+    if (path === '/auth/login' && req.nextUrl.searchParams.get('error') === 'CredentialsSignin') {
+        
+        const code = req.nextUrl.searchParams.get('code')
+
+        const redirectUrl = `${BASE}/auth/signup?error=CredentialsSignin${code ? `&code=${code}` : ''}`
+
+        return NextResponse.redirect(redirectUrl)
+    }
 
     if(isProtectedRoute && !session) return NextResponse.redirect(`${BASE}/auth/login`)
 
