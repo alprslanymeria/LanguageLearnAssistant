@@ -4,7 +4,7 @@ import { SessionProvider } from "next-auth/react"
 // ASSETS
 import "@/styles/globals.css"
 // COMPONENTS
-import { NavbarComponent } from "../src/components/navbar/navbar"
+import NavbarComponent from "../src/components/navbar/navbar"
 // TYPES
 import { rootLayout } from "@/src/types/prop"
 
@@ -19,13 +19,13 @@ export default function RootLayout({ children }: Readonly<rootLayout>) {
     
       <html lang="en">
           <body>
-            <SessionProvider>
-              <div className="container max-w-screen-xl mx-auto px-4">
-                  <NavbarComponent/>
-              </div>
-              <div className="w-full">
-                  {children}
-              </div>
+            <SessionProvider refetchOnWindowFocus={true}>
+                <div className="container max-w-screen-xl mx-auto px-4">
+                    <NavbarComponent/>
+                </div>
+                <div className="w-full">
+                    {children}
+                </div>
             </SessionProvider>
           </body>
       </html>
