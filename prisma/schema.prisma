@@ -8,17 +8,15 @@ datasource db {
 }
 
 model User {
-
-  userId                  String @id
-  email                   String
-  password                String
-  refreshToken            String?
-  nativeLanguageId        Int
+  id                      String          @id @default(cuid())
+  name                    String?
+  email                   String          @unique
+  emailVerified           DateTime?
+  password                String?
+  nativeLanguageId        Int?    @default(2)
+  image                   String?
   createdAt               DateTime @default(now())
-  updatedAt               DateTime
-
-  //REFERANS ALDIKLARI
-  language                Language @relation(fields: [nativeLanguageId], references: [id])
+  updatedAt               DateTime @updatedAt
 
   //REFERANS VERDİKLERİ
   liveSession             LiveSession?
@@ -26,7 +24,69 @@ model User {
   listenings              Listening[]
   writings                Writing[]
   readings                Reading[]
+  accounts                Account[]
+  sessions                Session[]
+  Authenticator           Authenticator[]
 
+  //REFERANS ALDIKLARI
+  language                Language? @relation(fields: [nativeLanguageId], references: [id])
+}
+
+model Account {
+  userId                String
+  type                  String
+  provider              String
+  providerAccountId     String
+  refresh_token         String? @db.Text
+  access_token          String? @db.Text
+  expires_at            Int?
+  token_type            String?
+  scope                 String?
+  id_token              String? @db.Text
+  session_state         String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+ 
+  //REFERANS ALDIKLARI
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken          String   @unique
+  userId                String
+  expires               DateTime
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  //REFERANS ALDIKLARI
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+ 
+model VerificationToken {
+  identifier            String
+  token                 String
+  expires               DateTime
+ 
+  @@id([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID          String  @unique
+  userId                String
+  providerAccountId     String
+  credentialPublicKey   String
+  counter               Int
+  credentialDeviceType  String
+  credentialBackedUp    Boolean
+  transports            String?
+ 
+  //REFERANS ALDIKLARI
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([userId, credentialID])
 }
 
 model Language {
@@ -68,7 +128,7 @@ model LiveSession {
   userId                String @unique
 
   //REFERANS ALDIKLARI
-  user                  User @relation(fields: [userId], references: [userId])
+  user                  User @relation(fields: [userId], references: [id])
 }
 
 model Flashcard {
@@ -79,7 +139,7 @@ model Flashcard {
   practiceId            Int
 
   //REFERANS ALDIKLARI
-  user                  User @relation(fields: [userId], references: [userId])
+  user                  User @relation(fields: [userId], references: [id])
   language              Language @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   practice              Practice @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction )
 
@@ -153,7 +213,7 @@ model Listening {
   practiceId            Int
 
   //REFERANS ALDIKLARI
-  user                  User @relation(fields: [userId], references: [userId])
+  user                  User @relation(fields: [userId], references: [id])
   language              Language @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   practice              Practice @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
@@ -215,7 +275,7 @@ model Writing {
   practiceId            Int
 
   //REFERANS ALDIKLARI
-  user                  User @relation(fields: [userId], references: [userId])
+  user                  User @relation(fields: [userId], references: [id])
   language              Language @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   practice              Practice @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
@@ -278,7 +338,7 @@ model Reading {
   practiceId            Int
 
   //REFERANS ALDIKLARI
-  user                  User @relation(fields: [userId], references: [userId])
+  user                  User @relation(fields: [userId], references: [id])
   language              Language @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   practice              Practice @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
