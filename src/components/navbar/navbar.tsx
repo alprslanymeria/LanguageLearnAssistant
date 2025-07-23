@@ -9,13 +9,12 @@ import { MenuComponent } from './menu'
 import { auth } from '@/src/Auth'
 
 
-export async function NavbarComponent() {
+export default async function NavbarComponent() {
 
     //SESSION ÜZERİNDEN KULLANCII BİLGİLERİ ALINIR
     const session = await auth()
-    const email  = session?.user?.email
-    const userId = session?.user?.userId
-    console.log(userId)
+    const userId = session?.user?.id
+    const email = session?.user?.email
 
     return (
 

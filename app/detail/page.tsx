@@ -34,7 +34,7 @@ function DetailPage() {
 
     //SESSION
     const session = useSession()
-    const userId = session.data?.user.userId
+    const userId = session.data?.user?.id
 
     //STATES
     const [contents, setContents] = useState<any>(null)

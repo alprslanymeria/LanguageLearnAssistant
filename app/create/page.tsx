@@ -34,8 +34,8 @@ function CreatePage() {
     const [errorDetails, setErrorDetails] = useState<string | null>(null)
 
     //SESSION
-    const session = useSession();
-    const userId = session.data?.user.userId
+    const session = useSession()
+    const userId = session.data?.user?.id
 
     //STORE
     const {setItems, setSessionData, setLanguage, setPractice} = GlobalStore()

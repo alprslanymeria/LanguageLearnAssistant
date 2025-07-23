@@ -24,7 +24,7 @@ export default function GameComponent({item} : any) {
 
     //SESSION
     const session = useSession()
-    const userId = session.data?.user.userId
+    const userId = session.data?.user?.id
 
     //ROUTER
     const router = useRouter()

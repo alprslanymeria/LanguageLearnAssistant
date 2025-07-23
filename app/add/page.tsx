@@ -37,7 +37,7 @@ function AddPage() {
 
     //SESSION
     const session = useSession()
-    const userId = session?.data?.user.userId
+    const userId = session.data?.user?.id
 
     useEffect(() => {
 

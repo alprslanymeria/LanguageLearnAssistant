@@ -19,7 +19,7 @@ export default function PracticePageComponent({language, practice}: practicePage
 
     //SESSION
     const session = useSession()
-    const userId = session.data?.user.userId
+    const userId = session.data?.user?.id
 
     //STATES
     const [isLoading, setIsLoading] = useState(true)

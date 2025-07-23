@@ -27,7 +27,7 @@ export default function ListeningFormComponent({item} : any) {
 
     //SESSION
     const session = useSession()
-    const userId = session.data?.user.userId
+    const userId = session.data?.user?.id
 
     //FUNCTIONS
     const handleShowAnswer = () => updateSessionData("showAnswer", true)

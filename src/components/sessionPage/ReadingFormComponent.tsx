@@ -32,7 +32,7 @@ export default function ReadingFormComponent({item} : any) {
 
     //SESSION
     const session = useSession()
-    const userId = session.data?.user.userId
+    const userId = session.data?.user?.id
 
     //FUNCTIONS
     const handleTextSelection  = () => {

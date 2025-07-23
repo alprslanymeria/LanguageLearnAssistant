@@ -29,7 +29,7 @@ export default function SliderComponent() {
 
     //SESSION
     const session = useSession()
-    const userId = session.data?.user.userId
+    const userId = session.data?.user?.id
 
     //STATES
     const [selectedItem, setSelectedItem] = useState<any>(null)

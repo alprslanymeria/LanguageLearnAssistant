@@ -32,9 +32,9 @@ function ListPage() {
     console.log(`SLUG: ${slug}`)
 
 
-    // SESSION
+    //SESSION
     const session = useSession()
-    const userId = session.data?.user.userId
+    const userId = session.data?.user?.id
 
     // STATES
     const [items, setItems] = useState<any>([])

@@ -3,7 +3,7 @@
 //REACT & NEXT
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 //TYPES
 import { flagComponentPropTypes } from "../../types/prop"
 //ASSETS
@@ -28,8 +28,7 @@ export default function FlagComponent({languages} : flagComponentPropTypes) {
 
     //SESSION
     const session = useSession()
-    const userId = session.data?.user.userId
-
+    const userId = session?.data?.user?.id
 
     //HANDLE FLAG CLICK
     const handleFlagClick = async (language : any) => {

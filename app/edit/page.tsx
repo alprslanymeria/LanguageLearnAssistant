@@ -39,7 +39,7 @@ function EditPage() {
 
     //SESSION
     const session = useSession()
-    const userId = session.data?.user.userId
+    const userId = session.data?.user?.id
 
     //FUNCTIONS
     const handlerFormData = (item : any, categories : any) => {
