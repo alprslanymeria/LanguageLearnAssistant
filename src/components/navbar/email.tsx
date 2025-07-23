@@ -6,13 +6,13 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 //ACTIONS
 import { DeleteLiveSession } from "../../actions/liveSession"
-import { logOut } from "../../actions/auth"
 //TYPES
 import { emailPropTypes } from "../../types/prop"
 //COMPONENTS
 import ShowErrorComponent from "../utils/showError"
 import { GlobalStore } from "@/src/store/globalStore"
 import AlertComponent from "../utils/alertComponent"
+import { signOut } from "next-auth/react"
 
 export function EmailComponent({email, userId} : emailPropTypes) {
 
@@ -60,7 +60,7 @@ export function EmailComponent({email, userId} : emailPropTypes) {
 
         resetStore()
         
-        await logOut()
+        await signOut({redirect: true , redirectTo: "/auth/login"})
     }
 
     return (

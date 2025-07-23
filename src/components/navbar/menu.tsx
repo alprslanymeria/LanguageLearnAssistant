@@ -6,7 +6,6 @@ import Link from "next/link";
 import { usePathname} from "next/navigation"
 //ACTIONS
 import { DeleteLiveSession } from "../../actions/liveSession"
-import { logOut } from "../../actions/auth"
 //ASSETS
 import MenuIcon from "@/public/icons/menuIcon"
 import CloseIcon from "@/public/icons/closeIcon"
@@ -16,6 +15,7 @@ import { menuPropTypes } from "../../types/prop"
 import ShowErrorComponent from "../utils/showError"
 import { GlobalStore } from "@/src/store/globalStore";
 import AlertComponent from "../utils/alertComponent";
+import { signOut } from "next-auth/react";
 
 
 export function MenuComponent({ email, userId }: menuPropTypes) {
@@ -61,7 +61,7 @@ export function MenuComponent({ email, userId }: menuPropTypes) {
 
       resetStore()
     
-      await logOut()
+      await signOut({redirect: true , redirectTo: "/auth/login"})
   }
 
   return (
