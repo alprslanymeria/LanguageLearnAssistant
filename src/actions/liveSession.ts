@@ -1,31 +1,76 @@
 "use server"
 
 //LIBRARIES
-import { prisma } from "../lib/prisma"
+import { prisma } from "@/src/lib/prisma"
+// TYPES
+import { CreateLiveSessionProps, CreateLiveSessionResponse, DeleteLiveSessionProps } from "@/src/types/actions"
+import { ApiResponse } from "@/src/types/response"
+// UTILS
+import { createResponse } from "@/src/utils/response"
+// ZOD
+import { CreateLiveSessionSchema, DeleteLiveSessionSchema } from "@/src/zod/actionsSchema"
 
-export async function CreateLiveSession(sessionId : string, userId : string | undefined | null) {
+
+export async function CreateLiveSession(params : CreateLiveSessionProps) : Promise<ApiResponse<CreateLiveSessionResponse>> {
 
     try {
-        
-        await prisma.liveSession.create({
-            data: {
-                liveSessionId: sessionId,
+
+        await CreateLiveSessionSchema.parseAsync(params)
+
+        const {userId, liveSessionId} = params
+
+        const isLiveSessionExist = await prisma.liveSession.findUnique({
+
+            where: {
                 userId: userId
             }
         })
 
-        return {status: 200}
+        if(isLiveSessionExist) {
 
+            throw new Error("Live Session already exist!")
+        }
+
+        const liveSession = await prisma.liveSession.create({
+
+            data: {
+                userId: userId!,
+                liveSessionId: liveSessionId
+            }
+        })
+
+        return createResponse(true, 201, {data: liveSession}, "Live Session Created Successfully!")
+        
     } catch (error) {
         
-        if(error instanceof Error) return {status: 500, message: "LiveSession oluşturulurken bir hata oluştu", details: error.message}
+        console.log(`ERROR: CreateLiveSession: ${error}`)
 
+        if(error instanceof Error)
+        return createResponse<CreateLiveSessionResponse>(false, 500, null, error.message)
+
+        return createResponse<CreateLiveSessionResponse>(false, 500, null, "ERROR: CreateLiveSession!")
     }
 }
 
-export async function DeleteLiveSession(userId : string | undefined | null) {
+export async function DeleteLiveSession(params : DeleteLiveSessionProps) : Promise<ApiResponse<undefined>>  {
 
     try {
+
+        await DeleteLiveSessionSchema.parseAsync(params)
+
+        const {userId} = params
+
+        const isLiveSessionExist = await prisma.liveSession.findUnique({
+
+            where: {
+                userId: userId
+            }
+        })
+
+        if(!isLiveSessionExist) {
+
+            throw new Error("Live Session doesn't exist!")
+        }
         
         await prisma.liveSession.delete({
             where: {
@@ -33,11 +78,15 @@ export async function DeleteLiveSession(userId : string | undefined | null) {
             }
         })
 
-        return {status: 200}
+        return createResponse(true, 204, undefined , "Live session deleted successfully!")
 
     } catch (error) {
         
-        if(error instanceof Error) return {status: 500, message: "LiveSession silinirken bir hata oluştu", details: error.message}
+        console.log(`ERROR: DeleteLiveSession: ${error}`)
 
+        if(error instanceof Error)
+        return createResponse(false, 500, undefined , error.message)
+
+        return createResponse(false, 500, undefined , "ERROR: DeleteLiveSession")
     }
 }

@@ -18,7 +18,7 @@ model User {
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   liveSession             LiveSession?
   flashcards              Flashcard[]
   listenings              Listening[]
@@ -28,7 +28,7 @@ model User {
   sessions                Session[]
   Authenticator           Authenticator[]
 
-  //REFERANS ALDIKLARI
+  //REFERANS ALDIKLARI (PARENT'LARI)
   language                Language? @relation(fields: [nativeLanguageId], references: [id])
 }
 
@@ -47,7 +47,7 @@ model Account {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
  
-  //REFERANS ALDIKLARI
+  //REFERANS ALDIKLARI (PARENT'LARI)
   user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
  
   @@id([provider, providerAccountId])
@@ -60,7 +60,7 @@ model Session {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
-  //REFERANS ALDIKLARI
+  //REFERANS ALDIKLARI (PARENT'LARI)
   user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
  
@@ -83,7 +83,7 @@ model Authenticator {
   credentialBackedUp    Boolean
   transports            String?
  
-  //REFERANS ALDIKLARI
+  //REFERANS ALDIKLARI (PARENT'LARI)
   user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
  
   @@id([userId, credentialID])
@@ -93,9 +93,9 @@ model Language {
 
   id                    Int @id @default(autoincrement())
   name                  String
-  imageUrl              String
+  imageUrl              String?
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   practices             Practice[]
   flashcards            Flashcard[]
   listenings            Listening[]
@@ -111,14 +111,18 @@ model Practice {
   languageId            Int
   name                  String
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   flashcards            Flashcard[]
   listenings            Listening[]
   writings              Writing[]
   readings              Reading[]
 
-  //REFERANS ALDIKLARI
+  //REFERANS ALDIKLARI (PARENT'LARI)
   language              Language @relation(fields: [languageId], references: [id])
+
+
+  //UNIQUE CONSTRAINT
+  @@unique([languageId, name], name: "languageId_name")
 
 }
 
@@ -127,8 +131,8 @@ model LiveSession {
   liveSessionId         String @id
   userId                String @unique
 
-  //REFERANS ALDIKLARI
-  user                  User @relation(fields: [userId], references: [id])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Flashcard {
@@ -138,14 +142,17 @@ model Flashcard {
   languageId            Int
   practiceId            Int
 
-  //REFERANS ALDIKLARI
-  user                  User @relation(fields: [userId], references: [id])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
   language              Language @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   practice              Practice @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction )
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   flashcardCategories   FlashcardCategory[]
   flashcardOldSessions  FlashcardOldSession[]
+
+  //UNIQUE CONSTRAINT
+  @@unique([userId, languageId, practiceId], name: "userId_languageId_practiceId")
 }
 
 model FlashcardCategory {
@@ -154,10 +161,10 @@ model FlashcardCategory {
   flashcardId           Int
   name                  String
 
-  //REFERANS ALDIKLARI
-  flashcard             Flashcard @relation(fields: [flashcardId], references: [id])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  flashcard             Flashcard @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   flashcardOldSessions  FlashcardOldSession[]
   deckWords             DeckWord[]
 
@@ -171,11 +178,11 @@ model FlashcardOldSession {
   rate                  Decimal
   createdAt             DateTime @default(now())
 
-  //REFERANS ALDIKLARI
-  flashcard             Flashcard @relation(fields: [flashcardId], references: [id])
-  category              FlashcardCategory @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  flashcard             Flashcard @relation(fields: [flashcardId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  category              FlashcardCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   flashcardSessionRows   FlashcardSessionRow[]
 }
 
@@ -187,8 +194,8 @@ model DeckWord {
   question              String
   answer                String
 
-  //REFERANS ALDIKLARI
-  category              FlashcardCategory @relation(fields: [categoryId], references: [id])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  category              FlashcardCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   
 }
 
@@ -200,8 +207,8 @@ model FlashcardSessionRow {
   answer                String
   status                Boolean
 
-  //REFERANS ALDIKLARI
-  oldSession            FlashcardOldSession @relation(fields: [oldSessionId], references: [oldSessionId])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  oldSession            FlashcardOldSession @relation(fields: [oldSessionId], references: [oldSessionId], onDelete: Cascade)
 }
 
 
@@ -212,46 +219,59 @@ model Listening {
   languageId            Int
   practiceId            Int
 
-  //REFERANS ALDIKLARI
-  user                  User @relation(fields: [userId], references: [id])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
   language              Language @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   practice              Practice @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  //REFERANS VERDİKLERİ
-  listeningFilms        ListeningFilm[]
+  //REFERANS VERDİKLERİ (CHILD'LARI)
+  listeningCategories   ListeningCategory[]
   listeningOldSessions  ListeningOldSession[]
+
+  //UNIQUE CONSTRAINT
+  @@unique([userId, languageId, practiceId], name: "userId_languageId_practiceId")
 }
 
-model ListeningFilm {
+model ListeningCategory {
 
   id                    Int @id @default(autoincrement())
   listeningId           Int
   name                  String
-  imageUrl              String
-  sourceUrl             String
-  strUrl                String?
 
-  //REFERANS ALDIKLARI
-  listening             Listening @relation(fields: [listeningId], references: [id])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  listening             Listening @relation(fields: [listeningId], references: [id], onDelete: Cascade)
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   listeningOldSessions  ListeningOldSession[]
+  deckVideos            DeckVideo[]
 }
 
 model ListeningOldSession {
 
   oldSessionId          String @id
   listeningId           Int
-  filmId                Int
+  categoryId            Int
   rate                  Decimal
   createdAt             DateTime @default(now())
 
-  //REFERANS ALDIKLARI
-  listening             Listening @relation(fields: [listeningId], references: [id])     
-  film                  ListeningFilm @relation(fields: [filmId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  listening             Listening @relation(fields: [listeningId], references: [id], onDelete: NoAction, onUpdate: NoAction)     
+  category              ListeningCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   listeningSessionRows  ListeningSessionRow[]
+}
+
+model DeckVideo {
+  
+  id                    Int @id @default(autoincrement())
+  categoryId            Int
+  correct               String
+  sourceUrl             String
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  category              ListeningCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
 }
 
 model ListeningSessionRow {
@@ -262,8 +282,8 @@ model ListeningSessionRow {
   answer                String
   similarity            Decimal
 
-  //REFERANS ALDIKLARI
-  oldSession            ListeningOldSession @relation(fields: [oldSessionId], references: [oldSessionId])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  oldSession            ListeningOldSession @relation(fields: [oldSessionId], references: [oldSessionId], onDelete: Cascade)
 }
 
 
@@ -274,14 +294,17 @@ model Writing {
   languageId            Int
   practiceId            Int
 
-  //REFERANS ALDIKLARI
-  user                  User @relation(fields: [userId], references: [id])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
   language              Language @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   practice              Practice @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   writingBooks          WritingBook[]
   writingOldSessions    WritingOldSession[]
+
+  //UNIQUE CONSTRAINT
+  @@unique([userId, languageId, practiceId], name: "userId_languageId_practiceId")
 }
 
 model WritingBook {
@@ -293,10 +316,10 @@ model WritingBook {
   leftColor             String
   sourceUrl             String
 
-  //REFERANS ALDIKLARI
-  writing               Writing @relation(fields: [writingId], references: [id])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  writing               Writing @relation(fields: [writingId], references: [id], onDelete: Cascade)
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   writingOldSessions    WritingOldSession[]
 }
 
@@ -308,11 +331,11 @@ model WritingOldSession {
   rate                  Decimal
   createdAt             DateTime @default(now())
 
-  //REFERANS ALDIKLARI
-  writing               Writing @relation(fields: [writingId], references: [id])
-  book                  WritingBook @relation(fields: [bookId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  writing               Writing @relation(fields: [writingId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  book                  WritingBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   writingSessionRows    WritingSessionRow[]
 }
 
@@ -325,8 +348,8 @@ model WritingSessionRow {
   answerTranslate       String
   similarity            Decimal
 
-  //REFERANS ALDIKLARI
-  oldSession            WritingOldSession @relation(fields: [oldSessionId], references: [oldSessionId])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  oldSession            WritingOldSession @relation(fields: [oldSessionId], references: [oldSessionId], onDelete: Cascade)
 
 }
 
@@ -337,14 +360,17 @@ model Reading {
   languageId            Int
   practiceId            Int
 
-  //REFERANS ALDIKLARI
-  user                  User @relation(fields: [userId], references: [id])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
   language              Language @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   practice              Practice @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   readingBooks          ReadingBook[]
   readingOldSessions    ReadingOldSession[]
+
+  //UNIQUE CONSTRAINT
+  @@unique([userId, languageId, practiceId], name: "userId_languageId_practiceId")
 }
 
 model ReadingBook {
@@ -356,10 +382,10 @@ model ReadingBook {
   leftColor             String
   sourceUrl             String
 
-  //REFERANS ALDIKLARI
-  reading               Reading @relation(fields: [readingId], references: [id])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  reading               Reading @relation(fields: [readingId], references: [id], onDelete: Cascade)
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   readingOldSessions    ReadingOldSession[]
 }
 
@@ -371,11 +397,11 @@ model ReadingOldSession {
   rate                  Decimal
   createdAt             DateTime @default(now())
 
-  //REFERANS ALDIKLARI
-  reading               Reading @relation(fields: [readingId], references: [id])
-  book                  ReadingBook @relation(fields: [bookId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  reading               Reading @relation(fields: [readingId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  book                  ReadingBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
-  //REFERANS VERDİKLERİ
+  //REFERANS VERDİKLERİ (CHILD'LARI)
   readingSessionRows    ReadingSessionRow[]
 }
 
@@ -388,6 +414,6 @@ model ReadingSessionRow {
   answerTranslate       String
   similarity            Decimal
 
-  //REFERANS ALDIKLARI
-  oldSession            ReadingOldSession @relation(fields: [oldSessionId], references: [oldSessionId])
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  oldSession            ReadingOldSession @relation(fields: [oldSessionId], references: [oldSessionId], onDelete: Cascade)
 }

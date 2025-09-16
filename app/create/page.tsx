@@ -1,98 +1,119 @@
 "use client"
 
 // REACT & NEXT
-import { useSearchParams } from "next/navigation"
-import { useState, useEffect, Suspense } from "react"
+import { useRouter } from "next/navigation"
+// NEXT AUTH
 import { useSession } from "next-auth/react"
-//ACTIONS
-import GetCreateItems from "@/src/actions/utils"
-//STORE
+// STORE
 import { GlobalStore } from "@/src/store/globalStore"
-//COMPONENTS
-import SliderComponent from "@/src/components/createPage/slider"
-import ShowErrorComponent from "@/src/components/utils/showError"
+// REDUCER & HANDLERS & CUSTOM USE EFFECTS
+import { useCreatePageCustomEffect } from "@/src/page/CreatePage/useCreatePageCustomEffect"
+import { handleChoose, handleSvgClick } from "@/src/page/CreatePage/handlers"
+// PROVIDER
+import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+// COMPONENTS
+import BookSvg from "@/src/components/svg/BookSvg"
+import DeckSvg from "@/src/components/svg/DeckSvg"
+import Loader from "@/src/components/loader"
+import HeadphonesSvg from "@/src/components/svg/HeadphonesSvg"
+// TYPES
+import { ReadingBook, WritingBook } from "@prisma/client"
+import { FlashcardCategoryWithDeckWords, ListeningCategoryWithDeckVideos } from "@/src/types/globalStore"
+
+
 
 export default function Page(){
 
-    return (
-        <Suspense fallback={<div>Yükleniyor...</div>}>
-            <CreatePage/>
-        </Suspense>
-    )
-}
-
-function CreatePage() {
-
-    //SEARCH PARAMS
-    const searchParams = useSearchParams()
-    const language = searchParams.get("language")
-    const practice = searchParams.get("practice")
-
-    //STATES
-    const [isLoading, setIsLoading] = useState(true)
-    const [error, setError] = useState<string | null>("")
-    const [errorDetails, setErrorDetails] = useState<string | null>(null)
+    // HOOKS
+    const {showAlert} = useAlert()
+    const router = useRouter()
+    const {isLoading, loadingSource, setLoading} = useLoading()
 
     //SESSION
-    const session = useSession()
-    const userId = session.data?.user?.id
+    const {data: session , status} = useSession()
+    const userId = session?.user?.id
 
     //STORE
-    const {setItems, setSessionData, setLanguage, setPractice} = GlobalStore()
+    const language = GlobalStore((state) =>  state.Language)
+    const practice = GlobalStore((state) =>  state.Practice)
+    const oldSessions = GlobalStore((state) =>  state.OldSessions)
+    const createItems = GlobalStore((state) =>  state.CreateItems)
+    const selectedItemId = GlobalStore((state) =>  state.SelectedItemId)
+    const hasHydrated = GlobalStore((state) => state.HasHydrated)
+    const setCreateItems = GlobalStore((state) =>  state.setCreateItems)
+    const setSelectedItemId = GlobalStore((state) =>  state.setSelectedItemId)
+    const setOldSessionId = GlobalStore((state) =>  state.setOldSessionId)
+    const resetExcept = GlobalStore((state) => state.resetExcept)
 
-    useEffect(() => {
+    //USE EFFECTS
+    useCreatePageCustomEffect({
 
-        //UPDATE GLOBAL STORE
-        setSessionData(
-        {  wordIndex: 0,
-           selectedText: "", 
-           inputText: "", 
-           translatedText: "", 
-           showTranslation: false,
-           lastPlayTime: 0, lastPauseTime: 0, subtitleJson: null, textHeardByUser: "", extractedText: "", showAnswer: false, 
-           sentences: [{sentenceStart: 0, sentenceEnd: 0}], sentenceIndex: 0, 
-           rows: []
-        })
-        setLanguage(language)
-        setPractice(practice)
+        userId,
+        language,
+        practice,
+        router,
+        hasHydrated,
+        oldSessions,
+        createItems,
+        setCreateItems,
+        setLoading,
+        showAlert,
+        resetExcept
+    })
 
-        
-        // GET CREATE ITEMS
-        const GET = async () => {
-
-            const response = await GetCreateItems(language, practice, userId)
-
-            if(response && response.status == 200)
-            {
-                console.log(response.data)
-                setItems(response.data)
-                setIsLoading(false)
-                return
-            } 
-            if(response && response.status == 500 ){
-                
-                setError(response.message ?? null)
-                setErrorDetails(response.details ?? null)
-                setIsLoading(false)
-                return
-            }
-
-            setIsLoading(false)
-            setError('An unknown error occurred')
-        }
-
-        GET()
-
-    }, [language, practice])
-
-    if(isLoading) return <></>
-
-    if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
+    console.log(`CREATE ITEMS`)
+    console.log(createItems)
+    
+    if(isLoading && loadingSource === "page" ) return <Loader/>
 
     return (
 
         <>
-            <SliderComponent/>
+            <div className="flex justify-center w-full">
+                <div className="carousel rounded-box flex ml-0 md:flex-row flex-col space-y-4 md:space-y-0 md:space-x-4 gap-6 h-[550px] overflow-y-auto items-center px-10">
+                {createItems && createItems!.map((item, index) => (
+                    <div
+                        key={index}
+                        className={`carousel-item flex-shrink-0 cursor-pointer transform transition-all duration-300 ${
+                            selectedItemId === item.id
+                            ? 'scale-110'
+                            : 'hover:scale-102'
+                        }`}
+                        onClick={() => handleSvgClick({item, setSelectedItemId})}
+                        >
+                            {practice === 'reading' && (
+                                <BookSvg reading={{item: (item as ReadingBook) , contents: []}}/>
+                            )}
+                            {practice === 'writing' && (
+                                <BookSvg writing={{item: (item as WritingBook) , contents: []}}/>
+                            )}
+                            {practice === 'flashcard' && (
+                                <DeckSvg flashcard={{item: (item as FlashcardCategoryWithDeckWords) , contents: []}} language={language}/>
+                            )}
+                            {practice === 'listening' && (
+                                <HeadphonesSvg listening={{item: (item as ListeningCategoryWithDeckVideos), contents: []}}/>
+                            )} 
+                    </div>
+                ))}
+                </div>
+            </div>
+
+            <div className="w-full flex justify-center my-2">
+                <button
+                    disabled= {(isLoading && loadingSource === "ChooseHandler") || status === "loading"}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                    onClick={() => handleChoose({userId, selectedItemId, router, showAlert, setOldSessionId, setLoading })}
+                >
+                    {isLoading && loadingSource === "ChooseHandler" ? (
+                        <div className="flex items-center justify-center">
+                            <div className="w-6 h-6 border-4 border-white-500 border-t-transparent rounded-full animate-spin"/>
+                        </div>
+                    ) : (
+                        "CHOOSE"
+                    )}
+                </button>
+            </div>
         </>
     )
 }

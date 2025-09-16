@@ -1,54 +1,67 @@
 "use client"
 
 // REACT & NEXT
-import { useState,  useEffect, JSX } from "react"
+import { JSX } from "react"
+import { useRouter } from "next/navigation"
 // COMPONENTS
-import FlashcardSessionComponent from "@/src/components/sessionPage/FlashcardSession"
-import ListeningSessionComponent from "@/src/components/sessionPage/ListeningSession"
-import ReadingSessionComponent from "@/src/components/sessionPage/ReadingSession"
-import WritingSessionComponent from "@/src/components/sessionPage/WritingSession"
+import FlashcardSessionComponent from "@/src/components/FlashcardSessionComponent/FlashcardSession"
+import ListeningSessionComponent from "@/src/components/ListeningSessionComponent/ListeningSession"
+import ReadingSessionComponent from "@/src/components/ReadingSessionComponent/ReadingSession"
+import WritingSessionComponent from "@/src/components/WritingSessionComponent/WritingSession"
 // STORE
 import { GlobalStore } from "@/src/store/globalStore"
+// REDUCER & HANDLERS & CUSTOM USE EFFECTS
+import { useSessionPageReducer } from "@/src/page/SessionPage/useSessionPageReducer"
+import { useSessionPageCustomEffect } from "@/src/page/SessionPage/useSessionPageCustomEffect"
 
 
-export default function Page(){
+export default function Page() {
+
+    //HOOKS
+    const {state, dispatch} = useSessionPageReducer()
+    const router = useRouter()
 
     //GLOBAL STORE
-    const {Items, SelectedItemId, Practice} = GlobalStore()
-
-    //STATES
-    const [item, setItem] = useState<any>(null)
-    const [activeComponent, setActiveComponent] = useState<string>("")
+    const language = GlobalStore((state) => state.Language)
+    const practice = GlobalStore((state) => state.Practice)
+    const oldSessions = GlobalStore((state) => state.OldSessions)
+    const createItems = GlobalStore((state) => state.CreateItems)
+    const oldSessionId = GlobalStore((state) => state.OldSessionId)
+    const selectedItemId = GlobalStore((state) => state.SelectedItemId)
+    const hasHydrated = GlobalStore((state) => state.HasHydrated)
+    const resetExcept = GlobalStore((state) => state.resetExcept)
+    const setSelectedItem = GlobalStore((state) => state.setSelectedItem)
 
     //COMPONENT MAP
     const componentMap: Record<string, JSX.Element> = {
-        reading: <ReadingSessionComponent item={item}/>,
-        writing: <WritingSessionComponent item={item}/>,
-        listening: <ListeningSessionComponent item={item}/>,
-        flashcard: <FlashcardSessionComponent item={item}/>,
-    };
 
-    //GET SELECTED ITEM
-    useEffect(() => {
+        reading: <ReadingSessionComponent/>,
+        writing: <WritingSessionComponent/>,
+        listening: <ListeningSessionComponent/>,
+        flashcard: <FlashcardSessionComponent/>
+        
+    }
 
-        //SET ACTIVE COMPONENT
-        if(Practice == "reading") setActiveComponent("reading")
-        if(Practice == "writing") setActiveComponent("writing")
-        if(Practice == "listening") setActiveComponent("listening")
-        if(Practice == "flashcard") setActiveComponent("flashcard")
+    // USE EFFECTS
+    useSessionPageCustomEffect({
 
-        //GET SELECTED ITEM
-        const selectedItem = Items.find(item => item.id === SelectedItemId)
-        setItem(selectedItem)
-
-    }, [Practice])
-
+        language,
+        practice,
+        createItems,
+        selectedItemId,
+        oldSessionId,
+        oldSessions,
+        hasHydrated,
+        router,
+        resetExcept,
+        setSelectedItem,
+        dispatch
+    })
 
     return (
 
-
         <div>
-            {componentMap[activeComponent] || <div></div>}
+            {componentMap[state.activeComponent] || <div></div>}
         </div>
     )
 }

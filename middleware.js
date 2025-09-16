@@ -4,7 +4,7 @@ import { decrypt } from "@/src/lib/crypto"
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL
 
-const protectedRoutes = ["/create", "/session", "/lang", "/detail", "/list", "/edit", "/add"]
+const protectedRoutes = ["/create", "/session", "/language", "/practice", "/profile", "/detail", "/list", "/edit", "/add"]
 const publicRoutes = ["/auth", "/auth/login", "/auth/signup"]
 const passRoutes = ["/api", "/_next", "/favicon.ico"]
 
@@ -44,18 +44,21 @@ export default async function middleware(req){
 
     }
 
+    if (isProtectedRoute && !session) return NextResponse.redirect(`${BASE}/auth/login`)
+
+    if (isPublicRoute && session) return NextResponse.redirect(`${BASE}`)
+
     if (path === '/auth/login' && req.nextUrl.searchParams.get('error') === 'CredentialsSignin') {
         
         const code = req.nextUrl.searchParams.get('code')
 
-        const redirectUrl = `${BASE}/auth/signup?error=CredentialsSignin${code ? `&code=${code}` : ''}`
+        if(code == "code_2" || code == "code_4" || code == "code_5") {
 
-        return NextResponse.redirect(redirectUrl)
+            const redirectUrl = `${BASE}/auth/signup?error=CredentialsSignin${code ? `&code=${code}` : ''}`
+
+            return NextResponse.redirect(redirectUrl)
+        }
     }
-
-    if(isProtectedRoute && !session) return NextResponse.redirect(`${BASE}/auth/login`)
-
-    if(isPublicRoute && session) return NextResponse.redirect(`${BASE}`)
 
     return NextResponse.next()
 }

@@ -1,100 +1,98 @@
 "use client"
 
 // REACT & NEXT
-import { Suspense, useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
+// NEXT AUTH
 import { useSession } from "next-auth/react"
-//ACTIONS
-import { GetRowsById } from "@/src/actions/rows"
 //COMPONENTS
 import BookSvg from "@/src/components/svg/BookSvg"
 import DeckSvg from "@/src/components/svg/DeckSvg"
-import FilmSvg from "@/src/components/svg/FilmSvg"
-import TableComponent from "@/src/components/detailPage/table"
-import ShowErrorComponent from "@/src/components/utils/showError"
+import HeadphonesSvg from "@/src/components/svg/HeadphonesSvg"
+import TableComponent from "@/src/components/TableComponent/table"
+import Loader from "@/src/components/loader"
+// REDUCER & HANDLERS & CUSTOM USE EFFECTS
+import { useDetailPageReducer } from "@/src/page/DetailPage/useDetailPageReducer"
+import { useDetailPageCustomEffect } from "@/src/page/DetailPage/useDetailPageCustomEffect"
+// PROVIDER
+import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+// STORE
+import { GlobalStore } from "@/src/store/globalStore"
+import { FlashcardSessionRowInput, ListeningSessinRowInput, ReadingSessionRowInput, WritingSessionRowInput } from "@/src/types/actions"
 
 
-export default function Page(){
-
-    return (
-        <Suspense fallback={<div>Yükleniyor...</div>}>
-            <DetailPage/>
-        </Suspense>
-    )
-}
-
-
-function DetailPage() {
+export default function Page() {
 
     //SEARCH PARAMS
     const searchParams = useSearchParams()
-    const language = searchParams.get("language")
-    const practice = searchParams.get("practice")
-    const id = searchParams.get("id")
+    const oldSessionId = searchParams!.get("id")
 
     //SESSION
-    const session = useSession()
-    const userId = session.data?.user?.id
+    const {data: session , status} = useSession()
+    const userId = session?.user?.id
 
-    //STATES
-    const [contents, setContents] = useState<any>(null)
-    const [item, setItem] = useState<any>(null)
-    const [isLoading, setIsLoading] = useState(true)
-    const [error, setError] = useState<string | null>("")
-    const [errorDetails, setErrorDetails] = useState<string | null>(null)
+    // HOOKS
+    const {state, dispatch} = useDetailPageReducer()
+    const {showAlert} = useAlert()
+    const router = useRouter()
+    const {isLoading, loadingSource, setLoading} = useLoading()
 
-    // GET ROWS
-    useEffect(() => {
+    // STORE
+    const language = GlobalStore((state) => state.Language )
+    const practice = GlobalStore((state) => state.Practice )
+    const oldSessions = GlobalStore((state) => state.OldSessions )
+    const hasHydrated = GlobalStore((state) => state.HasHydrated)
+    const resetExcept = GlobalStore((state) => state.resetExcept )
 
-        const GET = async () => {
+    // USE EFFECTS
+    useDetailPageCustomEffect({
+        userId,
+        language,
+        practice,
+        oldSessions,
+        oldSessionId,
+        hasHydrated,
+        router,
+        state,
+        setLoading,
+        showAlert,
+        resetExcept,
+        dispatch
+    })
 
-            let response = null
-
-            response = await GetRowsById(language, practice, userId, id)
-
-            if(response && response.status == 200)
-            {
-                setContents(response.data)
-                setItem(response.item)
-                setIsLoading(false)
-                return
-            }
-
-            setIsLoading(false)
-            setError(response?.message ?? null)
-            setErrorDetails(response?.details ?? null)  
-        }
-
-        GET()
-
-    }, [language, practice, userId, id, isLoading])
-
-    if(isLoading) return <></>
-
-    if(error && error !== "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
+    if(isLoading && loadingSource === "page" ) return <Loader/>
 
     return(
 
         <div className="container max-w-screen-xl mx-auto flex flex-col md:flex-row px-4 gap-10">
             <div className="relative h-[487px] flex w-[300px] items-center justify-center self-center">
 
-                {practice == 'flashcard'
-                 ? <DeckSvg language={language} text={item.name}/>
-                 : practice == 'listening'
-                 ? <FilmSvg imagePath={item.imageUrl} index={0}/>
-                 : <BookSvg imagePath={item.imageUrl} color={item.leftColor}/>
-                 }
+                {practice == 'reading'
+                    ? <BookSvg reading={state.reading}/>
+                    : practice == 'writing'
+                    ? <BookSvg writing={state.writing}/>
+                    : practice == 'listening'
+                    ? <HeadphonesSvg listening={state.listening}/>
+                    : practice == 'flashcard'
+                    ? <DeckSvg flashcard={state.flashcard} language={language}/>
+                    : <p></p>
+                }
                  
             </div>
             
             <div className="flex-[2]">
-                {practice == "reading" || practice == "writing" 
-                ? <TableComponent contents={contents} type="book" columns={["Sentence", "Answer", "Translate", "Similarity"]}/>
-                :practice == "flashcard" 
-                ?  <TableComponent contents={contents} type="flashcard" columns={["Question", "Answer", "Status"]}/>
-                :practice == "listening"
-                ?  <TableComponent contents={contents} type="listening" columns={["Listened Sentence", "Answer", "Similarity"]}/>
-                : <p></p>}
+
+                {practice === "reading"
+                    ? (<TableComponent contents={state.reading!.contents! as unknown as ReadingSessionRowInput[]} type="readingBook" columns={["Sentence", "Answer", "Translate", "Similarity"]} page={state.page} limit={state.limit} total={state.total} dispatch={dispatch}/>)
+                    : practice == "writing" 
+                    ? <TableComponent contents={state.writing!.contents! as unknown as WritingSessionRowInput[]} type="writingBook" columns={["Sentence", "Answer", "Translate", "Similarity"]} page={state.page} limit={state.limit} total={state.total} dispatch={dispatch}/>
+                    : practice == "flashcard" 
+                    ?  <TableComponent contents={state.flashcard!.contents! as unknown as FlashcardSessionRowInput[]} type="flashcard" columns={["Question", "Answer", "Status"]} page={state.page} limit={state.limit} total={state.total} dispatch={dispatch}/>
+                    :practice == "listening"
+                    ?  <TableComponent contents={state.listening!.contents! as unknown as ListeningSessinRowInput[]} type="listening" columns={["Listened Sentence", "Answer", "Similarity"]} page={state.page} limit={state.limit} total={state.total} dispatch={dispatch}/>
+                    : <p></p>
+                }
+
             </div>
         </div>
     )

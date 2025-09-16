@@ -1,21 +1,22 @@
 // NEXT AUTH
 import NextAuth,{ CredentialsSignin }  from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-// ADAPTER
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { prisma } from "./lib/prisma"
-import { comparePassword, hashPassword } from "./lib/bcrypt"
-import { v4 as uuidv4 } from "uuid"
-import { loginSchema, signupSchema } from "./lib/zod"
-import { ZodError } from "zod"
 import Google from "next-auth/providers/google"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+// 3RD PARTY LIBRARIES
+import { prisma } from "@/src/lib/prisma"
+import { comparePassword, hashPassword } from "@/src/lib/bcrypt"
+import { loginSchema, signupSchema } from "@/src/lib/zod"
+import { ZodError } from "zod"
+import { v4 as uuidv4 } from "uuid"
+
 
 
 // DEFINE ADAPTER
 const adapter = PrismaAdapter(prisma)
 
 // // CUSTOM ERROR CLASSES
-class UnexpectedError extends CredentialsSignin {
+class UnexpectedErrorSO extends CredentialsSignin {
     code = "code_1"
     // ERROR_MESSAGE --> UNEXPECTED ERROR (+)
 }
@@ -204,9 +205,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             console.log("Link Account Event")
         },
 
-        // WORKS WHEN SESSION CREATE OR useSession() CALLED
+        // WORKS WHEN SESSION CALLBACK TRIGGERED OR useSession() | auth() CALLED 
         async session({session, token}) {
-            console.log(session.user.id)
             console.log("Session Event")
         },
 

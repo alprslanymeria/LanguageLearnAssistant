@@ -1,25 +1,36 @@
 "use server"
 
-//LIBRARIES
-import { prisma } from "../lib/prisma"
-import { Storage } from "@google-cloud/storage";
-import { redirect } from "next/navigation";
-import { Vibrant } from "node-vibrant/node";
-import sharp from "sharp";
+// LIBRARIES
+import { prisma } from "@/src/lib/prisma"
+// GOOGLE
+import { Storage } from "@google-cloud/storage"
+// 3RD PARTY
+import { Vibrant } from "node-vibrant/node"
+import sharp from "sharp"
+// UTILS
+import { createResponse } from "@/src/utils/response"
+// TYPES
+import { ApiResponse } from "@/src/types/response"
+import { DeckWord, FlashcardCategory, ReadingBook, WritingBook } from "@prisma/client"
+import { DeleteByIdProps, DWWCL, FCWL, GetExistingRecordProps, GetItemByIdProps, GetItemByIdResponse, GetLeftSideColorProps, RBWL, WBWL } from "@/src/types/actions"
+// ZOD
+import { DeckWordAddOrUpdateSchema, DeleteyIdSchema, GetItemByIdSchema, ReadingAddOrUpdateSchema, WritingAddOrUpdateSchema } from "@/src/zod/actionsSchema"
 
-export async function GetItemById(table : any , id: any, userId: any) {
+
+export async function GetItemById(params : GetItemByIdProps) : Promise<ApiResponse<GetItemByIdResponse>> {
 
     try {
 
-        let item;
-        let categories;
+        await GetItemByIdSchema.parseAsync(params)
+
+        const {itemId, table} = params
         
         switch(table) {
 
             case "rbooks":
-                item = await prisma.readingBook.findUnique({
+                const readingBookItem = await prisma.readingBook.findUnique({
                     where: {
-                        id: Number(id)
+                        id: Number(itemId)
                     },
                     include: {
                         reading: {
@@ -29,11 +40,15 @@ export async function GetItemById(table : any , id: any, userId: any) {
                         }
                     }
                 })
-                break;
+
+                if(!readingBookItem) return createResponse<GetItemByIdResponse>(false, 404 , null , "Reading Book Item Not Found!")
+
+                return createResponse(true, 200, {data: readingBookItem as RBWL} , "SUCCESS GetItemById")
+
             case "wbooks":
-                item = await prisma.writingBook.findUnique({
+                const writingBookItem = await prisma.writingBook.findUnique({
                     where: {
-                        id: Number(id)
+                        id: Number(itemId)
                     },
                     include: {
                         writing: {
@@ -43,25 +58,15 @@ export async function GetItemById(table : any , id: any, userId: any) {
                         }
                     }
                 })
-                break;
-            case "lfilms":
-                item = await prisma.listeningFilm.findUnique({
-                    where: {
-                        id: Number(id)
-                    },
-                    include: {
-                        listening: {
-                            select: {
-                                languageId: true
-                            }
-                        }
-                    }
-                })
-                break;
+
+                if(!writingBookItem) return createResponse<GetItemByIdResponse>(false, 404 , null , "Writing Book Item Not Found!")
+
+                return createResponse(true, 200, {data: writingBookItem as WBWL} , "SUCCESS GetItemById")
+
             case "fcategories":
-                item = await prisma.flashcardCategory.findUnique({
+                const flashcardCategoryItem = await prisma.flashcardCategory.findUnique({
                     where: {
-                        id: Number(id)
+                        id: Number(itemId)
                     },
                     include: {
                         flashcard: {
@@ -71,11 +76,15 @@ export async function GetItemById(table : any , id: any, userId: any) {
                         }
                     }
                 })
-                break;
+
+                if(!flashcardCategoryItem) return createResponse<GetItemByIdResponse>(false, 404 , null , "Flashcard Category Item Not Found!")
+
+                return createResponse(true, 200, {data: flashcardCategoryItem as FCWL} , "SUCCESS GetItemById")
+
             case "fwords":
-                item = await prisma.deckWord.findUnique({
+                const flashcardWordsItem = await prisma.deckWord.findUnique({
                     where: {
-                        id: Number(id)
+                        id: Number(itemId)
                     },
                     include : {
                         category: {
@@ -90,46 +99,46 @@ export async function GetItemById(table : any , id: any, userId: any) {
                     }
                 })
 
-                categories = await prisma.flashcardCategory.findMany({
+                if(!flashcardWordsItem) return createResponse<GetItemByIdResponse>(false, 404 , null , "Flashcard Words Item Not Found!")
 
-                    where: {
-                        flashcard: {
-                            userId: userId
-                        }
-                    }
-                })
+                return createResponse(true, 200, {data: flashcardWordsItem as DWWCL }  , "SUCCESS GetItemById")
 
-                return {data: item, categories: categories, status: 200}
-                break;
+            default: 
+                return createResponse<GetItemByIdResponse>(false, 500, null, "ERROR: GetItemById")
         }
-
-        return {data: item, status: 200}
 
     } catch (error) {
         
-        if(error instanceof Error) return {status: 500, message: "Item alınırken bir hata oluştu", details: error.message};
+        console.log(`ERROR: GetItemById: ${error}`)
+        return createResponse<GetItemByIdResponse>(false, 500, null, "ERROR: GetItemById")
     }
 }
 
-export async function DeleteById(id : any, table : any){
+
+export async function DeleteById(params : DeleteByIdProps) : Promise<ApiResponse<void>> {
 
     try {
+
+        await DeleteyIdSchema.parseAsync(params)
+
+        const {itemId, table} = params
         
-        //Burada aynı zamanda google storage üzerinden de veri silinir.
+        // GOOGLE STORAGE CONFIGURATION
         const projectId = process.env.GCP_PROJECT_ID
 
         const storage = new Storage({
-            projectId : projectId
+            
+            projectId: projectId
         })
 
-        const imageBucket = storage.bucket("language-learn-assistant-images")
+        const bucket = storage.bucket('create-items')
 
         switch(table){
 
             case "rbooks":
                 const rbook = await prisma.readingBook.findUnique({
                     where: {
-                        id: id
+                        id: itemId!
                     },
                     select: {
                         imageUrl: true,
@@ -137,868 +146,816 @@ export async function DeleteById(id : any, table : any){
                     }
                 })
 
-                const rbookFileName = rbook.imageUrl.split('/').pop() ?? "";
-                const rbookSourceName = rbook.sourceUrl.split('/').pop() ?? "";
-                await imageBucket.file(rbookFileName).delete();
-                await imageBucket.file(rbookSourceName).delete();
+                if(!rbook) return createResponse(false, 404, null, "Reading Book Not Found!")
 
+                // DELETE FROM DATABASE
                 await prisma.readingBook.delete({
                     where: {
-                        id: id
+                        id: itemId!
                     }
                 })
-                break;
+
+                // DELETE FROM CLOUD
+                const rbookFileName =  decodeURIComponent(rbook!.imageUrl.split('/').pop() ?? "")
+                const rbookSourceName = decodeURIComponent(rbook!.sourceUrl.split('/').pop() ?? "") 
+                await bucket.file(rbookFileName).delete()
+                await bucket.file(rbookSourceName).delete()
+
+                return createResponse(true, 204, null, "Delete successfull!")
+                
             case "wbooks":
                 const wbook = await prisma.writingBook.findUnique({
                     where: {
-                        id: id
+                        id: itemId!
                     },
                     select: {
                         imageUrl: true,
                         sourceUrl: true
+                    }
+                })
+
+                if(!wbook) return createResponse(false, 404, null, "Wriitng Book Not Found!")
+
+                // DELETE FROM DATABASE
+                await prisma.writingBook.delete({
+                    where: {
+                        id: itemId!
                     }
                 })
                 
-                const wbookFileName = wbook.imageUrl.split('/').pop() ?? "";
-                const wbookSourceName = wbook.sourceUrl.split('/').pop() ?? "";
-                await imageBucket.file(wbookFileName).delete();
-                await imageBucket.file(wbookSourceName).delete();
+                // DELETE FROM CLOUD
+                const wbookFileName = decodeURIComponent(wbook!.imageUrl.split('/').pop() ?? "") 
+                const wbookSourceName = decodeURIComponent(wbook!.sourceUrl.split('/').pop() ?? "") 
+                await bucket.file(wbookFileName).delete()
+                await bucket.file(wbookSourceName).delete()
 
-                await prisma.writingBook.delete({
-                    where: {
-                        id: id
-                    }
-                })
-                break;
-            case "lfilms":
-                const lfilm = await prisma.listeningFilm.findUnique({
-                    where: {
-                        id: id
-                    },
-                    select: {
-                        imageUrl: true,
-                        sourceUrl: true
-                    }
-                })
+                return createResponse(true, 204, null, "Delete successfull!")
 
-                const lfilmFileName = lfilm.imageUrl.split('/').pop() ?? "";
-                const lfilmSourceName = lfilm.sourceUrl.split('/').pop() ?? "";
-                await imageBucket.file(lfilmFileName).delete();
-                await imageBucket.file(lfilmSourceName).delete();
-
-                await prisma.listeningFilm.delete({
-                    where: {
-                        id: id
-                    }
-                })
-                break;
             case "fcategories":
+
+                const fcategory = await prisma.flashcardCategory.findUnique({
+                    where: {
+                        id: itemId!
+                    }
+                })
+
+                if(!fcategory) return createResponse(false, 404, null, "Flashcard Category Not Found!")
+
+                // DELETE FROM DATABASE
                 await prisma.flashcardCategory.delete({
                     where: {
-                        id: id
+                        id: itemId!
                     }
                 })
-                break;
+
+                return createResponse(true, 204, null, "Delete successfull!")
+
             case "fwords":
+
+                const dword = await prisma.deckWord.findUnique({
+                    where: {
+                        id: itemId!
+                    }
+                })
+
+                if(!dword) return createResponse(false, 404, null, "Deck Word Not Found!")
+
+                // DELETE FROM DATABASE
                 await prisma.deckWord.delete({
                     where: {
-                        id: id
+                        id: itemId!
                     }
                 })
-                break;
+
+                return createResponse(true, 204, null, "Delete successfull!")
+
+            default:
+                return createResponse(false, 500, null, "ERROR: DeleteById!")
+
         }
-        
-        return {status: 200}
 
     } catch (error) {
-        
-        if(error instanceof Error) return {status: 500, message: "Öğe silinirken bir hata oluştu", details: error.message};
 
+        console.log(`ERROR: DeleteById: ${error}`)
+        return createResponse(false, 500, null, "ERROR: DeleteById!")
     }
 }
 
-export async function AddOrUpdate(prevState : any, formData: FormData){
 
-    //GET FORM DATA'S
-    const userId = formData.get("userId")
-    const itemId = formData.get("itemId")
-    const table = formData.get("table")
-    const type = formData.get("type")
+// GET LEFT SIDE COLOR FOR IMAGE
+async function GetLeftSideColor({bufferForFile} : GetLeftSideColorProps) {
 
-    const languageId = Number(formData.get("languageId"))
-    const wordCategoryId = formData.get("wordCategoryId")
-    const input1 = formData.get("input1")
-    const input2 = formData.get("input2")
-    const file1 = formData.get("file1")
-    const file2 = formData.get("file2")
-    const file3 = formData.get("file3")
+    try {
+        
+        // ARRAY BUFFER --> BUFFER<ARRAY BUFFER>
+        const buffer = Buffer.from(bufferForFile);
+        
+        // PROCESS BUFFER
+        const processedBuffer = await sharp(buffer).resize(300, 300, { fit: 'inside' }).toBuffer()
+            
+        // GET METADA PROCESSED BUFFER
+        const metadata = await sharp(processedBuffer).metadata()
+
+        // GET LEFT SIDE AS BUFFER
+        const leftSideBuffer = await sharp(processedBuffer)
+            .extract({
+                left: 0,
+                top: 0,
+                width: metadata.width ?? 100,
+                height: metadata.height ?? 100
+            })
+            .toBuffer()
+            
+        
+        // ANALYZE COLOR PALATTE OF LEFT SIDE BUFFER
+        const leftSidePalette = await Vibrant.from(leftSideBuffer).getPalette()
+
+        // GET COLOR
+        const leftSideColor = leftSidePalette.Vibrant!.hex
+
+        return leftSideColor
+
+    } catch (error) {
+        
+        // TODO: HATA DÖNÜLECEK
+    }
+}
+
+async function GetExistingRecord({table, itemId} : GetExistingRecordProps) {
+
+    switch(table) {
+        case "rbooks":
+            const readingBook = await prisma.readingBook.findUnique({
+                where: {
+                    id: itemId!
+                }
+            })
+
+            return readingBook
+
+        case "wbooks":
+            const writingBook = await prisma.writingBook.findUnique({
+                where: {
+                    id: itemId!
+                }
+            })
+
+            return writingBook
+
+        default: 
+            throw new Error(`Unknown table: ${table}`)
+
+            
+    }
+}
+
+export async function ReadingAddOrUpdate(prevState : ApiResponse<ReadingBook> | undefined, formData: FormData) : Promise<ApiResponse<ReadingBook>>  {
+
+    // GET FORM DATA
+    const values = {
+
+        languageId: Number(formData.get("languageId")),
+        inputOne: formData.get("inputOne")?.toString(),
+        fileOne: formData.get("fileOne") as File,
+        fileTwo: formData.get("fileTwo") as File,
+
+        userId: formData.get("userId")?.toString(),
+        itemId: Number(formData.get("itemId")),
+        table: formData.get("table")?.toString(),
+        type: formData.get("type")?.toString()
+    }
+
+    await ReadingAddOrUpdateSchema.parseAsync(values)
+
 
     try {
 
+        // GOOGLE STORAGE CONFIGURATION
         const projectId = process.env.GCP_PROJECT_ID
 
         const storage = new Storage({
-            projectId : projectId
+            
+            projectId: projectId
         })
 
-        const imageBucket = storage.bucket("language-learn-assistant-images")
+        const bucket = storage.bucket('create-items')
 
-        let oldFile1Url : string;
-        let oldFile2Url : string;
-        let oldFile3Url : string;
-        let bufferForFile1: ArrayBuffer;
-        let bufferForFile2 : ArrayBuffer;
-        let bufferForFile3 : ArrayBuffer;
-        let existingRecord : any;
-        let file1Url: string;
-        let file2Url: string;
-        let file3Url: string;
-        let leftSideColor : string;
+        // GET BUFFERS OF FILES
+        const bufferForFileOne = await (values.fileOne).arrayBuffer()
+        const bufferForFileTwo = await (values.fileTwo).arrayBuffer()
 
-        // GET LEFT SIDE COLOR FOR IMAGE
-        const getLeftSideColor = async (bufferForFile1 : any) => {
-
-            try {
-                const buffer = Buffer.from(bufferForFile1);
-                
-                // First get the processed buffer and its metadata
-                const processedBuffer = await sharp(buffer)
-                    .resize(300, 300, { fit: 'inside' })
-                    .toBuffer();
-                    
-                // Get the metadata to access width and height
-                const metadata = await sharp(processedBuffer).metadata();
-
-                // Now use the metadata for the extraction
-                const leftSideBuffer = await sharp(processedBuffer)
-                    .extract({
-                        left: 0,
-                        top: 0,
-                        width: metadata.width ?? 100,
-                        height: metadata.height ?? 100
-                    })
-                    .toBuffer();
-                    
-                // Analyze left side colors
-                const leftSidePalette = await Vibrant.from(leftSideBuffer).getPalette();
-
-                if (!leftSidePalette.Vibrant) {
-                    throw new Error("Vibrant color not found in the palette");
-                }
-
-                leftSideColor = leftSidePalette.Vibrant.hex;
-
-            } catch (error) {
-                
-                if(error instanceof Error) console.log(error.message);
-            }
-        }
-
-        const getExistingRecord = async () => {
-
-            switch(table) {
-                case "rbooks":
-                    existingRecord = await prisma.readingBook.findUnique({
-                        where: {
-                            id: Number(itemId)
-                        }
-                    })
-                    break;
-                case "wbooks":
-                    existingRecord = await prisma.writingBook.findUnique({
-                        where: {
-                            id: Number(itemId)
-                        }
-                    })
-                    break;
-                case "lfilms":
-                    existingRecord = await prisma.listeningFilm.findUnique({
-                        where: {
-                            id: Number(itemId)
-                        }
-                    })
-                    break;
-            }
-        }
-
-
-        if(file1 != null && file2 != null && (table == "rbooks" || table == "wbooks" || table == "lfilms"))
-        {
-            bufferForFile1 = await (file1 as File).arrayBuffer()
-            bufferForFile2 = await (file2 as File).arrayBuffer()
-            await getLeftSideColor(bufferForFile1)
-
-            if(file3 != null)
-            {
-                bufferForFile3 = await (file3 as File).arrayBuffer()
-            }
-        }
+        // GET LEFT SIDE COLOR READING BOOK IMAGE
+        const leftSideColor = await GetLeftSideColor({bufferForFile: bufferForFileOne})
 
 
         const handleCreate = async () => {
 
-            if(file1 != null && file2 != null && (table == "rbooks" || table == "wbooks" || table == "lfilms"))
-            {
-                // CREATE UNIQUE NAME FOR FILES
-                const file1Name = `${Date.now()}_${(file1 as File).name}`;
-                const file2Name = `${Date.now()}_${(file2 as File).name}`;
-                let file3Name : any;
-                if(file3 != null) file3Name = `${Date.now()}_${(file3 as File).name}`;
+            // CREATE UNIQUE NAME FOR FILES
+            const file1Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileOne).name}`
+            const file2Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileTwo).name}`
 
-                // UPLOAD FILES TO GOOGLE CLOUD STORAGE
-                const file1Upload = imageBucket.file(file1Name).createWriteStream({
-                    resumable: false,
-                    metadata: { contentType: (file1 as File).type }
-                });
 
-                const file2Upload = imageBucket.file(file2Name).createWriteStream({
-                    resumable: false,
-                    metadata: { contentType: (file2 as File).type }
-                });
+            // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+            const file1Upload = bucket.file(file1Name).createWriteStream({
+                resumable: false,
+                metadata: { contentType: (values.fileOne).type }
+            })
 
-                let file3Upload : any;
+            const file2Upload = bucket.file(file2Name).createWriteStream({
+                resumable: false,
+                metadata: { contentType: (values.fileTwo).type }
+            })
 
-                if(file3 != null)
-                {
-                    file3Upload = imageBucket.file(file3Name).createWriteStream({
-                        resumable: false,
-                        metadata: { contentType: (file3 as File).type }
-                    })
-                }
+            // WRITE FILES TO GOOGLE CLOUD STORAGE
+            file1Upload.end(Buffer.from(bufferForFileOne))
+            file2Upload.end(Buffer.from(bufferForFileTwo))
 
-                // WRITE FILES TO GOOGLE CLOUD STORAGE
-                file1Upload.end(Buffer.from(bufferForFile1))
-                file2Upload.end(Buffer.from(bufferForFile2))
-                if(file3 != null) file3Upload.end(Buffer.from(bufferForFile3))
 
-                // WAIT
-                await new Promise((resolve, reject) => {
-                    file1Upload.on('finish', resolve);
-                    file1Upload.on('error', reject);
-                    file2Upload.on('finish', resolve);
-                    file2Upload.on('error', reject);
+            // GET FILE'S URL
+            const fileOneUrl = bucket.file(file1Name).publicUrl()
+            const fileTwoUrl = bucket.file(file2Name).publicUrl()
 
-                    if(file3 != null)
-                    {
-                        file3Upload.on('finish', resolve);
-                        file3Upload.on('error', reject);
-                    }
-                });
-
-                // GET FILE URL'S
-                file1Url = imageBucket.file(file1Name).publicUrl();
-                file2Url = imageBucket.file(file2Name).publicUrl();
-                if(file3 != null) file3Url = imageBucket.file(file3Name).publicUrl();
-            }
-
-            let practice: any;
 
             // SAVE TO DATABASE
-            switch(table){
+            return await prisma.$transaction(async (tx) => {
 
-                case "rbooks":
-                    practice = await prisma.practice.findFirst({
-                        where: {
-                            languageId: languageId,
-                            name: "reading"
-                        },
-                        select: {
-                            id:true
-                        }
-                    })
-                    
-                    const reading = await prisma.reading.findFirst({
-                        where: {
-                            userId: userId,
-                            languageId : languageId,
-                            practiceId: practice.id
-                        }
-                    })
+                const practice = await tx.practice.findUnique({
+                    where: { languageId_name: { languageId: values.languageId, name: "reading" } },
+                    select: { id: true }
+                })
 
-                    if(reading == null)
-                    {
-                        await prisma.reading.create({
-                            data: {
-                                userId: userId,
-                                languageId : languageId,
-                                practiceId: practice.id,
-                                readingBooks: {
-                                    create: {
-                                        name: input1,
-                                        imageUrl: file1Url,
-                                        leftColor: leftSideColor,
-                                        sourceUrl: file2Url
-                                    }
-                                }
-                            }
-                        })
-                        break;
+                if(!practice) throw new Error("Practice Not Found!")
 
+                const reading = await tx.reading.upsert({
+                    where: { userId_languageId_practiceId: { userId: values.userId!, languageId: values.languageId, practiceId: practice!.id } },
+                    update: {},
+                    create: {
+                        userId: values.userId!,
+                        languageId: values.languageId,
+                        practiceId: practice!.id
                     }
+                })
 
-                    await prisma.readingBook.create({
-                        data: {
-                            readingId: reading.id,
-                            name: input1,
-                            imageUrl: file1Url,
-                            leftColor: leftSideColor,
-                            sourceUrl: file2Url
-                        }
-                    })
-
-                    break;
-                case "wbooks":
-                    practice = await prisma.practice.findFirst({
-                        where: {
-                            languageId: languageId,
-                            name: "writing"
-                        },
-                        select: {
-                            id:true
-                        }
-                    })
-                    
-                    const writing = await prisma.writing.findFirst({
-                        where: {
-                            userId: userId,
-                            languageId : languageId,
-                            practiceId: practice.id
-                        }
-                    })
-
-                    if(writing == null)
-                    {
-                        await prisma.writing.create({
-                            data: {
-                                userId: userId,
-                                languageId : languageId,
-                                practiceId: practice.id,
-                                writingBooks: {
-                                    create: {
-                                        name: input1,
-                                        imageUrl: file1Url,
-                                        leftColor: leftSideColor,
-                                        sourceUrl: file2Url
-                                    }
-                                }
-                            }
-                        })
-                        break;
-
+                const readingBook = await tx.readingBook.create({
+                    data: {
+                        readingId: reading.id,
+                        name: values.inputOne!,
+                        imageUrl: fileOneUrl,
+                        leftColor: leftSideColor!,
+                        sourceUrl: fileTwoUrl
                     }
+                })
 
-                    await prisma.writingBook.create({
-                        data: {
-                            writingId: writing.id,
-                            name: input1,
-                            imageUrl: file1Url,
-                            leftColor: leftSideColor,
-                            sourceUrl: file2Url
-                        }
-                    })
-
-                    break;
-                case "lfilms":
-                    practice = await prisma.practice.findFirst({
-                        where: {
-                            languageId: languageId,
-                            name: "listening"
-                        },
-                        select: {
-                            id:true
-                        }
-                    })
-                    
-                    const listening = await prisma.listening.findFirst({
-                        where: {
-                            userId: userId,
-                            languageId : languageId,
-                            practiceId: practice.id
-                        }
-                    })
-
-                    if(listening == null)
-                    {
-                        await prisma.listening.create({
-                            data: {
-                                userId: userId,
-                                languageId : languageId,
-                                practiceId: practice.id,
-                                listeningFilms: {
-                                    create: {
-                                        name: input1,
-                                        imageUrl: file1Url,
-                                        sourceUrl: file2Url,
-                                        strUrl: file3Url
-                                    }
-                                }
-                            }
-                        })
-                        break;
-
-                    }
-
-                    await prisma.listeningFilm.create({
-                        data: {
-                            listeningId: listening.id,
-                            name: input1,
-                            imageUrl: file1Url,
-                            sourceUrl: file2Url,
-                            strUrl: file3Url
-                        }
-                    })
-
-                    break;
-                case "fwords":
-                    await prisma.deckWord.create({
-                        data: {
-                            categoryId: Number(wordCategoryId),
-                            question: input1,
-                            answer: input2
-                        }
-                    })
-                    break;
-                case "fcategories":
-                    practice = await prisma.practice.findFirst({
-                        where: {
-                            languageId: languageId,
-                            name: "flashcard"
-                        },
-                        select: {
-                            id:true
-                        }
-                    })
-                    
-                    const flashcard2 = await prisma.flashcard.findFirst({
-                        where: {
-                            userId: userId,
-                            languageId : languageId,
-                            practiceId: practice.id
-                        }
-                    })
-
-                    if(flashcard2 == null)
-                    {
-                        await prisma.flashcard.create({
-                            data: {
-                                userId: userId,
-                                languageId : languageId,
-                                practiceId: practice.id,
-                                flashcardCategories: {
-                                    create: {
-                                        name: input1
-                                    }
-                                }
-                            }
-                        })
-                        break;
-
-                    }
-
-                    await prisma.flashcardCategory.create({
-                        data: {
-                            flashcardId: flashcard2.id,
-                            name: input1
-                        }
-                    })
-
-                    break;
-                    
-            }
+                return createResponse(true, 200, readingBook, "Reading book created successfully!")
+            })
 
         }
+
 
         const handleEdit = async () => {
 
-            if(file1 != null && file2 != null && (table == "rbooks" || table == "wbooks" || table == "lfilms"))
-            {
-                // GET OLD FILE INFO'S
-                await getExistingRecord();
-                oldFile1Url = existingRecord.imageUrl;
-                oldFile2Url = existingRecord.sourceUrl;
 
-                if(file3 != null && table == "lfilms") oldFile3Url = existingRecord.strUrl;
+            // GET OLD FILE INFO'S
+            const existingRecord = await GetExistingRecord({table: values.table!, itemId: values.itemId!})
+
+            if(!existingRecord) throw new Error("Existing Record Not Found!")
+
+            const oldFileOneUrl = existingRecord!.imageUrl
+            const oldFileTwoUrl = existingRecord!.sourceUrl
+
+            // DELETE OLD FILES
+            if (oldFileOneUrl) {
+
+                const oldFile1Name = decodeURIComponent(oldFileOneUrl.split('/').pop() ?? "") 
+                const [isExist] = await bucket.file(oldFile1Name).exists()
+                
+                if(isExist) await bucket.file(oldFile1Name).delete()
             }
 
-            if(file1 != null && file2 != null && (table == "rbooks" || table == "wbooks" || table == "lfilms"))
-            {
-                // CREATE UNIQUE NAME FOR FILES
-                const file1Name = `${Date.now()}_${(file1 as File).name}`;
-                const file2Name = `${Date.now()}_${(file2 as File).name}`;
-                let file3Name : any
-                if(file3 != null) file3Name = `${Date.now()}_${(file3 as File).name}`;
+            if (oldFileTwoUrl) {
 
-                // UPLOAD FILES TO GOOGLE CLOUD STORAGE
-                const file1Upload = imageBucket.file(file1Name).createWriteStream({
-                    resumable: false,
-                    metadata: { contentType: (file1 as File).type }
-                });
+                const oldFile2Name = decodeURIComponent(oldFileTwoUrl.split('/').pop() ?? "") 
+                const [isExist] = await bucket.file(oldFile2Name).exists()
 
-                const file2Upload = imageBucket.file(file2Name).createWriteStream({
-                    resumable: false,
-                    metadata: { contentType: (file2 as File).type }
-                });
-
-                let file3Upload: any
-
-                if(file3 != null)
-                {
-                    file3Upload = imageBucket.file(file3Name).createWriteStream({
-                        resumable: false,
-                        metadata: { contentType: (file3 as File).type }
-                    })
-                }
-
-                // WRITE FILES TO GOOGLE CLOUD STORAGE
-                file1Upload.end(Buffer.from(bufferForFile1))
-                file2Upload.end(Buffer.from(bufferForFile2))
-                if(file3 != null) file3Upload.end(Buffer.from(bufferForFile3))
-
-                // WAIT
-                await new Promise((resolve, reject) => {
-                    file1Upload.on('finish', resolve);
-                    file1Upload.on('error', reject);
-                    file2Upload.on('finish', resolve);
-                    file2Upload.on('error', reject);
-
-                    if(file3 != null)
-                    {
-                        file3Upload.on('finish', resolve);
-                        file3Upload.on('error', reject);
-                    }
-
-                });
-
-                // GET FILE URL'S
-                file1Url = imageBucket.file(file1Name).publicUrl();
-                file2Url = imageBucket.file(file2Name).publicUrl();
-                if(file3 != null) file3Url = imageBucket.file(file3Name).publicUrl();
+                if(isExist) await bucket.file(oldFile2Name).delete();
             }
 
-            let practice;
+
+            // CREATE UNIQUE NAME FOR FILES
+            const file1Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileOne).name}`
+            const file2Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileTwo).name}`
+
+
+            // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+            const file1Upload = bucket.file(file1Name).createWriteStream({
+                resumable: false,
+                metadata: { contentType: (values.fileOne).type }
+            })
+
+            const file2Upload = bucket.file(file2Name).createWriteStream({
+                resumable: false,
+                metadata: { contentType: (values.fileTwo).type }
+            })
+
+
+            // WRITE FILES TO GOOGLE CLOUD STORAGE
+            file1Upload.end(Buffer.from(bufferForFileOne))
+            file2Upload.end(Buffer.from(bufferForFileTwo))
+
+            // GET FILE'S URL
+            const fileOneUrl = bucket.file(file1Name).publicUrl()
+            const fileTwoUrl = bucket.file(file2Name).publicUrl()
 
             // UPDATE DATABASE
-            switch(table){
-                case "rbooks":
-                    practice = await prisma.practice.findFirst({
-                        where: {
-                            languageId: languageId,
-                            name: "reading"
-                        },
-                        select: {
-                            id:true
-                        }
-                    })
+            return await prisma.$transaction(async (tx) => {
 
-                    const reading = await prisma.reading.findFirst({
-                        where: {
-                            userId: userId,
-                            languageId : languageId,
-                            practiceId: practice.id
-                        }
-                    })
+                const practice = await tx.practice.findUnique({
+                    where: { languageId_name: { languageId: values.languageId, name: "reading" } },
+                    select: { id: true }
+                })
 
-                    if(reading == null){
+                if(!practice) throw new Error("Practice Not Found!")
 
-                        const newReading = await prisma.reading.create({
-                            data: {
-                                userId: userId,
-                                languageId : languageId,
-                                practiceId: practice.id,
-                            }
-                        })
-
-                        await prisma.readingBook.update({
-                            where: { id: Number(itemId)},
-                            data: {
-                                readingId: newReading.id,
-                                name: input1,
-                                imageUrl: file1Url,
-                                leftColor: leftSideColor,
-                                sourceUrl: file2Url
-                            }
-                        })
-
-                        break;
+                const reading = await tx.reading.upsert({
+                    where: { 
+                        userId_languageId_practiceId: { 
+                            userId: values.userId!, 
+                            languageId: values.languageId, 
+                            practiceId: practice!.id 
+                        } 
+                    },
+                    update: {},
+                    create: {
+                        userId: values.userId!,
+                        languageId: values.languageId!,
+                        practiceId: practice!.id
                     }
+                })
 
-                    await prisma.readingBook.update({
-                        where: { id: Number(itemId)},
-                        data: {
-                            readingId: reading.id,
-                            name: input1,
-                            imageUrl: file1Url,
-                            leftColor: leftSideColor,
-                            sourceUrl: file2Url
-                        }
-                    })
-
-                    break;
-                case "wbooks":
-                    practice = await prisma.practice.findFirst({
-                        where: {
-                            languageId: languageId,
-                            name: "writing"
-                        },
-                        select: {
-                            id:true
-                        }
-                    })
-
-                    const writing = await prisma.writing.findFirst({
-                        where: {
-                            userId: userId,
-                            languageId : languageId,
-                            practiceId: practice.id
-                        }
-                    })
-
-                    if(writing == null){
-
-                        const newWriting = await prisma.writing.create({
-                            data: {
-                                userId: userId,
-                                languageId : languageId,
-                                practiceId: practice.id,
-                            }
-                        })
-
-                        await prisma.writingBook.update({
-                            where: { id: Number(itemId)},
-                            data: {
-                                writingId: newWriting.id,
-                                name: input1,
-                                imageUrl: file1Url,
-                                leftColor: leftSideColor,
-                                sourceUrl: file2Url
-                            }
-                        })
-
-                        break;
+                const existingReadingBook = await tx.readingBook.findUnique({
+                    where: {
+                        id: values.itemId
                     }
+                })
 
-                    await prisma.writingBook.update({
-                        where: { id: Number(itemId)},
-                        data: {
-                            writingId: writing.id,
-                            name: input1,
-                            imageUrl: file1Url,
-                            leftColor: leftSideColor,
-                            sourceUrl: file2Url
-                        }
-                    })
-                    break;
-                case "lfilms":
-                    practice = await prisma.practice.findFirst({
-                        where: {
-                            languageId: languageId,
-                            name: "listening"
-                        },
-                        select: {
-                            id:true
-                        }
-                    })
+                if(!existingReadingBook) throw new Error("Reading Book Not Found!")
 
-                    const listening = await prisma.listening.findFirst({
-                        where: {
-                            userId: userId,
-                            languageId : languageId,
-                            practiceId: practice.id
-                        }
-                    })
-
-                    if(listening == null){
-
-                        const newListening = await prisma.listening.create({
-                            data: {
-                                userId: userId,
-                                languageId : languageId,
-                                practiceId: practice.id,
-                            }
-                        })
-
-                        await prisma.listeningFilm.update({
-                            where: { id: Number(itemId)},
-                            data: {
-                                listeningId: newListening.id,
-                                name: input1,
-                                imageUrl: file1Url,
-                                sourceUrl: file2Url,
-                                strUrl: file3Url
-                            }
-                        })
-
-                        break;
+                const readingBook = await tx.readingBook.update({
+                    where: { id: values.itemId },
+                    data: {
+                        readingId: reading.id,
+                        name: values.inputOne,
+                        imageUrl: fileOneUrl,
+                        leftColor: leftSideColor!,
+                        sourceUrl: fileTwoUrl
                     }
+                })
 
-                    await prisma.listeningFilm.update({
-                        where: { id: Number(itemId)},
-                        data: {
-                            listeningId: listening.id,
-                            name: input1,
-                            imageUrl: file1Url,
-                            sourceUrl: file2Url,
-                            strUrl: file3Url
-                        }
-                    })
-                    break;
-                case "fwords":
-                    practice = await prisma.practice.findFirst({
-                        where: {
-                            languageId: languageId,
-                            name: "flashcard"
-                        },
-                        select: {
-                            id:true
-                        }
-                    })
+                return createResponse(true, 200, readingBook, "Reading book updated successfully!")
+            })
+        }
 
-                    const flashcard1 = await prisma.flashcard.findFirst({
-                        where: {
-                            userId: userId,
-                            languageId : languageId,
-                            practiceId: practice.id
-                        }
-                    })
+        switch(values.type){
 
-                    if(flashcard1 == null){
+            case "Create":
+                return await handleCreate()
+            case "Edit":
+                return await handleEdit()
+            default:
+                return createResponse<ReadingBook>(false, 500, null, "ERROR: ReadingAddOrEdit")
+        }
+        
+    } catch (error) {
+        
+        console.log(`ERROR: ReadingAddOrEdit: ${error}`)
+        return createResponse<ReadingBook>(false, 500, null, "ERROR: ReadingAddOrEdit")
+    }
+}
 
-                        const newFlashcard1 = await prisma.flashcard.create({
-                            data: {
-                                userId: userId,
-                                languageId : languageId,
-                                practiceId: practice.id,
-                            }
-                        })
+export async function WritingAddOrUpdate(prevState : ApiResponse<WritingBook> | undefined, formData: FormData) : Promise<ApiResponse<WritingBook>> {
 
-                        const category = await prisma.flashcardCategory.update({
-                            where: { id: Number(wordCategoryId)},
-                            data: {
-                                flashcardId: newFlashcard1.id,
-                            }
-                        })
+    // GET FORM DATA
+    const values = {
 
-                        await prisma.deckWord.update({
-                            where: { id: Number(itemId)},
-                            data: {
-                                categoryId: category.id,
-                                question: input1,
-                                answer: input2
-                            }
-                        })
+        languageId: Number(formData.get("languageId")),
+        inputOne: formData.get("inputOne")?.toString(),
+        fileOne: formData.get("fileOne") as File,
+        fileTwo: formData.get("fileTwo") as File,
 
+        userId: formData.get("userId")?.toString(),
+        itemId: Number(formData.get("itemId")),
+        table: formData.get("table")?.toString(),
+        type: formData.get("type")?.toString()
+    }
+
+    await WritingAddOrUpdateSchema.parseAsync(values)
+
+
+    try {
+
+        // GOOGLE STORAGE CONFIGURATION
+        const projectId = process.env.GCP_PROJECT_ID
+
+        const storage = new Storage({
+            
+            projectId: projectId
+        })
+
+        const bucket = storage.bucket('create-items')
+
+        // GET BUFFERS OF FILES
+        const bufferForFileOne = await (values.fileOne).arrayBuffer()
+        const bufferForFileTwo = await (values.fileTwo).arrayBuffer()
+
+        // GET LEFT SIDE COLOR READING BOOK IMAGE
+        const leftSideColor = await GetLeftSideColor({bufferForFile: bufferForFileOne})
+
+
+        const handleCreate = async () => {
+
+
+            // CREATE UNIQUE NAME FOR FILES
+            const file1Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileOne).name}`
+            const file2Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileTwo).name}`
+
+
+            // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+            const file1Upload = bucket.file(file1Name).createWriteStream({
+                resumable: false,
+                metadata: { contentType: (values.fileOne).type }
+            })
+
+            const file2Upload = bucket.file(file2Name).createWriteStream({
+                resumable: false,
+                metadata: { contentType: (values.fileTwo).type }
+            })
+
+            // WRITE FILES TO GOOGLE CLOUD STORAGE
+            file1Upload.end(Buffer.from(bufferForFileOne))
+            file2Upload.end(Buffer.from(bufferForFileTwo))
+
+
+            // GET FILE'S URL
+            const fileOneUrl = bucket.file(file1Name).publicUrl()
+            const fileTwoUrl = bucket.file(file2Name).publicUrl()
+
+
+            // SAVE TO DATABASE
+            return await prisma.$transaction(async (tx) => {
+
+                const practice = await tx.practice.findUnique({
+                    where: { languageId_name: { languageId: values.languageId, name: "writing" } },
+                    select: { id: true }
+                })
+
+                if(!practice) throw new Error("Practice Not Found!")
+
+                const writing = await tx.writing.upsert({
+                    where: { userId_languageId_practiceId: { userId: values.userId!, languageId: values.languageId!, practiceId: practice!.id } },
+                    update: {},
+                    create: {
+                        userId: values.userId!,
+                        languageId: values.languageId,
+                        practiceId: practice!.id
                     }
+                })
 
-                    const category = await prisma.flashcardCategory.update({
-                        where: { id: Number(wordCategoryId)},
-                        data: {
-                            flashcardId: flashcard1.id,
-                        }
-                    })
-
-                    await prisma.deckWord.update({
-                        where: { id: Number(itemId)},
-                        data: {
-                            categoryId: category.id,
-                            question: input1,
-                            answer: input2
-                        }
-                    })
-
-                    break;
-                case "fcategories":
-                    practice = await prisma.practice.findFirst({
-                        where: {
-                            languageId: languageId,
-                            name: "flashcard"
-                        },
-                        select: {
-                            id:true
-                        }
-                    })
-
-                    const flashcard2 = await prisma.flashcard.findFirst({
-                        where: {
-                            userId: userId,
-                            languageId : languageId,
-                            practiceId: practice.id
-                        }
-                    })
-
-                    if(flashcard2 == null){
-
-                        const newFlashcard2 = await prisma.flashcard.create({
-                            data: {
-                                userId: userId,
-                                languageId : languageId,
-                                practiceId: practice.id,
-                            }
-                        })
-
-                        await prisma.flashcardCategory.update({
-                            where: { id: Number(itemId)},
-                            data: {
-                                flashcardId: newFlashcard2.id,
-                                name: input1,
-                            }
-                        })
-
-                        break;
+                const writingBook = await tx.writingBook.create({
+                    data: {
+                        writingId: writing.id,
+                        name: values.inputOne!,
+                        imageUrl: fileOneUrl,
+                        leftColor: leftSideColor!,
+                        sourceUrl: fileTwoUrl
                     }
+                })
 
-                    await prisma.flashcardCategory.update({
-                        where: { id: Number(itemId)},
-                        data: {
-                            flashcardId: flashcard2.id,
-                            name: input1,
-                        }
-                    })
-                    break;
-            }
+                return createResponse(true, 200, writingBook, "Writing book created successfully!")
+            })
 
-            if(file1 != null && file2 != null && (table == "rbooks" || table == "wbooks" || table == "lfilms"))
-            {
-                // DELETE OLD FILES
-                if (oldFile1Url) {
-                    const oldFile1Name = oldFile1Url.split('/').pop() ?? "";
-                    const isExist = await imageBucket.file(oldFile1Name).exists();
-                    if(isExist)
-                        await imageBucket.file(oldFile1Name).delete();
-                }
-
-                if (oldFile2Url) {
-                    const oldFile2Name = oldFile2Url.split('/').pop() ?? "";
-                    const isExist = await imageBucket.file(oldFile2Name).exists();
-                        await imageBucket.file(oldFile2Name).delete();
-                }
-
-                if(file3 != null)
-                {
-                    if (oldFile3Url) {
-                        const oldFile3Name = oldFile3Url.split('/').pop() ?? "";
-                        const isExist = await imageBucket.file(oldFile3Name).exists();
-                            await imageBucket.file(oldFile3Name).delete();
-                    }
-                }
-            }
 
         }
 
-        switch(type){
+
+        const handleEdit = async () => {
+
+            // GET OLD FILE INFO'S
+            const existingRecord = await GetExistingRecord({table: values.table!, itemId: values.itemId})
+
+            if(!existingRecord) throw new Error("Existing Record Not Found!")
+
+            const oldFileOneUrl = existingRecord!.imageUrl
+            const oldFileTwoUrl = existingRecord!.sourceUrl
+
+            // DELETE OLD FILES
+            if (oldFileOneUrl) {
+
+                const oldFile1Name = decodeURIComponent(oldFileOneUrl.split('/').pop() ?? "") 
+                const [isExist] = await bucket.file(oldFile1Name).exists()
+                
+                if(isExist) await bucket.file(oldFile1Name).delete()
+            }
+
+            if (oldFileTwoUrl) {
+
+                const oldFile2Name = decodeURIComponent(oldFileTwoUrl.split('/').pop() ?? "") 
+                const [isExist] = await bucket.file(oldFile2Name).exists()
+
+                if(isExist) await bucket.file(oldFile2Name).delete();
+            }
+
+
+            // CREATE UNIQUE NAME FOR FILES
+            const file1Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileOne).name}`
+            const file2Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileTwo).name}`
+
+
+            // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+            const file1Upload = bucket.file(file1Name).createWriteStream({
+                resumable: false,
+                metadata: { contentType: (values.fileOne).type }
+            })
+
+            const file2Upload = bucket.file(file2Name).createWriteStream({
+                resumable: false,
+                metadata: { contentType: (values.fileTwo).type }
+            })
+
+
+            // WRITE FILES TO GOOGLE CLOUD STORAGE
+            file1Upload.end(Buffer.from(bufferForFileOne))
+            file2Upload.end(Buffer.from(bufferForFileTwo))
+
+            // GET FILE'S URL
+            const fileOneUrl = bucket.file(file1Name).publicUrl()
+            const fileTwoUrl = bucket.file(file2Name).publicUrl()
+
+            // UPDATE DATABASE
+            return await prisma.$transaction(async (tx) => {
+
+                const practice = await tx.practice.findUnique({
+                    where: { languageId_name: { languageId: values.languageId, name: "writing" } },
+                    select: { id: true }
+                })
+
+                if(!practice) throw new Error("Practice Not Found!")
+
+                const writing = await tx.writing.upsert({
+                    where: { 
+                        userId_languageId_practiceId: { 
+                            userId: values.userId!, 
+                            languageId: values.languageId, 
+                            practiceId: practice!.id 
+                        } 
+                    },
+                    update: {},
+                    create: {
+                        userId: values.userId!,
+                        languageId: values.languageId,
+                        practiceId: practice!.id
+                    }
+                })
+
+                const existingWritingBook = await tx.writingBook.findUnique({
+                    where: {
+                        id: values.itemId
+                    }
+                })
+
+                if(!existingWritingBook) throw new Error("Writing Book Not Found!")
+
+                const writingBook = await tx.writingBook.update({
+                    where: { id: values.itemId },
+                    data: {
+                        writingId: writing.id,
+                        name: values.inputOne,
+                        imageUrl: fileOneUrl,
+                        leftColor: leftSideColor!,
+                        sourceUrl: fileTwoUrl
+                    }
+                })
+
+                return createResponse(true, 200, writingBook, "Writing book updated successfully!")
+            })
+
+        }
+
+
+        switch(values.type){
 
             case "Create":
-                await handleCreate()
-                break;
+                return await handleCreate()
             case "Edit":
-                await handleEdit()
-                break;
+                return handleEdit()
+            default:
+                return createResponse<WritingBook>(false, 500, null, "ERROR: WritingAddOrEdit")
+        }
+        
+        
+    } catch (error) {
+        
+        console.log(`ERROR: WritingAddOrEdit: ${error}`)
+        return createResponse<WritingBook>(false, 500, null, "ERROR: WritingAddOrEdit")
+    }
+
+}
+
+export async function DeckWordAddOrUpdate(prevState : ApiResponse<DeckWord> | undefined, formData: FormData) : Promise<ApiResponse<DeckWord>> {
+
+    // GET FORM DATA
+    const values = {
+
+        languageId: Number(formData.get("languageId")),
+        categoryId: Number(formData.get("categoryId")),
+        inputOne: formData.get("inputOne")?.toString(),
+        inputTwo: formData.get("inputTwo")?.toString(),
+        
+        userId: formData.get("userId")?.toString(),
+        itemId: Number(formData.get("itemId")),
+        table: formData.get("table")?.toString(),
+        type: formData.get("type")?.toString()
+    }
+
+    await DeckWordAddOrUpdateSchema.parseAsync(values)
+
+
+    try {
+
+        const handleCreate = async () => {
+
+
+            // SAVE TO DATABASE
+
+            // BURAYA KADAR GELDİYSE ZATEN CATEGORY MEVCUT OLMALIDIR. CATEGORY MEVCUT OLMASI İÇİN ZATEN FLASHCARD MEVCUT OLMALIDIR.
+            return await prisma.$transaction(async (tx) => {
+
+                const deckWord = await tx.deckWord.create({
+
+                    data: {
+                        categoryId: values.categoryId,
+                        question: values.inputOne!,
+                        answer: values.inputTwo!
+                    }
+                })
+
+                return createResponse(true, 200, deckWord, "Deck word created successfully!")
+            })
+            
+        }
+
+
+        const handleEdit = async () => {
+
+            return await prisma.$transaction(async (tx) => {
+
+                const existingDeckWord = await tx.deckWord.findUnique({
+                    where: {
+                        id: values.itemId
+                    }
+                })
+
+                if(!existingDeckWord) throw new Error("DeckWord Not Found!")
+
+                const deckWord = await tx.deckWord.update({
+
+                    where: { id: values.itemId },
+                    data: {
+                        categoryId: values.categoryId,
+                        question: values.inputOne,
+                        answer: values.inputTwo
+                    }
+                })
+
+                return createResponse(true, 200, deckWord, "Deck word updated successfully!")
+            })
+        }
+
+
+        switch(values.type){
+
+            case "Create":
+                return await handleCreate()
+            case "Edit":
+                return await handleEdit()
+            default:
+                return createResponse<DeckWord>(false, 500, null, "ERROR: DeckWordAddOrEdit")
+        }
+        
+    } catch (error) {
+        
+        console.log(`ERROR: DeckWordAddOrEdit: ${error}`)
+        return createResponse<DeckWord>(false, 500, null, "ERROR: DeckWordAddOrEdit")
+    }
+}
+
+export async function FlashcardCategoryAddOrUpdate(prevState : ApiResponse<FlashcardCategory> | undefined, formData: FormData) : Promise<ApiResponse<FlashcardCategory>> {
+
+    // GET FORM DATA
+    const values = {
+
+        languageId: Number(formData.get("languageId")),
+        inputOne: formData.get("inputOne")?.toString(),
+        
+        userId: formData.get("userId")?.toString(),
+        itemId: Number(formData.get("itemId")),
+        table: formData.get("table")?.toString(),
+        type: formData.get("type")?.toString()
+    }
+
+    await DeckWordAddOrUpdateSchema.parseAsync(values)
+
+    try {
+
+        const handleCreate = async () => {
+
+            // SAVE TO DATABASE
+            return await prisma.$transaction(async (tx) => {
+
+                const practice = await tx.practice.findUnique({
+                    where: { languageId_name: { languageId: values.languageId, name: "flashcard" } },
+                    select: { id: true }
+                })
+
+                if(!practice) throw new Error("Practice Not Found!")
+
+                const flashcard = await tx.flashcard.upsert({
+                    where: { userId_languageId_practiceId: { userId: values.userId!, languageId: values.languageId, practiceId: practice!.id } },
+                    update: {},
+                    create: {
+                        userId: values.userId!,
+                        languageId: values.languageId,
+                        practiceId: practice!.id
+                    }
+                })
+
+                const flashcardCategory = await tx.flashcardCategory.create({
+                    data: {
+                        flashcardId: flashcard.id,
+                        name: values.inputOne!
+                    }
+                })
+
+                return createResponse(true, 200, flashcardCategory, "Flashcard category created successfully!")
+            })
+        }
+
+
+        const handleEdit = async () => {
+
+            // UPDATE DATABASE
+            return await prisma.$transaction(async (tx) => {
+
+                const practice = await tx.practice.findUnique({
+                    where: { languageId_name: { languageId: values.languageId, name: "flashcard" } },
+                    select: { id: true }
+                })
+
+                if(!practice) throw new Error("Practice Not Found!")
+
+                const flashcard = await tx.flashcard.upsert({
+                    where: { userId_languageId_practiceId: { userId: values.userId!, languageId: values.languageId, practiceId: practice!.id } },
+                    update: {},
+                    create: {
+                        userId: values.userId!,
+                        languageId: values.languageId,
+                        practiceId: practice!.id
+                    }
+                })
+
+                const existingFlashcardCategory = await tx.flashcardCategory.findUnique({
+                    where: {
+                        id: values.itemId
+                    }
+                })
+
+                if(!existingFlashcardCategory) throw new Error("Flashcard Category Not Found!")
+
+                const flashcardCategory = await tx.flashcardCategory.update({
+                    where: { id: values.itemId },
+                    data: {
+                        flashcardId: flashcard.id,
+                        name: values.inputOne
+                    }
+                })
+
+                return createResponse(true, 200, flashcardCategory, "Flashcard category updated successfully!")
+            })
+        }
+
+
+        switch(values.type){
+
+            case "Create":
+                return await handleCreate()
+            case "Edit":
+                return await handleEdit()
+            default:
+                return createResponse<FlashcardCategory>(false, 500, null, "ERROR: FlashcardCategoryAddOrEdit")
         }
 
     } catch (error) {
-        
-        if(error instanceof Error) return {status: 500, message: "Öğe eklenirken bir hata oluştu", details: error.message, stackDetails: error.stack};
+
+        console.log(`ERROR: FlashcardCategoryAddOrEdit: ${error}`)
+        return createResponse<FlashcardCategory>(false, 500, null, "ERROR: FlashcardCategoryAddOrEdit")        
     }
-
-    redirect(`/list/${table}`);
-
 }

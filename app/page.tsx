@@ -1,54 +1,49 @@
 "use client"
 
-// REACT & NEXT
-import { useState, useEffect } from "react"
-//ACTIONS
-import { GetLanguages } from "@/src/actions/language"
-//COMPONENTS
-import InfoMessageComponent from "@/src/components/utils/infoMessage"
-import FlagComponent from "@/src/components/homePage/flag"
-import ShowErrorComponent from "@/src/components/utils/showError"
-//TYPES
-import { Language } from "@prisma/client"
+// COMPONENTS
+import InfoMessageComponent from "@/src/components/InfoMessageComponent/infoMessage"
+import FlagComponent from "@/src/components/FlagComponent/flag"
+import Loader from "@/src/components/loader"
+// REDUCER & HANDLERS & CUSTOM USE EFFECTS
+import { useHomePageReducer } from "@/src/page/HomePage/useHomePageReducer"
+import { useHomePageCustomEffect } from "@/src/page/HomePage/useHomePageCustomEffect"
+// PROVIDER
+import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+// STORE
+import { GlobalStore } from "@/src/store/globalStore"
+
+
 
 export default function HomePage() {
 
-  //STATES
-  const [languages, setLanguages] = useState<Language[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>("")
-  const [errorDetails, setErrorDetails] = useState<string | null>(null)
+  // HOOKS
+  const {isLoading, loadingSource, setLoading} = useLoading()
+  const {state, dispatch} = useHomePageReducer()
+  const {showAlert} = useAlert()
 
-  useEffect(() => {
-  
-    // GET LANGUAGES
-    const GET = async () => {
+  // STORE
+  const hasHydrated = GlobalStore((state) => state.HasHydrated)
+  const resetExcept = GlobalStore((state) => state.resetExcept)
 
-        const response = await GetLanguages()
 
-        if(response && response.status == 500){
-            
-            setError(response.message ?? null)
-            setErrorDetails(response.details ?? null)
+  // USE EFFECT
+  useHomePageCustomEffect({
 
-            return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
-        }
+    hasHydrated,
+    showAlert,
+    setLoading,
+    resetExcept,
+    dispatch
+    
+  })
 
-        setLanguages(response!.data)
-
-        setIsLoading(false)
-    }
-
-    GET()
-
-  }, [])
-
-  if(isLoading) return <></>
+  if(isLoading && loadingSource === "page" ) return <Loader/>
 
   return (
     <>
       <InfoMessageComponent message="Please choose which language you would like to learn"/>
-      <FlagComponent languages={languages}/>
+      <FlagComponent languages={state.languages!}/>
     </>
   )
 }

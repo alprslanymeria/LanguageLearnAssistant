@@ -1,0 +1,58 @@
+NOT 1
+__________
+schema prisma dosyası değiştiğinde şu kodu çalıştır --> npx prisma generate --schema=./prisma/schema.prisma
+
+bu kod tip dosyasının güncellenmesini sağlar.
+
+
+NOT 2
+__________
+React'da render sırası şöyle işler:
+
+HomePage
+    - InfoMessageComponent
+    - FlagComponent
+
+Her birinde useEffect olduğunu düşünelim. İlk önce render işlemi gerçekleştirilir. 
+Bu sırada hiçbir useEffect çalıştırılmaz.
+
+HomePage render --> InfoMessageComponent render --> FlagComponent render
+
+** Aynı seviyede olan kardeş componentler render edilirken soldan sağa doğru render işlemi gerçekleştirilir.
+
+** UseEffect çalıştırılırken mount edilme sırasına gör çalıştırılır.
+
+HomePage useEffect --> InfoMessageComponent useEffect --> FlagComponent useEffect
+
+
+NOT 3
+______________________________-
+
+USE EFFECT İÇİN
+const hasHydrated = GlobalStore((state) => state.HasHydrated)
+
+const kese = [duration]
+
+if(kese.some(k => !k)) return
+
+HANDLERS İÇİN
+const isHydrated = GlobalStore.persist?.hasHydrated?.() ?? false
+
+if(!isHydrated) return
+
+const kese = [duration]
+
+
+NOT 4
+__________________________
+
+if(kese.some(k => !k)) return  --> normal kontroL
+
+if(kese.some(k => k === null)) return --> zustand store persist kontrol
+
+
+NOT 5
+______________________________
+
+SVG'LER VE TABLE COMPONENT BİRDEN FAZLA YERDE KULLANILIYOR VE TİP KARMAŞASI YARATABİLİR.
+BU İLERKİ ZAMANLARDA DÜZELTİLİR.

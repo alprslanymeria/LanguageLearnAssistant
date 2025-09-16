@@ -2,70 +2,51 @@
 
 // REACT & NEXT
 import Link from "next/link"
-import { FormEvent, useEffect, useState } from "react"
-// ACTIONS
-import { signIn } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
+// COMPONENTS
 import { GoogleLogo } from "@/src/components/svg/googleSvg"
+// REDUCER & HANDLERS & CUSTOM USE EFFECTS
+import { useLoginReducer } from "@/src/page/LoginPage/useLoginReducer"
+import { handleSubmit } from "@/src/page/LoginPage/handlers"
+import { useLoginPageCustomEffect } from "@/src/page/LoginPage/useLoginPageCustomEffect"
+// NEXT AUTH
+import { signIn } from "next-auth/react"
+// STORE
+import { GlobalStore } from "@/src/store/globalStore"
+// PROVIDER
+import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
 
 
 export default function Page() {
 
-    // STATES
-    const [authError, setAuthError] = useState<string | null>(null)
-
-    // SEARCH PARAMS
+    // HOOKS
     const searchParams = useSearchParams()
+    const {state , dispatch} = useLoginReducer()
+    const {isLoading, loadingSource, setLoading} = useLoading()
 
-    useEffect(() => {
+    // STORE
+    const hasHydrated = GlobalStore((state) => state.HasHydrated)
+    const resetExcept = GlobalStore((state) => state.resetExcept)
 
-        const code = searchParams.get('code')
+    // USE EFFECTS
+    useLoginPageCustomEffect({
+        
+        searchParams,
+        hasHydrated,
+        resetExcept,
+        dispatch
+    })
 
-        if(code) setAuthError(getErrorMessage(code))
-
-    }, [searchParams])
-
-    const getErrorMessage = (errorCode: string) => {
-        switch (errorCode) {
-            case 'code_1':
-                return 'UNEXPECTED ERROR!'
-            case 'code_3':
-                return 'INVALID EMAIL OR PASSWORD!'
-            case 'code_6':
-                return 'PLEASE CHECK EMAIL FORMAT!'
-            case 'code_7':
-                return 'PASSWORD CAN NOT BE SHORTER THAN 8 CHARACTERS!'
-            default:
-                return 'SERVER ERROR'
-        }
-    }
-
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-
-        const form = e.currentTarget
-        const email = form.email.value
-        const password = form.password.value
-        const operation = form.operation.value
-
-        await signIn("credentials", {
-            email,
-            password,
-            operation: operation,
-            redirect: true,
-            redirectTo: "/"
-        })
-    }
 
     return (
         <div className="flex items-center justify-center">
             <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
                 <h2 className="text-2xl font-bold text-center">Login</h2>
 
-                <form className="space-y-4" method="POST" onSubmit={handleSubmit}>
+                <form className="space-y-4" method="POST" onSubmit={(e) => handleSubmit({e, setLoading})}>
                     <input type="hidden" name="operation" value={"login"} />
                     <div>
-                        {authError && <p className="text-sm text-red-500 text-center">{authError}</p>}
+                        {state.authError && <p className="text-sm text-red-500 text-center">{state.authError}</p>}
                     </div>
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
@@ -88,13 +69,19 @@ export default function Page() {
                         />
                     </div>
                     <button
+                        disabled= {isLoading && loadingSource === "LoginHandleSubmit"}
                         type="submit"
                         className="w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
-                    Login
+                        {isLoading && loadingSource === "LoginHandleSubmit" ? (
+                            <div className="flex items-center justify-center">
+                                <div className="w-6 h-6 border-4 border-white-500 border-t-transparent rounded-full animate-spin"/>
+                            </div>
+                        ) : (
+                            "Login"
+                        )}
                     </button>
 
-                    {/* GOOGLE SIGN-IN BUTTON */}
                     <div className="flex items-center gap-2 mt-4">
                         <div className="flex-grow h-px bg-gray-300" />
                         <span className="text-sm text-gray-500">or</span>

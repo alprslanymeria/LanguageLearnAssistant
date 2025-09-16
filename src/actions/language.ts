@@ -1,67 +1,64 @@
 "use server"
 
 // LIBRARIES
-import {prisma} from "@/src/lib/prisma";
+import {prisma} from "@/src/lib/prisma"
+// TYPES
+import { ApiResponse } from "@/src/types/response"
+import { CompareLanguageIdProps, GetLanguagesResponse } from "@/src/types/actions"
+// UTILS
+import { createResponse } from "@/src/utils/response"
+// ZOD
+import { CompareLanguageIdSchema } from "@/src/zod/actionsSchema"
 
-export async function GetLanguages() {
+
+
+export async function GetLanguages() : Promise<ApiResponse<GetLanguagesResponse>> {
 
     try {
 
-        const languages = await prisma.language.findMany();
+        const languages = await prisma.language.findMany()
 
-        return {data: languages, status: 200};
-        
+        // BU HATAYI KULLANICI GÖRMÜYOR O YÜZDEN THROW ETTİM.
+        if(languages.length === 0) throw new Error("No Languages Found!")
+
+        return createResponse(true, 200, {data: languages}, "SUCCESS: GetLanguages")
+
     } catch (error) {
-        
-        if(error instanceof Error) return {status: 500, message: "Language verileri alınırken bir hata oluştu", details: error.message};
+
+        console.log(`ERROR: GetLanguages: ${error}`)
+        return createResponse<GetLanguagesResponse>(false, 500, null, `ERROR: GetLanguages`)
     }
 }
 
 
-export async function GetLanguageName(flashcardId : any) {
+export async function CompareLanguageId(params : CompareLanguageIdProps) : Promise<ApiResponse<boolean>> {
 
     try {
-        
-        const flashcard = await prisma.flashcard.findUnique({
 
-            where:{
-                id: flashcardId
-            }
+        await CompareLanguageIdSchema.parseAsync(params)
 
-        })
-
-        const language = await prisma.language.findUnique({
-
-            where:{
-                id: flashcard?.languageId
-            }
-
-        })
-
-        return {data: language.name, status: 200};
-
-    } catch (error) {
-        
-        if(error instanceof Error) return {status: 500, message: "Language ismi verisi alınırken bir hata oluştu", details: error.message}
-    }
-}
-
-export async function CheckLanguageId(userId: any, languageId: number) {
-
-    try {
+        const { userId, languageId } = params
 
         const user = await prisma.user.findFirst({
             where: {
                 id: userId
+            },
+            select: {
+                nativeLanguageId: true
             }
         })
 
-        if(user.nativeLanguageId == languageId) return {data: true, status: 200};
+        // BU İSTEĞİ YAPMIŞ İSE KULLANICI ZATEN LOGIN OLMUŞTUR DEMEKTİR. BU YÜZDEN KULLANICI BU HATAYI GÖRMEMELİ. THROW EDİYORUM.
+        if(!user) throw new Error("User not found!")
 
-        return {data: false, status: 200};
+        if(user.nativeLanguageId == languageId) return createResponse(true, 200, true,  "SUCCESS: CompareLanguageId")
+            
+        return createResponse(true, 200, false , "SUCCESS: CompareLanguageId")
 
     } catch (error) {
+
+        console.log(`ERROR: CompareLanguageId: ${error}`)
+        return createResponse<boolean>(false, 500, null, "ERROR: CompareLanguageId")
         
-        if(error instanceof Error) return {status: 500, message: "nativeLanguageId ile languageId karşılaştırılırken bir sorun oluştu", details: error.message};
     }
 }

@@ -1,119 +1,44 @@
 "use client"
 
 // REACT & NEXT
-import { Suspense, useEffect, useState } from "react"
+import { JSX } from "react"
 import { useSearchParams } from "next/navigation"
-import { useSession } from "next-auth/react"
-// ACTIONS
-import { GetAllFCategories } from "@/src/actions/list"
 // COMPONENTS
-import CrudFormComponent from "@/src/components/crudForm"
-import ShowErrorComponent from "@/src/components/utils/showError"
+import ReadingAddOrEditComponent from "@/src/components/ReadingAddOrEditComponent/ReadingAddOrEdit"
+import WritingAddOrEditComponent from "@/src/components/WritingAddOrEditComponent/WritingAddOrEdit"
+import FlashcardAddOrEditComponent from "@/src/components/FlashcardAddOrEditComponent/FlashcardAddOrEdit"
+import WordAddOrEditComponent from "@/src/components/WordAddOrEditComponent/WordAddOrEdit"
+// REDUCER & HANDLERS & CUSTOM USE EFFECTS
+import { useAddPageReducer } from "@/src/page/AddPage/useAddPageReducer"
+import { useAddPageCustomEffect } from "@/src/page/AddPage/useAddPageCustomEffect"
+
 
 export default function Page(){
 
-    return (
-        <Suspense fallback={<div>Yükleniyor...</div>}>
-            <AddPage/>
-        </Suspense>
-    )
-}
-
-function AddPage() {
-
     //SEARCH PARAMS
     const searchParams = useSearchParams()
-    const table = searchParams.get("table")
+    const table = searchParams!.get("table")
 
-    //FORM STATES
-    const [formData, setFormData] = useState({categories: [], languageId: "1"})
-    const [formHeading, setFormHeading] = useState("")
-    const [labelNames, setLabelNames] = useState<string[]>([])
-    const [isHidden, setIsHidden] = useState<boolean[]>([])
+    //HOOKS
+    const {state , dispatch} = useAddPageReducer()
 
-    const [isLoading, setIsLoading] = useState(true)
-    const [error, setError] = useState<string | null | undefined>("")
-    const [errorDetails, setErrorDetails] = useState<string | null | undefined>(null)
+    //COMPONENT MAP
+    const componentMap: Record<string, JSX.Element> = {
 
-    //SESSION
-    const session = useSession()
-    const userId = session.data?.user?.id
+        reading: <ReadingAddOrEditComponent type="Create"/>,
+        writing: <WritingAddOrEditComponent type="Create"/>,
+        flashcard: <FlashcardAddOrEditComponent type="Create"/>,
+        word: <WordAddOrEditComponent type="Create"/>
+    }
 
-    useEffect(() => {
-
-        switch(table) {
-
-            case "rbooks":
-                setFormHeading("Create Book")
-                setLabelNames(["Language", "", "Book Name", "", "Book Image", "Book Pdf", ""])
-                setIsHidden([true,false, true, false, true, true, false])
-                setIsLoading(false)
-                break
-            case "wbooks":
-                setFormHeading("Create Book")
-                setLabelNames(["Language", "", "Book Name", "", "Book Image", "Book Pdf", ""])
-                setIsHidden([true,false, true, false, true, true, false])
-                setIsLoading(false)
-                break
-            case "lfilms":
-                setFormHeading("Create Film")
-                setLabelNames(["Language", "", "Film Name", "", "Film Image", "Film Video", "Subtitle File"])
-                setIsHidden([true,false, true, false, true, true, true])
-                setIsLoading(false)
-                break
-            case "fcategories":
-                setFormHeading("Create Deck Category")
-                setLabelNames(["Language","", "Category", "", "", "", ""])
-                setIsHidden([true,false, true, false, false, false, false])
-                setIsLoading(false)
-                break
-            case "fwords":
-                setFormHeading("Create New Word")
-                setLabelNames(["Language","Deck", "Word", "Answer", "", "", ""])
-                setIsHidden([true,true, true, true, false, false, false])
-                setIsLoading(false)
-        }
-
-    }, [formHeading])
-
-    useEffect(() => {
-
-        const GET = async () => {
-
-            const response = await GetAllFCategories(userId)
-            
-            if(response?.status == 200){
-                setFormData({...formData, categories: response.data})
-                setIsLoading(false)
-                return
-            }
-
-            setIsLoading(false)
-            setError(response?.message)
-            setErrorDetails(response?.details)
-        }
-
-        if(table == "fwords") GET()
-            
-    }, [userId])
-
-    if(isLoading) return <></>
-
-    if(error && error != "") return <ShowErrorComponent error={error} errorDetails={errorDetails}/>
-
+    // USE EFFECTS
+    useAddPageCustomEffect({table, dispatch})
 
     return (
 
-        <CrudFormComponent
-            formHeading={formHeading} 
-            labelNames={labelNames} 
-            isHidden={isHidden} 
-            formData={formData} 
-            setFormData={setFormData}
-            table={table}
-            itemId={null}
-            userId={userId}
-            type="Create">
-        </CrudFormComponent>
+        <div>
+            {componentMap[state.activeComponent] || <div></div>}
+        </div>
+
     )
 }
