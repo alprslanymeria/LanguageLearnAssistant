@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 // ACTIONS
 import { CreateLiveSession } from "@/src/actions/liveSession"
 import { GlobalStore } from "@/src/store/globalStore"
+import  socket  from "@/src/lib/socketClient"
 
 //BASE
 const BASE = process.env.NEXT_PUBLIC_BASE_URL
@@ -59,15 +60,15 @@ export async function handleChoose(params : HandleChooseProps) {
         setLoading({value: true , source: "ChooseHandler"})
 
         //LIVESESSION İÇERİSİNE KAYDET
-        const response = await CreateLiveSession({userId, liveSessionId})
+        socket.emit("create-live-session", {userId, liveSessionId}, (response : any) => {
 
-        //HATALI İSE UYARI VER ANA SAYFAYA YÖNLENDİR
-        if (response?.status !== 201) {
+            if (response?.status !== 201) {
 
-            showAlert({type: "error", title: "error", message: response?.message})
+                showAlert({ type: "error", title: "error", message: response?.message })
+                return
+            }
+        })
 
-            return
-        }
 
         //CREATE SAFE URL
         const encryptedSessionId = encrypt(liveSessionId)

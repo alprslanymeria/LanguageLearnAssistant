@@ -2,8 +2,10 @@
   "name": "language_assistant",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
+    "dev:socket": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --trace-warnings --no-warnings\" ts-node server.mts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -25,7 +27,10 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sharp": "^0.33.5",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "string-similarity": "^4.0.4",
+    "ts-node": "^10.9.2",
     "uuid": "^11.1.0",
     "zod": "^3.24.1",
     "zustand": "^5.0.3"
@@ -35,6 +40,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/string-similarity": "^4.0.2",
+    "cross-env": "^10.0.0",
     "daisyui": "^4.12.23",
     "postcss": "^8",
     "prisma": "^6.13.0",

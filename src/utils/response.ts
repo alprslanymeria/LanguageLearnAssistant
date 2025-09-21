@@ -1,5 +1,5 @@
 // TYPES
-import { ApiResponse } from "@/src/types/response"
+import { ApiResponse } from "../../src/types/response"
 
 
 export function createResponse<T>(

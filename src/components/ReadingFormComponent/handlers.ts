@@ -1,11 +1,12 @@
 // ACTIONS
-import { DeleteLiveSession } from "@/src/actions/liveSession"
 import { SaveOldSession } from "@/src/actions/oldSession"
 import { CalculateRate } from "@/src/actions/rate"
 import { SaveRows } from "@/src/actions/rows"
 import {TranslateText} from "@/src/actions/translate"
 // TYPES
 import { CalculateRateProps, CloseAndSaveProps, HandleTextSelectionProps, HandleTranslateProps } from "@/src/components/ReadingFormComponent/prop"
+// LIBRARIES
+import  socket  from "@/src/lib/socketClient"
 import { GlobalStore } from "@/src/store/globalStore"
 import { ReadingOldSessionInput, ReadingSessionRowInput } from "@/src/types/actions"
 // UTILS
@@ -171,7 +172,14 @@ export async function closeAndSave(params : CloseAndSaveProps) {
         await SaveRows({rows: sessionData!.rows})
     
         //DELETE LIVE SESSION
-        await DeleteLiveSession({userId})
+        socket.emit("delete-live-session", {userId}, (response : any) => {
+
+            if (response?.status !== 204) {
+
+                showAlert({ type: "error", title: "error", message: response?.message })
+                return
+            }
+        })
 
         showAlert({type: "success", title: "success", message: "Session saved successfully!"})
 

@@ -2,11 +2,12 @@
 import { useEffect } from "react"
 // TYPES
 import { useSessionPageCustomEffectProps } from "@/src/page/SessionPage/prop"
+import socket from "@/src/lib/socketClient"
 
 
 export function useSessionPageCustomEffect(params : useSessionPageCustomEffectProps) {
 
-    const {language, practice, createItems, oldSessions, oldSessionId, selectedItemId, hasHydrated, router, setSelectedItem, resetExcept, dispatch} = params
+    const { language, practice, createItems, oldSessions, oldSessionId, selectedItemId, hasHydrated, router, setSelectedItem, resetExcept, dispatch} = params
 
     // USE EFFECT ONE
     useEffect(() => {

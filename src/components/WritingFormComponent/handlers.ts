@@ -1,7 +1,6 @@
 // ACTIONS
 import { SaveOldSession } from "@/src/actions/oldSession"
 import { SaveRows } from "@/src/actions/rows"
-import { DeleteLiveSession } from "@/src/actions/liveSession"
 import { CalculateRate } from "@/src/actions/rate"
 import { TranslateText } from "@/src/actions/translate"
 // TYPES
@@ -10,6 +9,8 @@ import { WritingOldSessionInput, WritingSessionRowInput } from "@/src/types/acti
 // UTILS
 import { calculateSuccessRate } from "@/src/utils/helper"
 import { GlobalStore } from "@/src/store/globalStore"
+// LIBRARIES
+import socket from "@/src/lib/socketClient"
 
 
 export async function handleTextSelection(params : HandleTextSelectionProps) {
@@ -171,7 +172,14 @@ export async function closeAndSave(params : CloseAndSaveProps) {
         await SaveRows({rows: sessionData!.rows})        
 
         //DELETE LIVE SESSION
-        await DeleteLiveSession({userId})
+        socket.emit("delete-live-session", {userId}, (response : any) => {
+
+            if (response?.status !== 204) {
+
+                showAlert({ type: "error", title: "error", message: response?.message })
+                return
+            }
+        })
 
         showAlert({type: "success", title: "success", message: "Session saved successfully!"})
         

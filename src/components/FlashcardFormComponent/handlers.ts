@@ -1,9 +1,10 @@
 // ACTIONS
-import { DeleteLiveSession } from "@/src/actions/liveSession"
 import { SaveOldSession } from "@/src/actions/oldSession"
 import { SaveRows } from "@/src/actions/rows"
 // TYPES
 import { HandleClickProps, HandleCloseClickProps, HandleNextClickProps } from "@/src/components/FlashcardFormComponent/prop"
+// LIBRARIES
+import socket from "@/src/lib/socketClient"
 import { GlobalStore } from "@/src/store/globalStore"
 import { FlashcardOldSessionInput, FlashcardSessionRowInput } from "@/src/types/actions"
 // UTILS
@@ -139,7 +140,14 @@ export async function handleCloseClick(params : HandleCloseClickProps) {
         await SaveRows({rows: sessionData!.rows})
 
         //DELETE LIVE SESSION
-        await DeleteLiveSession({userId})
+        socket.emit("delete-live-session", {userId}, (response : any) => {
+
+            if (response?.status !== 204) {
+
+                showAlert({ type: "error", title: "error", message: response?.message })
+                return
+            }
+        })
 
         showAlert({type: "success", title: "success", message: "Session saved successfully!"})
         

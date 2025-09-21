@@ -13,6 +13,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "allowImportingTsExtensions": true,
     "plugins": [
       {
         "name": "next"
@@ -23,6 +24,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/Auth.js", "app/api/auth/[...nextauth]/route.ts", "src/lib/crypto.js", "src/components/svg/googleSvg.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/Auth.js", "app/api/auth/[...nextauth]/route.ts", "src/lib/crypto.js", "src/components/svg/googleSvg.js", "server.mts"],
   "exclude": ["node_modules"]
 }

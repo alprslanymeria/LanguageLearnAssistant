@@ -11,8 +11,8 @@ export async function GET(req: NextRequest){
         const isExist = await prisma.liveSession.findFirst({
 
             where: {
-                liveSessionId: sessionId,
-                userId: userId
+                liveSessionId: sessionId!,
+                userId: userId!
             }
         })
 
