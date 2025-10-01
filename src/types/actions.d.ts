@@ -108,7 +108,7 @@ export type SaveRowsProps = {
     )[]
 }
 
-export type ReadingSessionRowInput  = Omit<ReadingSessionRow, "id" | "oldSession" | "similarity">  & { id?: number, from?: "reading", similarity?: number }
+export type ReadingSessionRowInput  = Omit<ReadingSessionRow, "id" | "oldSession" | "similarity">  & { id?: number, from?: "reading", similarity: number }
 export type WritingSessionRowInput  = Omit<WritingSessionRow, "id" | "oldSession" | "similarity">  & { id?: number, from?: "writing", similarity: number }
 export type FlashcardSessionRowInput = Omit<FlashcardSessionRow, "id" | "oldSession"> & { id?: number, from?: "flashcard" }
 export type ListeningSessinRowInput = Omit<ListeningSessionRow, "id" | "oldSession" | "similarity"> & { id?: number, from?: "listening", similarity: number }

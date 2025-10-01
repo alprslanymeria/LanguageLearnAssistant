@@ -10,7 +10,7 @@ import { createResponse } from "@/src/utils/response"
 // ZOD
 import { CreateLiveSessionSchema, DeleteLiveSessionSchema } from "@/src/zod/actionsSchema"
 
-
+// NO CACHE NEEDED 
 export async function CreateLiveSession(params : CreateLiveSessionProps) : Promise<ApiResponse<CreateLiveSessionResponse>> {
 
     try {

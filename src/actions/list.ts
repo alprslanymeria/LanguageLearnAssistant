@@ -10,6 +10,9 @@ import { ApiResponse } from "@/src/types/response"
 import { createResponse } from "@/src/utils/response"
 // ZOD
 import { GetAllFCategoriesSchema, GetAllFCategoriesWithPagingSchema, GetAllFWordsSchema, GetAllRBooksSchema, GetAllWBooksSchema } from "@/src/zod/actionsSchema"
+// UTILS
+import { CacheKeys } from "@/src/utils/cache_keys"
+import { getOrSetCache } from "@/src/utils/redisHelper"
 
 
 export async function GetAllRBooks(params : GetAllRBooksProps) : Promise<ApiResponse<GetAllRBooksResponse>> {
@@ -20,30 +23,39 @@ export async function GetAllRBooks(params : GetAllRBooksProps) : Promise<ApiResp
 
         const {userId, page=1 , limit= 10} = params
 
+        // GET CACHE KEY AND TTL
+        const { key, ttl } = CacheKeys.readingBook.paging(userId!, page, limit)
+
         const skip = (page - 1) * limit
 
-        const [books, total] = await Promise.all([
+        const cachedData = await getOrSetCache(key, async () => {
 
-            prisma.readingBook.findMany({
-                where: {
-                    reading : {
-                        userId: userId
+            const [books, total] = await Promise.all([
+
+                prisma.readingBook.findMany({
+                    where: {
+                        reading : {
+                            userId: userId
+                        }
+                    },
+                    skip,
+                    take: limit
+                }),
+
+                prisma.readingBook.count({
+                    where: {
+                        reading : {
+                            userId: userId
+                        }
                     }
-                },
-                skip,
-                take: limit
-            }),
+                })
+            ])
 
-            prisma.readingBook.count({
-                where: {
-                    reading : {
-                        userId: userId
-                    }
-                }
-            })
-        ])
+            return {data: books, total}
 
-        return createResponse(true, 200, {data: books, total: total} , "SUCCESS: GetAllRBooks")
+        }, ttl)
+
+        return createResponse(true, 200, cachedData , "SUCCESS: GetAllRBooks")
 
     } catch (error) {
 
@@ -60,30 +72,39 @@ export async function GetAllWBooks(params : GetAllWBooksProps) : Promise<ApiResp
 
         const {userId, page=1 , limit= 10} = params
 
+        // GET CACHE KEY AND TTL
+        const { key, ttl } = CacheKeys.writingBook.paging(userId!, page, limit)
+
         const skip = (page - 1) * limit
 
-        const [books, total] = await Promise.all([
+        const cachedData = await getOrSetCache(key, async () => {
 
-            prisma.writingBook.findMany({
-                where: {
-                    writing : {
-                        userId: userId
+            const [books, total] = await Promise.all([
+
+                prisma.writingBook.findMany({
+                    where: {
+                        writing : {
+                            userId: userId
+                        }
+                    },
+                    skip,
+                    take: limit
+                }),
+
+                prisma.writingBook.count({
+                    where: {
+                        writing : {
+                            userId: userId
+                        }
                     }
-                },
-                skip,
-                take: limit
-            }),
+                })
+            ])
 
-            prisma.writingBook.count({
-                where: {
-                    writing : {
-                        userId: userId
-                    }
-                }
-            })
-        ])
+            return {data: books, total}
 
-        return createResponse(true, 200, {data: books, total: total} , "SUCCESS: GetAllWBooks")
+        }, ttl)
+
+        return createResponse(true, 200, cachedData , "SUCCESS: GetAllWBooks")
 
     } catch (error) {
 
@@ -99,18 +120,26 @@ export async function GetAllFCategories(params : GetAllFCategoriesProps) : Promi
         await GetAllFCategoriesSchema.parseAsync(params)
 
         const {userId} = params
-        
-        const categories = await prisma.flashcardCategory.findMany({
-            where: {
-                flashcard : {
-                    userId: userId
-                }
-            },
-            include: {
-                flashcard: true
-            }
-        })
 
+        // GET CACHE KEY AND TTL
+        const { key, ttl } = CacheKeys.flashcardCategory.all(userId!)
+        
+        const categories = await getOrSetCache(key, async () => {
+
+            const result = await prisma.flashcardCategory.findMany({
+                where: {
+                    flashcard : {
+                        userId: userId
+                    }
+                },
+                include: {
+                    flashcard: true
+                }
+            })
+
+            return result
+
+        }, ttl)
 
         return createResponse(true, 200, {data: categories} , "SUCCESS: GetAllFCategories")
 
@@ -128,35 +157,43 @@ export async function GetAllFCategoriesWithPaging(params : GetAllFCategoriesWith
 
         const {userId, page=1 , limit= 10} = params
 
+        // GET CACHE KEY AND TTL
+        const { key, ttl } = CacheKeys.flashcardCategory.paging(userId!, page, limit)
+
         const skip = (page - 1) * limit
 
-        const [categories, total] = await Promise.all([
+        const cachedData = await getOrSetCache(key, async () => {
 
-            prisma.flashcardCategory.findMany({
-                where: {
-                    flashcard : {
-                        userId: userId
+            const [categories, total] = await Promise.all([
+
+                prisma.flashcardCategory.findMany({
+                    where: {
+                        flashcard : {
+                            userId: userId
+                        }
+                    },
+                    skip,
+                    take: limit,
+                    include: {
+                        flashcard: true
                     }
-                },
-                skip,
-                take: limit,
-                include: {
-                    flashcard: true
-                }
-            }),
+                }),
 
-            prisma.flashcardCategory.count({
-                where: {
-                    flashcard : {
-                        userId: userId
+                prisma.flashcardCategory.count({
+                    where: {
+                        flashcard : {
+                            userId: userId
+                        }
                     }
-                }
-            })
+                })
 
-        ])
+            ])
 
+            return {data: categories, total}
 
-        return createResponse(true, 200, {data: categories, total: total} , "SUCCESS: GetAllFCategoriesWithPaging")
+        }, ttl)
+
+        return createResponse(true, 200, cachedData , "SUCCESS: GetAllFCategoriesWithPaging")
 
     } catch (error) {
 
@@ -172,35 +209,44 @@ export async function GetAllFWords( params : GetAllFWordsProps) : Promise<ApiRes
 
         const {userId, page=1 , limit= 10} = params
 
+        // GET CACHE KEY AND TTL
+        const { key, ttl } = CacheKeys.deckWord.paging(userId!, page, limit)
+
         const skip = (page - 1) * limit
 
-        const [deckWords, total] = await Promise.all([
+        const cachedData = await getOrSetCache(key, async () => {
 
-            prisma.deckWord.findMany({
-                where: {
-                    category: {
-                        flashcard: {
-                            userId: userId
+            const [deckWords, total] = await Promise.all([
+
+                prisma.deckWord.findMany({
+                    where: {
+                        category: {
+                            flashcard: {
+                                userId: userId
+                            }
+                        }
+                    },
+                    skip,
+                    take: limit
+                }),
+
+                prisma.deckWord.count({
+
+                    where: {
+                        category: {
+                            flashcard: {
+                                userId: userId
+                            }
                         }
                     }
-                },
-                skip,
-                take: limit
-            }),
+                })
+            ])
 
-            prisma.deckWord.count({
+            return {data: deckWords, total}
 
-                where: {
-                    category: {
-                        flashcard: {
-                            userId: userId
-                        }
-                    }
-                }
-            })
-        ])
+        }, ttl)
 
-        return createResponse(true, 200, {data: deckWords, total: total} , "SUCCESS: GetAllFWords")
+        return createResponse(true, 200, cachedData , "SUCCESS: GetAllFWords")
 
     } catch (error) {
 

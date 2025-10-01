@@ -7,6 +7,8 @@ import { GetOldSessionsProps, GetOldSessionsResponse, SaveOldSessionProps, SaveO
 import { ApiResponse } from "@/src/types/response"
 // UTILS
 import { createResponse } from "@/src/utils/response"
+import { CacheKeys } from "@/src/utils/cache_keys"
+import { getOrSetCache, invalidateCacheByPrefix } from "@/src/utils/redisHelper"
 // ZOD
 import { GetOldSessionsSchema } from "@/src/zod/actionsSchema"
 
@@ -48,142 +50,177 @@ export async function GetOldSessions(params : GetOldSessionsProps) : Promise<Api
 
         switch (practice) {
             case "flashcard":
-                
-                const [flashcardOldSessions, flashcardOldSessionsTotal] = await Promise.all([
 
-                    prisma.flashcardOldSession.findMany({
-                        where: {
-                            flashcard: {
-                                userId: userId,
-                                practiceId: prac!.id,
-                                languageId: lang!.id
+                // GET CACHE KEY AND TTL
+                const { key: flashcardCacheKey , ttl: flashcardTTL } = CacheKeys.flashcardOldSessions.paging(userId!, lang.id, prac.id, page, limit)
+
+                const flashcardCachedData = await getOrSetCache(flashcardCacheKey, async () => {
+
+                    const [flashcardOldSessions, flashcardOldSessionsTotal] = await Promise.all([
+
+                        prisma.flashcardOldSession.findMany({
+                            where: {
+                                flashcard: {
+                                    userId: userId,
+                                    practiceId: prac!.id,
+                                    languageId: lang!.id
+                                }
+                            },
+                            skip,
+                            take: limit,
+                            orderBy: {
+                                createdAt: "desc"
                             }
-                        },
-                        skip,
-                        take: limit,
-                        orderBy: {
-                            createdAt: "desc"
-                        }
-                    }),
+                        }),
 
-                    prisma.flashcardOldSession.count({
-                        where: {
-                            flashcard: {
-                                userId: userId,
-                                practiceId: prac!.id,
-                                languageId: lang!.id
+                        prisma.flashcardOldSession.count({
+                            where: {
+                                flashcard: {
+                                    userId: userId,
+                                    practiceId: prac!.id,
+                                    languageId: lang!.id
+                                }
                             }
-                        }
-                    })
+                        })
 
-                ])
+                    ])
 
-                if(flashcardOldSessions.length === 0) return createResponse<GetOldSessionsResponse>(true, 200, {data: {data: [], total: 0}}, "ERROR: GetOldSessions")
+                    if(flashcardOldSessions.length === 0) return {data: [], total: 0}
 
-                return createResponse(true, 200, {data: {data: flashcardOldSessions, total: flashcardOldSessionsTotal}}, "SUCCESS: GetOldSessions!")
+                    return {data: flashcardOldSessions, total: flashcardOldSessionsTotal}
+                    
+                }, flashcardTTL)
+
+                return createResponse(true, 200, {data: flashcardCachedData}, "SUCCESS: GetOldSessions!")
 
             case "reading":
+
+                // GET CACHE KEY AND TTL
+                const { key: readingCacheKey, ttl: readingTTL } = CacheKeys.readingOldSessions.paging(userId!, lang.id, prac.id, page, limit)
                 
-                const [readingOldSessions, readingOldSessionsTotal] = await Promise.all([
+                const readingCachedData = await getOrSetCache(readingCacheKey, async () => {
 
-                    prisma.readingOldSession.findMany({
-                        where: {
-                            reading: {
-                                userId: userId,
-                                practiceId: prac!.id,
-                                languageId: lang!.id
+                    const [readingOldSessions, readingOldSessionsTotal] = await Promise.all([
+
+                        prisma.readingOldSession.findMany({
+                            where: {
+                                reading: {
+                                    userId: userId,
+                                    practiceId: prac!.id,
+                                    languageId: lang!.id
+                                }
+                            },
+                            skip,
+                            take: limit,
+                            orderBy: {
+                                createdAt: "desc"
                             }
-                        },
-                        skip,
-                        take: limit,
-                        orderBy: {
-                            createdAt: "desc"
-                        }
-                    }),
+                        }),
 
-                    prisma.readingOldSession.count({
-                        where: {
-                            reading: {
-                                userId: userId,
-                                practiceId: prac!.id,
-                                languageId: lang!.id
+                        prisma.readingOldSession.count({
+                            where: {
+                                reading: {
+                                    userId: userId,
+                                    practiceId: prac!.id,
+                                    languageId: lang!.id
+                                }
                             }
-                        }
-                    })
-                ])
+                        })
+                    ])
 
-                if(readingOldSessions.length === 0) return createResponse<GetOldSessionsResponse>(true, 200, {data: {data: [], total: 0}}, "ERROR: GetOldSessions")
+                    if(readingOldSessions.length === 0) return {data: [], total: 0}
 
-                return createResponse(true, 200, {data: {data: readingOldSessions, total: readingOldSessionsTotal}}, "SUCCESS: GetOldSessions!")
+                    return {data: readingOldSessions, total: readingOldSessionsTotal}
+
+                }, readingTTL)
+
+                return createResponse(true, 200, {data: readingCachedData}, "SUCCESS: GetOldSessions!")
 
             case "writing":
+
+                // GET CACHE KEY AND TTL
+                const { key: writingCacheKey, ttl: writingTTL } = CacheKeys.writingOldSessions.paging(userId!, lang.id, prac.id, page, limit)
                 
-                const [writingOldSessions, writingOldSessionsTotal] = await Promise.all([
+                const writingCachedData = await getOrSetCache(writingCacheKey, async () => {
 
-                    prisma.writingOldSession.findMany({
-                        where: {
-                            writing: {
-                                userId: userId,
-                                practiceId: prac!.id,
-                                languageId: lang!.id
+                    const [writingOldSessions, writingOldSessionsTotal] = await Promise.all([
+
+                        prisma.writingOldSession.findMany({
+                            where: {
+                                writing: {
+                                    userId: userId,
+                                    practiceId: prac!.id,
+                                    languageId: lang!.id
+                                }
+                            },
+                            skip,
+                            take: limit,
+                            orderBy: {
+                                createdAt: "desc"
                             }
-                        },
-                        skip,
-                        take: limit,
-                        orderBy: {
-                            createdAt: "desc"
-                        }
-                    }),
+                        }),
 
-                    prisma.writingOldSession.count({
-                        where: {
-                            writing: {
-                                userId: userId,
-                                practiceId: prac!.id,
-                                languageId: lang!.id
+                        prisma.writingOldSession.count({
+                            where: {
+                                writing: {
+                                    userId: userId,
+                                    practiceId: prac!.id,
+                                    languageId: lang!.id
+                                }
                             }
-                        }
-                    })
+                        })
 
-                ])
+                    ])
 
-                if(writingOldSessions.length === 0) return createResponse<GetOldSessionsResponse>(true, 200, {data: {data: [], total: 0}}, "ERROR: GetOldSessions")
+                    if(writingOldSessions.length === 0) return {data: [], total: 0}
 
-                return createResponse(true, 200, {data: {data: writingOldSessions, total: writingOldSessionsTotal}}, "SUCCESS: GetOldSessions!")
+                    return {data: writingOldSessions, total: writingOldSessionsTotal}
+
+                }, writingTTL)
+
+                return createResponse(true, 200, {data: writingCachedData}, "SUCCESS: GetOldSessions!")
 
             case "listening":
 
-                const [listeningOldSessions, listeningOldSessionsTotal] = await Promise.all([
+                // GET CACHE KEY AND TTL
+                const { key: listeningCacheKey, ttl: listeningTTL } = CacheKeys.listeningOldSessions.paging(userId!, lang.id, prac.id, page, limit)
 
-                    prisma.listeningOldSession.findMany({
-                        where: {
-                            listening: {
-                                userId: userId,
-                                practiceId: prac!.id,
-                                languageId: lang!.id
+                const listeningCachedData = await getOrSetCache(listeningCacheKey, async () => {
+
+                    const [listeningOldSessions, listeningOldSessionsTotal] = await Promise.all([
+
+                        prisma.listeningOldSession.findMany({
+                            where: {
+                                listening: {
+                                    userId: userId,
+                                    practiceId: prac!.id,
+                                    languageId: lang!.id
+                                }
+                            },
+                            skip,
+                            take: limit,
+                            orderBy: {
+                                createdAt: "desc"
                             }
-                        },
-                        skip,
-                        take: limit,
-                        orderBy: {
-                            createdAt: "desc"
-                        }
-                    }),
+                        }),
 
-                    prisma.listeningOldSession.count({
-                        where: {
-                            listening: {
-                                userId: userId,
-                                practiceId: prac!.id,
-                                languageId: lang!.id
+                        prisma.listeningOldSession.count({
+                            where: {
+                                listening: {
+                                    userId: userId,
+                                    practiceId: prac!.id,
+                                    languageId: lang!.id
+                                }
                             }
-                        }
-                    })
-                ])
+                        })
+                    ])
 
-                if(listeningOldSessions.length === 0) return createResponse<GetOldSessionsResponse>(true, 200, {data: {data: [], total: 0}}, "ERROR: GetOldSessions")
+                    if(listeningOldSessions.length === 0) return {data: [], total: 0}
 
-                return createResponse(true, 200, {data: {data: listeningOldSessions, total: listeningOldSessionsTotal } }, "SUCCESS: GetOldSessions!")
+                    return {data: listeningOldSessions, total: listeningOldSessionsTotal}
+                }, listeningTTL)
+
+                return createResponse(true, 200, {data: listeningCachedData }, "SUCCESS: GetOldSessions!")
 
             default:
                 return createResponse<GetOldSessionsResponse>(false, 500, null, "ERROR: GetOldSessions")
@@ -223,6 +260,8 @@ export async function SaveOldSession(params : SaveOldSessionProps) : Promise<Api
                 })
 
                 if(!flashcardOldSession) throw new Error("Flashcard OldSession Not Found!")
+
+                await invalidateCacheByPrefix("get_all_flashcard_oldSessions_with_paging")
                 
                 return createResponse(true, 201, {data: flashcardOldSession}, "Oldsession saved successfully!")
 
@@ -238,6 +277,8 @@ export async function SaveOldSession(params : SaveOldSessionProps) : Promise<Api
                 })
 
                 if(!readingOldSession) throw new Error("Reading OldSession Not Found!")
+
+                await invalidateCacheByPrefix("get_all_reading_oldSessions_with_paging")
                 
                 return createResponse(true, 201, {data: readingOldSession}, "Oldsession saved successfully!")
 
@@ -253,6 +294,8 @@ export async function SaveOldSession(params : SaveOldSessionProps) : Promise<Api
                 })
 
                 if(!writingOldSession) throw new Error("Writing OldSession Not Found!")
+
+                await invalidateCacheByPrefix("get_all_writing_oldSessions_with_paging")
                 
                 return createResponse(true, 201, {data: writingOldSession}, "Oldsession saved successfully!")
 
@@ -268,6 +311,8 @@ export async function SaveOldSession(params : SaveOldSessionProps) : Promise<Api
                 })
 
                 if(!listeningOldSession) throw new Error("Listening OldSession Not Found!")
+
+                await invalidateCacheByPrefix("get_all_listening_oldSessions_with_paging")
 
                 return createResponse(true, 201, {data: listeningOldSession}, "Oldsession saved successfully!")
 

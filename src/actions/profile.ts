@@ -10,6 +10,9 @@ import { createResponse } from "@/src/utils/response"
 import { Storage } from "@google-cloud/storage"
 // ZOD
 import { GetProfileInfosSchema, SaveProfileInfosSchema } from "@/src/zod/actionsSchema"
+// UTILS
+import { getOrSetCache, invalidateCache } from "@/src/utils/redisHelper"
+import { CacheKeys } from "@/src/utils/cache_keys"
 
 export async function GetProfileInfos(params : GetProfileInfosProps) : Promise<ApiResponse<GetProfileInfosResponse>> {
 
@@ -19,24 +22,31 @@ export async function GetProfileInfos(params : GetProfileInfosProps) : Promise<A
 
         const {userId} = params
 
-        // GET USER INFOS
-        const user = await prisma.user.findFirst({
-            where: {
-                id: userId
-            },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                image: true,
-                nativeLanguageId: true
-            }
-        })
+        // GET CACHE KEY AND TTL
+        const { key, ttl } = CacheKeys.user.profile(userId!)
 
-        if(!user) throw new Error("USER NOT FOUND")
+        // GET USER INFOS
+        const user = await getOrSetCache(key, async () => {
+
+            const data = await prisma.user.findFirst({
+                where: {
+                    id: userId
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    image: true,
+                    nativeLanguageId: true
+                }
+            })
+
+            if(!data) throw new Error("USER NOT FOUND")
+
+            return data
+        }, ttl)
 
         return createResponse(true, 200, {data: user}, "SUCCESS: GetProfileInfos")
-
         
     } catch (error) {
 
@@ -90,7 +100,6 @@ export async function SaveProfileInfos(prevState: ApiResponse<SaveProfileInfosRe
             if(isExist) await bucket.file(oldImage).delete()
         }
 
-
         // GET BUFFERS OF IMAGE
         const bufferForFileOne = await (values.image).arrayBuffer()
 
@@ -130,6 +139,8 @@ export async function SaveProfileInfos(prevState: ApiResponse<SaveProfileInfosRe
                 nativeLanguageId: true
             }
         })
+
+        await invalidateCache(`profile_infos:${values.userId}`)
 
 
         return createResponse(true, 200, {data: updatedUser} , "User Updated Successfully!")

@@ -9,6 +9,9 @@ import { ApiResponse } from "@/src/types/response"
 import { createResponse } from "@/src/utils/response"
 // ZOD
 import { GetRowsByIdSchema } from "@/src/zod/actionsSchema"
+// UTLS
+import { getOrSetCache, invalidateCacheByPrefix } from "@/src/utils/redisHelper"
+import { CacheKeys } from "@/src/utils/cache_keys"
 
 
 export async function GetRowsById(params : GetRowsByIdProps) : Promise<ApiResponse<GetRowsByIdResponse>> {
@@ -50,203 +53,239 @@ export async function GetRowsById(params : GetRowsByIdProps) : Promise<ApiRespon
         switch(practice){
 
             case "reading":
-                
-                //GET OLD SESSION
-                const readingOldSession = await prisma.readingOldSession.findFirst({
-                    where: {
-                        oldSessionId: oldSessionId!,
-                        reading: {
-                            userId: userId,
-                            practiceId: prac!.id,  
-                            languageId: lang!.id
-                        }  
-                    },
-                    select: {
-                        oldSessionId: true,
-                        bookId: true
-                    }
-                })
 
-                if(!readingOldSession) throw new Error("READING OLD SESSION NOT FOUND")
+                // GET CACHE KEY AND TTL
+                const { key: readingKey, ttl: readingTTL } = CacheKeys.rows.reading(userId!, lang.id, prac.id, oldSessionId!, page, limit)
 
-                //GET ROWS
-                const [readingRows, readingTotal] = await Promise.all([
+                const readingCachedData = await getOrSetCache(readingKey, async () => {
 
-                    prisma.readingSessionRow.findMany({
+                    //GET OLD SESSION
+                    const readingOldSession = await prisma.readingOldSession.findFirst({
                         where: {
-                            oldSessionId: readingOldSession?.oldSessionId
+                            oldSessionId: oldSessionId!,
+                            reading: {
+                                userId: userId,
+                                practiceId: prac!.id,  
+                                languageId: lang!.id
+                            }  
                         },
-                        skip,
-                        take: limit
-                    }),
-
-                    prisma.readingSessionRow.count({
-                        where: {
-                            oldSessionId: readingOldSession?.oldSessionId
+                        select: {
+                            oldSessionId: true,
+                            bookId: true
                         }
                     })
 
-                ])
+                    if(!readingOldSession) throw new Error("READING OLD SESSION NOT FOUND")
 
-                //GET ITEM
-                const readingItem = await prisma.readingBook.findFirst({
-                    where: {
-                        id: readingOldSession!.bookId
-                    }
-                })
 
-                if(!readingItem) throw new Error("READING ITEM NOT FOUND")
+                    //GET ROWS
+                    const [readingRows, readingTotal] = await Promise.all([
 
-                return createResponse(true , 200 , {data: {type: "reading" ,  reading: {item: readingItem! , contents: readingRows, total: readingTotal}}} , "SUCCESS: GetRowsById")
+                        prisma.readingSessionRow.findMany({
+                            where: {
+                                oldSessionId: readingOldSession?.oldSessionId
+                            },
+                            skip,
+                            take: limit
+                        }),
+
+                        prisma.readingSessionRow.count({
+                            where: {
+                                oldSessionId: readingOldSession?.oldSessionId
+                            }
+                        })
+
+                    ])
+
+                    //GET ITEM
+                    const readingItem = await prisma.readingBook.findFirst({
+                        where: {
+                            id: readingOldSession!.bookId
+                        }
+                    })
+
+                    if(!readingItem) throw new Error("READING ITEM NOT FOUND")
+
+                    return {data: {type: "reading" ,  reading: {item: readingItem! , contents: readingRows, total: readingTotal}}}
+
+                }, readingTTL)
+
+                return createResponse(true , 200 , readingCachedData , "SUCCESS: GetRowsById")
 
             case "writing":
+
+                // GET CACHE KEY AND TTL
+                const { key: writingKey, ttl: writingTTL } = CacheKeys.rows.writing(userId!, lang.id, prac.id, oldSessionId!, page, limit)
                 
-                //GET OLD SESSION
-                const writingOldSession = await prisma.writingOldSession.findFirst({
-                    where: {
-                        oldSessionId: oldSessionId!,
-                        writing: {
-                            userId: userId,
-                            practiceId: prac!.id,  
-                            languageId: lang!.id
-                        }  
-                    },
-                    select: {
-                        oldSessionId: true,
-                        bookId: true
-                    }
-                })
+                const writingCachedData = await getOrSetCache(writingKey, async () => {
 
-                if(!writingOldSession) throw new Error("WRITING OLD SESSION NOT FOUND")
-        
-                //GET ROWS
-                const [writingRows, writingTotal] = await Promise.all([
-
-                    prisma.writingSessionRow.findMany({
+                    //GET OLD SESSION
+                    const writingOldSession = await prisma.writingOldSession.findFirst({
                         where: {
-                            oldSessionId: writingOldSession?.oldSessionId
+                            oldSessionId: oldSessionId!,
+                            writing: {
+                                userId: userId,
+                                practiceId: prac!.id,  
+                                languageId: lang!.id
+                            }  
                         },
-                        skip,
-                        take: limit
-                    }),
-
-                    prisma.writingSessionRow.count({
-                        where: {
-                            oldSessionId: writingOldSession?.oldSessionId
+                        select: {
+                            oldSessionId: true,
+                            bookId: true
                         }
                     })
-                ])
 
-                //GET ITEM
-                const writingItem = await prisma.writingBook.findFirst({
-                    where: {
-                        id: writingOldSession!.bookId
-                    }
-                })
+                    if(!writingOldSession) throw new Error("WRITING OLD SESSION NOT FOUND")
 
-                if(!writingItem) throw new Error("WRITING ITEM NOT FOUND")
+                    //GET ROWS
+                    const [writingRows, writingTotal] = await Promise.all([
 
-                return createResponse(true , 200 , {data: {type: "writing" , writing: {item: writingItem! , contents: writingRows , total: writingTotal}}} , "SUCCESS: GetRowsById")
+                        prisma.writingSessionRow.findMany({
+                            where: {
+                                oldSessionId: writingOldSession?.oldSessionId
+                            },
+                            skip,
+                            take: limit
+                        }),
+
+                        prisma.writingSessionRow.count({
+                            where: {
+                                oldSessionId: writingOldSession?.oldSessionId
+                            }
+                        })
+                    ])
+
+                    //GET ITEM
+                    const writingItem = await prisma.writingBook.findFirst({
+                        where: {
+                            id: writingOldSession!.bookId
+                        }
+                    })
+
+                    if(!writingItem) throw new Error("WRITING ITEM NOT FOUND")
+
+                    return {data: {type: "writing" , writing: {item: writingItem! , contents: writingRows , total: writingTotal}}}
+                
+                }, writingTTL)
+
+                return createResponse(true , 200 , writingCachedData , "SUCCESS: GetRowsById")
 
             case "listening":
+
+                // GET CACHE KEY AND TTL
+                const { key: listeningKey, ttl: listeningTTL } = CacheKeys.rows.listening(userId!, lang.id, prac.id, oldSessionId!, page, limit)
                 
-                //GET OLD SESSION
-                const listeningOldSession = await prisma.listeningOldSession.findFirst({
-                    where: {
-                        oldSessionId: oldSessionId!,
-                        listening: {
-                            userId: userId,
-                            practiceId: prac!.id,  
-                            languageId: lang!.id
-                        }  
-                    },
-                    select: {
-                        oldSessionId: true,
-                        categoryId: true
-                    }
-                })
+                const listeningCachedData = await getOrSetCache(listeningKey, async () => {
 
-                if(!listeningOldSession) throw new Error("LISTENING OLD SESSION NOT FOUND")
-        
-                //GET ROWS
-                const [listeningRows , listeningTotal] = await Promise.all([
-
-                    prisma.listeningSessionRow.findMany({
+                    //GET OLD SESSION
+                    const listeningOldSession = await prisma.listeningOldSession.findFirst({
                         where: {
-                            oldSessionId: listeningOldSession?.oldSessionId
+                            oldSessionId: oldSessionId!,
+                            listening: {
+                                userId: userId,
+                                practiceId: prac!.id,  
+                                languageId: lang!.id
+                            }  
                         },
-                        skip,
-                        take: limit
-                    }),
-
-                    prisma.listeningSessionRow.count({
-                        where: {
-                            oldSessionId: listeningOldSession?.oldSessionId
+                        select: {
+                            oldSessionId: true,
+                            categoryId: true
                         }
                     })
-                ])
 
+                    if(!listeningOldSession) throw new Error("LISTENING OLD SESSION NOT FOUND")
 
-                //GET ITEM
-                const listeningItem = await prisma.listeningCategory.findFirst({
-                    where: {
-                        id: listeningOldSession!.categoryId
-                    }
-                })
+                    //GET ROWS
+                    const [listeningRows , listeningTotal] = await Promise.all([
 
-                if(!listeningItem) throw new Error("LISTENING ITEM NOT FOUND")
+                        prisma.listeningSessionRow.findMany({
+                            where: {
+                                oldSessionId: listeningOldSession?.oldSessionId
+                            },
+                            skip,
+                            take: limit
+                        }),
 
-                return createResponse(true , 200 , {data: {type: "listening" , listening: {item: listeningItem! , contents: listeningRows , total: listeningTotal}}} , "SUCCESS: GetRowsById")
+                        prisma.listeningSessionRow.count({
+                            where: {
+                                oldSessionId: listeningOldSession?.oldSessionId
+                            }
+                        })
+                    ])
+
+                    //GET ITEM
+                    const listeningItem = await prisma.listeningCategory.findFirst({
+                        where: {
+                            id: listeningOldSession!.categoryId
+                        }
+                    })
+
+                    if(!listeningItem) throw new Error("LISTENING ITEM NOT FOUND")
+
+                    return {data: {type: "listening" , listening: {item: listeningItem! , contents: listeningRows , total: listeningTotal}}}
+                
+                }, listeningTTL)
+
+                return createResponse(true , 200 , listeningCachedData , "SUCCESS: GetRowsById")
 
             case "flashcard":
+
+                // GET CACHE KEY AND TTL
+                const { key: flashcardKey, ttl: flashcardTTL } = CacheKeys.rows.flashcard(userId!, lang.id, prac.id, oldSessionId!, page, limit)
                 
-                // GET OLD SESSION  
-                const flashcardOldSession = await prisma.flashcardOldSession.findFirst({
-                    where: {
-                        oldSessionId: oldSessionId!,
-                        flashcard: {
-                            userId: userId,
-                            practiceId: prac!.id,  
-                            languageId: lang!.id
-                        }  
-                    },
-                    select: {
-                        oldSessionId: true,
-                        categoryId: true
-                    }
-                })
+                const flashcardCachedData = await getOrSetCache(flashcardKey, async () => {
 
-                if(!flashcardOldSession) throw new Error("FLASHCARD OLD SESSION NOT FOUND")
-
-                //GET ROWS
-                const [flashcardRows , flashcardTotal] = await Promise.all([
-
-                    prisma.flashcardSessionRow.findMany({
+                    // GET OLD SESSION  
+                    const flashcardOldSession = await prisma.flashcardOldSession.findFirst({
                         where: {
-                            oldSessionId: flashcardOldSession?.oldSessionId
+                            oldSessionId: oldSessionId!,
+                            flashcard: {
+                                userId: userId,
+                                practiceId: prac!.id,  
+                                languageId: lang!.id
+                            }  
                         },
-                        skip,
-                        take: limit
-                    }),
-
-                    prisma.flashcardSessionRow.count({
-                        where: {
-                            oldSessionId: flashcardOldSession?.oldSessionId
+                        select: {
+                            oldSessionId: true,
+                            categoryId: true
                         }
                     })
-                ])
+
+                    if(!flashcardOldSession) throw new Error("FLASHCARD OLD SESSION NOT FOUND")
+
+                    //GET ROWS
+                    const [flashcardRows , flashcardTotal] = await Promise.all([
+
+                        prisma.flashcardSessionRow.findMany({
+                            where: {
+                                oldSessionId: flashcardOldSession?.oldSessionId
+                            },
+                            skip,
+                            take: limit
+                        }),
+
+                        prisma.flashcardSessionRow.count({
+                            where: {
+                                oldSessionId: flashcardOldSession?.oldSessionId
+                            }
+                        })
+                    ])
 
 
-                //GET ITEM
-                const flashcardItem = await prisma.flashcardCategory.findFirst({
-                    where: {
-                        id: flashcardOldSession!.categoryId
-                    }
-                })
+                    //GET ITEM
+                    const flashcardItem = await prisma.flashcardCategory.findFirst({
+                        where: {
+                            id: flashcardOldSession!.categoryId
+                        }
+                    })
 
-                if(!flashcardItem) throw new Error("FLASHCARD ITEM NOT FOUND")
+                    if(!flashcardItem) throw new Error("FLASHCARD ITEM NOT FOUND")
 
-                return createResponse(true , 200 , {data: {type: "flashcard" , flashcard: {item: flashcardItem! , contents: flashcardRows , total: flashcardTotal}}} , "SUCCESS: GetRowsById")
+                    return {data: {type: "flashcard" , flashcard: {item: flashcardItem! , contents: flashcardRows , total: flashcardTotal}}}
+                
+                }, flashcardTTL)
+
+                return createResponse(true , 200 , flashcardCachedData , "SUCCESS: GetRowsById")
 
             default:
                 return createResponse<GetRowsByIdResponse>(false, 500, null, "ERROR: GetRowsById")
@@ -282,6 +321,8 @@ export async function SaveRows({rows} : SaveRowsProps) : Promise<ApiResponse<und
                         }
                     })
 
+                    await invalidateCacheByPrefix("get_reading_rows")
+
                     break
 
                 case "writing":
@@ -295,6 +336,8 @@ export async function SaveRows({rows} : SaveRowsProps) : Promise<ApiResponse<und
                         }
                     })
 
+                    await invalidateCacheByPrefix("get_writing_rows")
+
                     break
 
                 case "listening":
@@ -307,6 +350,8 @@ export async function SaveRows({rows} : SaveRowsProps) : Promise<ApiResponse<und
                         }
                     })
 
+                    await invalidateCacheByPrefix("get_listening_rows")
+
                     break
 
                 case "flashcard":
@@ -318,6 +363,8 @@ export async function SaveRows({rows} : SaveRowsProps) : Promise<ApiResponse<und
                             status: row.status
                         }
                     })
+
+                    await invalidateCacheByPrefix("get_flashcard_rows")
 
                     break
 

@@ -7,20 +7,31 @@ import { ApiResponse } from "@/src/types/response"
 import { CompareLanguageIdProps, GetLanguagesResponse } from "@/src/types/actions"
 // UTILS
 import { createResponse } from "@/src/utils/response"
+import { getOrSetCache } from "@/src//utils/redisHelper"
+import { CacheKeys } from "@/src/utils/cache_keys"
 // ZOD
 import { CompareLanguageIdSchema } from "@/src/zod/actionsSchema"
 
 
-
+// ADDED CACHE FEATURE - NO INVALIDATION REQUIRED
 export async function GetLanguages() : Promise<ApiResponse<GetLanguagesResponse>> {
 
     try {
 
-        const languages = await prisma.language.findMany()
+        // GET CACHE KEY AND TTL
+        const { key, ttl } = CacheKeys.languages.all()
 
-        // BU HATAYI KULLANICI GÖRMÜYOR O YÜZDEN THROW ETTİM.
-        if(languages.length === 0) throw new Error("No Languages Found!")
+        const languages = await getOrSetCache(key, async () => {
 
+            const result = await prisma.language.findMany()
+
+            // BU HATAYI KULLANICI GÖRMÜYOR O YÜZDEN THROW ETTİM.
+            if(result.length === 0) throw new Error("No Languages Found!")
+
+            return result
+
+        }, ttl)
+        
         return createResponse(true, 200, {data: languages}, "SUCCESS: GetLanguages")
 
     } catch (error) {
@@ -30,7 +41,7 @@ export async function GetLanguages() : Promise<ApiResponse<GetLanguagesResponse>
     }
 }
 
-
+// ADDED CACHE FEATURE - NO INVALIDATION REQUIRED
 export async function CompareLanguageId(params : CompareLanguageIdProps) : Promise<ApiResponse<boolean>> {
 
     try {
@@ -39,18 +50,27 @@ export async function CompareLanguageId(params : CompareLanguageIdProps) : Promi
 
         const { userId, languageId } = params
 
-        const user = await prisma.user.findFirst({
-            where: {
-                id: userId
-            },
-            select: {
-                nativeLanguageId: true
-            }
-        })
+        // GET CACHE KEY AND TTL
+        const { key, ttl } = CacheKeys.user.compareLanguage(userId, languageId)
 
-        // BU İSTEĞİ YAPMIŞ İSE KULLANICI ZATEN LOGIN OLMUŞTUR DEMEKTİR. BU YÜZDEN KULLANICI BU HATAYI GÖRMEMELİ. THROW EDİYORUM.
-        if(!user) throw new Error("User not found!")
+        const user = await getOrSetCache(key, async () => {
 
+            const result = await prisma.user.findFirst({
+                where: {
+                    id: userId
+                },
+                select: {
+                    nativeLanguageId: true
+                }
+            })
+
+            // BU İSTEĞİ YAPMIŞ İSE KULLANICI ZATEN LOGIN OLMUŞTUR DEMEKTİR. BU YÜZDEN KULLANICI BU HATAYI GÖRMEMELİ. THROW EDİYORUM.
+            if(!result) throw new Error("User not found!")
+
+            return result
+
+        }, ttl)
+        
         if(user.nativeLanguageId == languageId) return createResponse(true, 200, true,  "SUCCESS: CompareLanguageId")
             
         return createResponse(true, 200, false , "SUCCESS: CompareLanguageId")
