@@ -11,6 +11,8 @@ import { CacheKeys } from "@/src/utils/cache_keys"
 import { getOrSetCache, invalidateCacheByPrefix } from "@/src/utils/redisHelper"
 // ZOD
 import { GetOldSessionsSchema } from "@/src/zod/actionsSchema"
+// LIBRARY
+import { logger } from "@/src/lib/logger"
 
 
 export async function GetOldSessions(params : GetOldSessionsProps) : Promise<ApiResponse<GetOldSessionsResponse>> {
@@ -31,7 +33,11 @@ export async function GetOldSessions(params : GetOldSessionsProps) : Promise<Api
             }
         })
 
-        if(!lang) throw new Error("Language Not Found!")
+        if(!lang) {
+
+            logger.error("GET OLD SESSIONS --> LANGUAGE NOT FOUND!")
+            throw new Error("Language Not Found!")
+        } 
 
         // GET PRACTICE ID
         const prac = await prisma.practice.findFirst({
@@ -44,7 +50,11 @@ export async function GetOldSessions(params : GetOldSessionsProps) : Promise<Api
             }
         })
 
-        if(!prac) throw new Error("Practice Not Found!")
+        if(!prac) {
+
+            logger.error("GET OLD SESSIONS --> PRACTICE NOT FOUND!")
+            throw new Error("Practice Not Found!")
+        } 
 
         const skip = (page - 1) * limit
 
@@ -85,12 +95,17 @@ export async function GetOldSessions(params : GetOldSessionsProps) : Promise<Api
 
                     ])
 
-                    if(flashcardOldSessions.length === 0) return {data: [], total: 0}
+                    if(flashcardOldSessions.length === 0) {
+
+                        logger.info("GET OLD SESSIONS --> FLASHCARD OLDSESSIONS UZUNLUĞU 0")
+                        return {data: [], total: 0}
+                    } 
 
                     return {data: flashcardOldSessions, total: flashcardOldSessionsTotal}
                     
                 }, flashcardTTL)
 
+                logger.info("GET OLD SESSIONS --> FLASHCARD OLDSESSIONS FETCHED SUCCESSFULLY!")
                 return createResponse(true, 200, {data: flashcardCachedData}, "SUCCESS: GetOldSessions!")
 
             case "reading":
@@ -128,12 +143,17 @@ export async function GetOldSessions(params : GetOldSessionsProps) : Promise<Api
                         })
                     ])
 
-                    if(readingOldSessions.length === 0) return {data: [], total: 0}
+                    if(readingOldSessions.length === 0) {
+
+                        logger.info("GET OLD SESSIONS --> READING OLDSESSIONS UZUNLUĞU 0")
+                        return {data: [], total: 0}
+                    } 
 
                     return {data: readingOldSessions, total: readingOldSessionsTotal}
 
                 }, readingTTL)
 
+                logger.info("GET OLD SESSIONS --> READING OLDSESSIONS FETCHED SUCCESSFULLY!")
                 return createResponse(true, 200, {data: readingCachedData}, "SUCCESS: GetOldSessions!")
 
             case "writing":
@@ -172,12 +192,17 @@ export async function GetOldSessions(params : GetOldSessionsProps) : Promise<Api
 
                     ])
 
-                    if(writingOldSessions.length === 0) return {data: [], total: 0}
+                    if(writingOldSessions.length === 0) {
+
+                        logger.info("GET OLD SESSIONS --> WRITING OLDSESSIONS UZUNLUĞU 0")
+                        return {data: [], total: 0}
+                    } 
 
                     return {data: writingOldSessions, total: writingOldSessionsTotal}
 
                 }, writingTTL)
 
+                logger.info("GET OLD SESSIONS --> WRITING OLDSESSIONS FETCHED SUCCESSFULLY!")
                 return createResponse(true, 200, {data: writingCachedData}, "SUCCESS: GetOldSessions!")
 
             case "listening":
@@ -215,20 +240,28 @@ export async function GetOldSessions(params : GetOldSessionsProps) : Promise<Api
                         })
                     ])
 
-                    if(listeningOldSessions.length === 0) return {data: [], total: 0}
+                    if(listeningOldSessions.length === 0) {
+
+                        logger.info("GET OLD SESSIONS --> LISTENING OLDSESSIONS UZUNLUĞU 0")
+                        return {data: [], total: 0}
+                    } 
 
                     return {data: listeningOldSessions, total: listeningOldSessionsTotal}
                 }, listeningTTL)
 
+                logger.info("GET OLD SESSIONS --> LISTENING OLDSESSIONS FETCHED SUCCESSFULLY!")
                 return createResponse(true, 200, {data: listeningCachedData }, "SUCCESS: GetOldSessions!")
 
             default:
+                logger.error("GET OLD SESSIONS --> switch case eşleşmedi!")
                 return createResponse<GetOldSessionsResponse>(false, 500, null, "ERROR: GetOldSessions")
         }
 
     } catch (error) {
 
         console.log(`ERROR: GetOldSessions: ${error}`)
+        logger.error("ERROR: GetOldSessions", {error})
+
         return createResponse<GetOldSessionsResponse>(false, 500, null, "ERROR: GetOldSessions")
 
     }
@@ -242,7 +275,11 @@ export async function SaveOldSession(params : SaveOldSessionProps) : Promise<Api
         const {oldSessionRow} = params
 
         // BURASI ZOR OLDUĞU ZOD İLE YAPMADIM. BÖYLE KALSIN
-        if (!oldSessionRow) return createResponse<SaveOldSessionResponse>(false, 400, null, "INVALID PARAMETERS")
+        if (!oldSessionRow) {
+
+            logger.error("SAVE OLD SESSIONS --> INVALID PARAMETERS!")
+            return createResponse<SaveOldSessionResponse>(false, 400, null, "INVALID PARAMETERS")
+        } 
         
         const from = oldSessionRow.from
 
@@ -263,6 +300,7 @@ export async function SaveOldSession(params : SaveOldSessionProps) : Promise<Api
 
                 await invalidateCacheByPrefix("get_all_flashcard_oldSessions_with_paging")
                 
+                logger.info("SAVE OLD SESSIONS --> FLASHCARD OLD SESSION SAVED SUCCESSFULLY!")
                 return createResponse(true, 201, {data: flashcardOldSession}, "Oldsession saved successfully!")
 
             case "reading":
@@ -280,6 +318,7 @@ export async function SaveOldSession(params : SaveOldSessionProps) : Promise<Api
 
                 await invalidateCacheByPrefix("get_all_reading_oldSessions_with_paging")
                 
+                logger.info("SAVE OLD SESSIONS --> READING OLD SESSION SAVED SUCCESSFULLY!")
                 return createResponse(true, 201, {data: readingOldSession}, "Oldsession saved successfully!")
 
             case "writing":
@@ -297,6 +336,7 @@ export async function SaveOldSession(params : SaveOldSessionProps) : Promise<Api
 
                 await invalidateCacheByPrefix("get_all_writing_oldSessions_with_paging")
                 
+                logger.info("SAVE OLD SESSIONS --> WRITING OLD SESSION SAVED SUCCESSFULLY!")
                 return createResponse(true, 201, {data: writingOldSession}, "Oldsession saved successfully!")
 
             case "listening":
@@ -314,15 +354,19 @@ export async function SaveOldSession(params : SaveOldSessionProps) : Promise<Api
 
                 await invalidateCacheByPrefix("get_all_listening_oldSessions_with_paging")
 
+                logger.info("SAVE OLD SESSIONS --> LISTENING OLD SESSION SAVED SUCCESSFULLY!")
                 return createResponse(true, 201, {data: listeningOldSession}, "Oldsession saved successfully!")
 
             default: 
+                logger.error("ERROR: SaveOldSession --> switch case eşleşmedi ")
                 return createResponse<SaveOldSessionResponse>(false, 500, null, "ERROR: SaveOldSession!")
         }
 
     } catch (error) {
 
         console.log(`ERROR: SaveOldSession: ${error}`)
+        logger.error("ERROR: SaveOldSession!", {error})
+        
         return createResponse<SaveOldSessionResponse>(false, 500, null, "ERROR: SaveOldSession!")
 
     }

@@ -9,6 +9,8 @@ import { ApiResponse } from '@/src/types/response'
 import { createResponse } from '@/src/utils/response'
 // ZOD
 import { CalculateRateSchema } from '@/src/zod/actionsSchema'
+// LIBRARY
+import { logger } from '@/src/lib/logger'
 
 
 export async function CalculateRate(params : CalculateRateProps) : Promise<ApiResponse<number>> {
@@ -21,11 +23,14 @@ export async function CalculateRate(params : CalculateRateProps) : Promise<ApiRe
 
         const similarity = stringSimilarity.compareTwoStrings(inputOne, inputTwo)
 
+        logger.info("CALCULATE RATE --> RATE CALCULATED SUCCESSFULLY!")
         return createResponse(true, 200, similarity, "SUCCESS: CalculateRate")
         
     } catch (error) {
         
         console.log(`ERROR: CalculateRate: ${error}`)
+        logger.error("ERROR: CalculateRate!", {error})
+
         return createResponse<number>(false, 500, null, "ERROR: CalculateRate!")
     }
 }

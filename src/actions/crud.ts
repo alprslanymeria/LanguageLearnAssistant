@@ -15,6 +15,8 @@ import { DeckWord, FlashcardCategory, ReadingBook, WritingBook } from "@prisma/c
 import { DeleteByIdProps, DWWCL, FCWL, GetExistingRecordProps, GetItemByIdProps, GetItemByIdResponse, GetLeftSideColorProps, RBWL, WBWL } from "@/src/types/actions"
 // ZOD
 import { DeckWordAddOrUpdateSchema, DeleteyIdSchema, GetItemByIdSchema, ReadingAddOrUpdateSchema, WritingAddOrUpdateSchema } from "@/src/zod/actionsSchema"
+import { invalidateCacheByPrefix } from "@/src/utils/redisHelper"
+import { logger } from "@/src/lib/logger"
 
 
 export async function GetItemById(params : GetItemByIdProps) : Promise<ApiResponse<GetItemByIdResponse>> {
@@ -41,8 +43,13 @@ export async function GetItemById(params : GetItemByIdProps) : Promise<ApiRespon
                     }
                 })
 
-                if(!readingBookItem) return createResponse<GetItemByIdResponse>(false, 404 , null , "Reading Book Item Not Found!")
+                if(!readingBookItem) {
 
+                    logger.error("GetItemById: Reading Book Item Not Found! ")
+                    return createResponse<GetItemByIdResponse>(false, 404 , null , "Reading Book Item Not Found!")
+                } 
+
+                logger.info("ReadingBookItem: Item başarılı bir şekilde alındı")
                 return createResponse(true, 200, {data: readingBookItem as RBWL} , "SUCCESS GetItemById")
 
             case "wbooks":
@@ -59,8 +66,13 @@ export async function GetItemById(params : GetItemByIdProps) : Promise<ApiRespon
                     }
                 })
 
-                if(!writingBookItem) return createResponse<GetItemByIdResponse>(false, 404 , null , "Writing Book Item Not Found!")
+                if(!writingBookItem) {
 
+                    logger.error("GetItemById: Writing Book Item Not Found! ")
+                    return createResponse<GetItemByIdResponse>(false, 404 , null , "Writing Book Item Not Found!")
+                } 
+
+                logger.info("WritingBookItem: Item başarılı bir şekilde alındı")
                 return createResponse(true, 200, {data: writingBookItem as WBWL} , "SUCCESS GetItemById")
 
             case "fcategories":
@@ -77,8 +89,13 @@ export async function GetItemById(params : GetItemByIdProps) : Promise<ApiRespon
                     }
                 })
 
-                if(!flashcardCategoryItem) return createResponse<GetItemByIdResponse>(false, 404 , null , "Flashcard Category Item Not Found!")
+                if(!flashcardCategoryItem) {
 
+                    logger.error("GetItemById: Flashcard Category Item Not Found! ")
+                    return createResponse<GetItemByIdResponse>(false, 404 , null , "Flashcard Category Item Not Found!")
+                } 
+
+                logger.info("FlashcardCategoryItem: Item başarılı bir şekilde alındı")
                 return createResponse(true, 200, {data: flashcardCategoryItem as FCWL} , "SUCCESS GetItemById")
 
             case "fwords":
@@ -99,17 +116,25 @@ export async function GetItemById(params : GetItemByIdProps) : Promise<ApiRespon
                     }
                 })
 
-                if(!flashcardWordsItem) return createResponse<GetItemByIdResponse>(false, 404 , null , "Flashcard Words Item Not Found!")
+                if(!flashcardWordsItem) {
 
+                    logger.error("GetItemById: Flashcard Words Item Not Found! ")
+                    return createResponse<GetItemByIdResponse>(false, 404 , null , "Flashcard Words Item Not Found!")
+                } 
+
+                logger.info("FlashcardWordsItem: Item başarılı bir şekilde alındı")
                 return createResponse(true, 200, {data: flashcardWordsItem as DWWCL }  , "SUCCESS GetItemById")
 
             default: 
+                logger.error("ERROR: GetItemById --> switch case eşleşmedi  ")
                 return createResponse<GetItemByIdResponse>(false, 500, null, "ERROR: GetItemById")
         }
 
     } catch (error) {
         
         console.log(`ERROR: GetItemById: ${error}`)
+        logger.error("ERROR: GetItemById", {error})
+
         return createResponse<GetItemByIdResponse>(false, 500, null, "ERROR: GetItemById")
     }
 }
@@ -125,6 +150,7 @@ export async function DeleteById(params : DeleteByIdProps) : Promise<ApiResponse
         
         // GOOGLE STORAGE CONFIGURATION
         const projectId = process.env.GCP_PROJECT_ID
+        logger.info("DELETE BY ID --> GCP_PROJECT_ID", {projectId})
 
         const storage = new Storage({
             
@@ -146,7 +172,11 @@ export async function DeleteById(params : DeleteByIdProps) : Promise<ApiResponse
                     }
                 })
 
-                if(!rbook) return createResponse(false, 404, null, "Reading Book Not Found!")
+                if(!rbook) {
+
+                    logger.error("DELETE BY ID: Reading Book Not Found!")
+                    return createResponse(false, 404, null, "Reading Book Not Found!")
+                } 
 
                 // DELETE FROM DATABASE
                 await prisma.readingBook.delete({
@@ -155,12 +185,15 @@ export async function DeleteById(params : DeleteByIdProps) : Promise<ApiResponse
                     }
                 })
 
+                logger.info("DELETE BY ID: Reading Book Deleted From Database!")
+
                 // DELETE FROM CLOUD
                 const rbookFileName =  decodeURIComponent(rbook!.imageUrl.split('/').pop() ?? "")
                 const rbookSourceName = decodeURIComponent(rbook!.sourceUrl.split('/').pop() ?? "") 
                 await bucket.file(rbookFileName).delete()
                 await bucket.file(rbookSourceName).delete()
 
+                logger.info("DELETE BY ID: Reading Book Deleted From Cloud!")
                 return createResponse(true, 204, null, "Delete successfull!")
                 
             case "wbooks":
@@ -174,7 +207,11 @@ export async function DeleteById(params : DeleteByIdProps) : Promise<ApiResponse
                     }
                 })
 
-                if(!wbook) return createResponse(false, 404, null, "Wriitng Book Not Found!")
+                if(!wbook) {
+
+                    logger.error("DELETE BY ID: Writing Book Not Found!")
+                    return createResponse(false, 404, null, "Wriitng Book Not Found!")
+                }
 
                 // DELETE FROM DATABASE
                 await prisma.writingBook.delete({
@@ -182,6 +219,8 @@ export async function DeleteById(params : DeleteByIdProps) : Promise<ApiResponse
                         id: itemId!
                     }
                 })
+
+                logger.info("DELETE BY ID: Writing Book Deleted From Database!")
                 
                 // DELETE FROM CLOUD
                 const wbookFileName = decodeURIComponent(wbook!.imageUrl.split('/').pop() ?? "") 
@@ -189,6 +228,7 @@ export async function DeleteById(params : DeleteByIdProps) : Promise<ApiResponse
                 await bucket.file(wbookFileName).delete()
                 await bucket.file(wbookSourceName).delete()
 
+                logger.info("DELETE BY ID: Writing Book Deleted From Cloud!")
                 return createResponse(true, 204, null, "Delete successfull!")
 
             case "fcategories":
@@ -199,7 +239,11 @@ export async function DeleteById(params : DeleteByIdProps) : Promise<ApiResponse
                     }
                 })
 
-                if(!fcategory) return createResponse(false, 404, null, "Flashcard Category Not Found!")
+                if(!fcategory) {
+
+                    logger.error("DELETE BY ID: Flashcard Category Not Found!")
+                    return createResponse(false, 404, null, "Flashcard Category Not Found!")
+                } 
 
                 // DELETE FROM DATABASE
                 await prisma.flashcardCategory.delete({
@@ -208,6 +252,7 @@ export async function DeleteById(params : DeleteByIdProps) : Promise<ApiResponse
                     }
                 })
 
+                logger.info("DELETE BY ID: Flashcard Category Deleted From Database!")
                 return createResponse(true, 204, null, "Delete successfull!")
 
             case "fwords":
@@ -218,7 +263,11 @@ export async function DeleteById(params : DeleteByIdProps) : Promise<ApiResponse
                     }
                 })
 
-                if(!dword) return createResponse(false, 404, null, "Deck Word Not Found!")
+                if(!dword) {
+
+                    logger.error("DELETE BY ID: Deck Word Not Found!")
+                    return createResponse(false, 404, null, "Deck Word Not Found!")
+                } 
 
                 // DELETE FROM DATABASE
                 await prisma.deckWord.delete({
@@ -227,9 +276,11 @@ export async function DeleteById(params : DeleteByIdProps) : Promise<ApiResponse
                     }
                 })
 
+                logger.info("DELETE BY ID: Deck Word Deleted From Database!")
                 return createResponse(true, 204, null, "Delete successfull!")
 
             default:
+                logger.error("ERROR: DeleteById --> switch case eşleşmedi!")
                 return createResponse(false, 500, null, "ERROR: DeleteById!")
 
         }
@@ -237,6 +288,8 @@ export async function DeleteById(params : DeleteByIdProps) : Promise<ApiResponse
     } catch (error) {
 
         console.log(`ERROR: DeleteById: ${error}`)
+        logger.error("ERROR: DeleteById", {error})
+
         return createResponse(false, 500, null, "ERROR: DeleteById!")
     }
 }
@@ -278,35 +331,58 @@ async function GetLeftSideColor({bufferForFile} : GetLeftSideColorProps) {
     } catch (error) {
         
         // TODO: HATA DÖNÜLECEK
+        logger.error("ERROR: GetLeftSideColor", {error})
     }
 }
 
 async function GetExistingRecord({table, itemId} : GetExistingRecordProps) {
 
-    switch(table) {
-        case "rbooks":
-            const readingBook = await prisma.readingBook.findUnique({
-                where: {
-                    id: itemId!
+    try {
+
+        switch(table) {
+            case "rbooks":
+                const readingBook = await prisma.readingBook.findUnique({
+                    where: {
+                        id: itemId!
+                    }
+                })
+
+                if(!readingBook) {
+
+                    logger.error("GetExistingRecord: Reading Book Not Found!")
+                    return null
                 }
-            })
 
-            return readingBook
+                logger.info("GetExistingRecord: Reading Book is Exist", {readingBook})
+                return readingBook
 
-        case "wbooks":
-            const writingBook = await prisma.writingBook.findUnique({
-                where: {
-                    id: itemId!
+            case "wbooks":
+                const writingBook = await prisma.writingBook.findUnique({
+                    where: {
+                        id: itemId!
+                    }
+                })
+
+                if(!writingBook) {
+
+                    logger.error("GetExistingRecord: Writing Book Not Found!")
+                    return null
                 }
-            })
 
-            return writingBook
+                logger.info("GetExistingRecord: Writing Book is Exist", {writingBook})
+                return writingBook
 
-        default: 
-            throw new Error(`Unknown table: ${table}`)
+            default:
+                logger.error("ERROR: GetExistingRecord: switch case eşleşmedi!")
+                throw new Error(`Unknown table: ${table}`)
+        }
+        
+    } catch (error) {
 
-            
+        logger.error("ERROR: GetExistingRecord", {error})
+        
     }
+
 }
 
 export async function ReadingAddOrUpdate(prevState : ApiResponse<ReadingBook> | undefined, formData: FormData) : Promise<ApiResponse<ReadingBook>>  {
@@ -325,6 +401,7 @@ export async function ReadingAddOrUpdate(prevState : ApiResponse<ReadingBook> | 
         type: formData.get("type")?.toString()
     }
 
+    logger.info("ReadingAddOrUpdate Form Verileri Alındı:", {values} )
     await ReadingAddOrUpdateSchema.parseAsync(values)
 
 
@@ -332,10 +409,12 @@ export async function ReadingAddOrUpdate(prevState : ApiResponse<ReadingBook> | 
 
         // GOOGLE STORAGE CONFIGURATION
         const projectId = process.env.GCP_PROJECT_ID
+        logger.info("READING ADD OR UPDATE --> GCP_PROJECT_ID", {projectId})
 
         const storage = new Storage({
             
-            projectId: projectId
+            projectId: projectId,
+            keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
         })
 
         const bucket = storage.bucket('create-items')
@@ -354,26 +433,90 @@ export async function ReadingAddOrUpdate(prevState : ApiResponse<ReadingBook> | 
             const file1Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileOne).name}`
             const file2Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileTwo).name}`
 
+            logger.info("READING BOOK ADD: FILE 1 NAME", {file1Name})
+            logger.info("READING BOOK ADD: FILE 2 NAME", {file2Name})
 
-            // UPLOAD FILES TO GOOGLE CLOUD STORAGE
-            const file1Upload = bucket.file(file1Name).createWriteStream({
-                resumable: false,
-                metadata: { contentType: (values.fileOne).type }
-            })
+            const [fileOneUrl, fileTwoUrl] = await Promise.all([
 
-            const file2Upload = bucket.file(file2Name).createWriteStream({
-                resumable: false,
-                metadata: { contentType: (values.fileTwo).type }
-            })
+                new Promise((resolve, reject) => {
 
-            // WRITE FILES TO GOOGLE CLOUD STORAGE
-            file1Upload.end(Buffer.from(bufferForFileOne))
-            file2Upload.end(Buffer.from(bufferForFileTwo))
+                    // CLOUD'DA BU İSİMDE BİR REFERANS OLUŞTURUYORUZ
+                    const file = bucket.file(file1Name)
 
+                    // START STREAM
+                    // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+                    const stream = file.createWriteStream({
+                        resumable: false,
+                        metadata: {contentType: values.fileOne.type}
+                    })
 
-            // GET FILE'S URL
-            const fileOneUrl = bucket.file(file1Name).publicUrl()
-            const fileTwoUrl = bucket.file(file2Name).publicUrl()
+                    // IF ERROR OCCURED DURING STREAM
+                    stream.on("error", (err) => {
+        
+                        logger.error("READING BOOK ADD --> GCS FILE 1 UPLOAD ERROR", {err})
+                        reject(err)
+                    })
+        
+                    // IF STREAM FINISH
+                    stream.on("finish", async () => {
+        
+                        try {
+        
+                            resolve(file.publicUrl())
+                            
+                        } catch (error) {
+                            
+                            logger.error("READING BOOK ADD --> STREAM FILE 1 FINISH ERROR", {error})
+                            reject(error)
+                        }
+                    })
+        
+                    // WRITE FILES TO GOOGLE CLOUD STORAGE
+                    stream.end(Buffer.from(bufferForFileOne))
+
+                }),
+
+                new Promise((resolve, reject) => {
+
+                    // CLOUD'DA BU İSİMDE BİR REFERANS OLUŞTURUYORUZ
+                    const file = bucket.file(file2Name)
+
+                    // START STREAM
+                    // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+                    const stream = file.createWriteStream({
+                        resumable: false,
+                        metadata: {contentType: values.fileTwo.type}
+                    })
+
+                    // IF ERROR OCCURED DURING STREAM
+                    stream.on("error", (err) => {
+        
+                        logger.error("READING BOOK ADD --> GCS FILE 2 UPLOAD ERROR", {err})
+                        reject(err)
+                    })
+        
+                    // IF STREAM FINISH
+                    stream.on("finish", async () => {
+        
+                        try {
+        
+                            resolve(file.publicUrl())
+                            
+                        } catch (error) {
+                            
+                            logger.error("READING BOOK ADD --> STREAM FILE 2 FINISH ERROR", {error})
+                            reject(error)
+                        }
+                    })
+        
+                    // WRITE FILES TO GOOGLE CLOUD STORAGE
+                    stream.end(Buffer.from(bufferForFileTwo))
+                })
+            ])
+
+            logger.info("READING BOOK ADD --> READING BOOK FILE 1 CLOUD URL", {fileOneUrl})
+            logger.info("READING BOOK ADD --> READING BOOK FILE 2 CLOUD URL", {fileTwoUrl})
+            logger.info("READING BOOK ADD --> READING BOOK FILES SUCCESSFULLY UPLOADED TO CLOUD")
 
 
             // SAVE TO DATABASE
@@ -400,12 +543,13 @@ export async function ReadingAddOrUpdate(prevState : ApiResponse<ReadingBook> | 
                     data: {
                         readingId: reading.id,
                         name: values.inputOne!,
-                        imageUrl: fileOneUrl,
+                        imageUrl: fileOneUrl as string,
                         leftColor: leftSideColor!,
-                        sourceUrl: fileTwoUrl
+                        sourceUrl: fileTwoUrl as string
                     }
                 })
 
+                logger.info("READING BOOK FILES SUCCESSFULLY ADDED TO DATABASE")
                 return createResponse(true, 200, readingBook, "Reading book created successfully!")
             })
 
@@ -418,7 +562,7 @@ export async function ReadingAddOrUpdate(prevState : ApiResponse<ReadingBook> | 
             // GET OLD FILE INFO'S
             const existingRecord = await GetExistingRecord({table: values.table!, itemId: values.itemId!})
 
-            if(!existingRecord) throw new Error("Existing Record Not Found!")
+            if(!existingRecord) throw new Error("READING BOOK UPDATE: Existing Record Not Found!")
 
             const oldFileOneUrl = existingRecord!.imageUrl
             const oldFileTwoUrl = existingRecord!.sourceUrl
@@ -430,6 +574,8 @@ export async function ReadingAddOrUpdate(prevState : ApiResponse<ReadingBook> | 
                 const [isExist] = await bucket.file(oldFile1Name).exists()
                 
                 if(isExist) await bucket.file(oldFile1Name).delete()
+
+                logger.info("READING BOOK UPDATE: FILE ONE DELETED FROM CLOUD")
             }
 
             if (oldFileTwoUrl) {
@@ -437,7 +583,9 @@ export async function ReadingAddOrUpdate(prevState : ApiResponse<ReadingBook> | 
                 const oldFile2Name = decodeURIComponent(oldFileTwoUrl.split('/').pop() ?? "") 
                 const [isExist] = await bucket.file(oldFile2Name).exists()
 
-                if(isExist) await bucket.file(oldFile2Name).delete();
+                if(isExist) await bucket.file(oldFile2Name).delete()
+
+                logger.info("READING BOOK UPDATE: FILE TWO DELETED FROM CLOUD")
             }
 
 
@@ -445,26 +593,90 @@ export async function ReadingAddOrUpdate(prevState : ApiResponse<ReadingBook> | 
             const file1Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileOne).name}`
             const file2Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileTwo).name}`
 
+            logger.info("READING BOOK UPDATE: FILE 1 NAME", {file1Name})
+            logger.info("READING BOOK UPDATE: FILE 2 NAME", {file2Name})
 
-            // UPLOAD FILES TO GOOGLE CLOUD STORAGE
-            const file1Upload = bucket.file(file1Name).createWriteStream({
-                resumable: false,
-                metadata: { contentType: (values.fileOne).type }
-            })
+            const [fileOneUrl, fileTwoUrl] = await Promise.all([
 
-            const file2Upload = bucket.file(file2Name).createWriteStream({
-                resumable: false,
-                metadata: { contentType: (values.fileTwo).type }
-            })
+                new Promise((resolve, reject) => {
 
+                    // CLOUD'DA BU İSİMDE BİR REFERANS OLUŞTURUYORUZ
+                    const file = bucket.file(file1Name)
 
-            // WRITE FILES TO GOOGLE CLOUD STORAGE
-            file1Upload.end(Buffer.from(bufferForFileOne))
-            file2Upload.end(Buffer.from(bufferForFileTwo))
+                    // START STREAM
+                    // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+                    const stream = file.createWriteStream({
+                        resumable: false,
+                        metadata: {contentType: values.fileOne.type}
+                    })
 
-            // GET FILE'S URL
-            const fileOneUrl = bucket.file(file1Name).publicUrl()
-            const fileTwoUrl = bucket.file(file2Name).publicUrl()
+                    // IF ERROR OCCURED DURING STREAM
+                    stream.on("error", (err) => {
+        
+                        logger.error("READING BOOK UPDATE --> GCS FILE 1 UPLOAD ERROR", {err})
+                        reject(err)
+                    })
+        
+                    // IF STREAM FINISH
+                    stream.on("finish", async () => {
+        
+                        try {
+        
+                            resolve(file.publicUrl())
+                            
+                        } catch (error) {
+                            
+                            logger.error("READING BOOK UPDATE --> STREAM FILE 1 FINISH ERROR", {error})
+                            reject(error)
+                        }
+                    })
+        
+                    // WRITE FILES TO GOOGLE CLOUD STORAGE
+                    stream.end(Buffer.from(bufferForFileOne))
+
+                }),
+
+                new Promise((resolve, reject) => {
+
+                    // CLOUD'DA BU İSİMDE BİR REFERANS OLUŞTURUYORUZ
+                    const file = bucket.file(file2Name)
+
+                    // START STREAM
+                    // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+                    const stream = file.createWriteStream({
+                        resumable: false,
+                        metadata: {contentType: values.fileTwo.type}
+                    })
+
+                    // IF ERROR OCCURED DURING STREAM
+                    stream.on("error", (err) => {
+        
+                        logger.error("READING BOOK UPDATE --> GCS FILE 2 UPLOAD ERROR", {err})
+                        reject(err)
+                    })
+        
+                    // IF STREAM FINISH
+                    stream.on("finish", async () => {
+        
+                        try {
+        
+                            resolve(file.publicUrl())
+                            
+                        } catch (error) {
+                            
+                            logger.error("READING BOOK UPDATE --> STREAM FILE 2 FINISH ERROR", {error})
+                            reject(error)
+                        }
+                    })
+        
+                    // WRITE FILES TO GOOGLE CLOUD STORAGE
+                    stream.end(Buffer.from(bufferForFileTwo))
+                })
+            ])
+
+            logger.info("READING BOOK UPDATE --> READING BOOK FILE 1 CLOUD URL", {fileOneUrl})
+            logger.info("READING BOOK UPDATE --> READING BOOK FILE 2 CLOUD URL", {fileTwoUrl})
+            logger.info("READING BOOK UPDATE --> READING BOOK FILES SUCCESSFULLY UPLOADED TO CLOUD")
 
             // UPDATE DATABASE
             return await prisma.$transaction(async (tx) => {
@@ -505,29 +717,40 @@ export async function ReadingAddOrUpdate(prevState : ApiResponse<ReadingBook> | 
                     data: {
                         readingId: reading.id,
                         name: values.inputOne,
-                        imageUrl: fileOneUrl,
+                        imageUrl: fileOneUrl as string,
                         leftColor: leftSideColor!,
-                        sourceUrl: fileTwoUrl
+                        sourceUrl: fileTwoUrl as string
                     }
                 })
 
+                logger.info("READING BOOK FILES UPDATED SUCCESSFULLY ON DATABASE")
                 return createResponse(true, 200, readingBook, "Reading book updated successfully!")
             })
         }
 
+        let result: ApiResponse<ReadingBook>
+
         switch(values.type){
 
             case "Create":
-                return await handleCreate()
+                result = await handleCreate()
+                break
             case "Edit":
-                return await handleEdit()
+                result = await handleEdit()
+                break
             default:
                 return createResponse<ReadingBook>(false, 500, null, "ERROR: ReadingAddOrEdit")
         }
+
+        await invalidateCacheByPrefix(`get_all_rbooks_with_paging:${values.userId}`)
+
+        return result
         
     } catch (error) {
         
         console.log(`ERROR: ReadingAddOrEdit: ${error}`)
+        logger.error("ERROR: ReadingAddOrUpdate", {error})
+
         return createResponse<ReadingBook>(false, 500, null, "ERROR: ReadingAddOrEdit")
     }
 }
@@ -548,6 +771,7 @@ export async function WritingAddOrUpdate(prevState : ApiResponse<WritingBook> | 
         type: formData.get("type")?.toString()
     }
 
+    logger.info("WritingAddOrUpdate Form Verileri Alındı:", {values} )
     await WritingAddOrUpdateSchema.parseAsync(values)
 
 
@@ -555,10 +779,12 @@ export async function WritingAddOrUpdate(prevState : ApiResponse<WritingBook> | 
 
         // GOOGLE STORAGE CONFIGURATION
         const projectId = process.env.GCP_PROJECT_ID
+        logger.info("WRITING ADD OR UPDATE --> GCP_PROJECT_ID", {projectId})
 
         const storage = new Storage({
             
-            projectId: projectId
+            projectId: projectId,
+            keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
         })
 
         const bucket = storage.bucket('create-items')
@@ -578,26 +804,91 @@ export async function WritingAddOrUpdate(prevState : ApiResponse<WritingBook> | 
             const file1Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileOne).name}`
             const file2Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileTwo).name}`
 
-
-            // UPLOAD FILES TO GOOGLE CLOUD STORAGE
-            const file1Upload = bucket.file(file1Name).createWriteStream({
-                resumable: false,
-                metadata: { contentType: (values.fileOne).type }
-            })
-
-            const file2Upload = bucket.file(file2Name).createWriteStream({
-                resumable: false,
-                metadata: { contentType: (values.fileTwo).type }
-            })
-
-            // WRITE FILES TO GOOGLE CLOUD STORAGE
-            file1Upload.end(Buffer.from(bufferForFileOne))
-            file2Upload.end(Buffer.from(bufferForFileTwo))
+            logger.info("WRITING BOOK ADD: FILE 1 NAME", {file1Name})
+            logger.info("WRITING BOOK ADD: FILE 2 NAME", {file2Name})
 
 
-            // GET FILE'S URL
-            const fileOneUrl = bucket.file(file1Name).publicUrl()
-            const fileTwoUrl = bucket.file(file2Name).publicUrl()
+            const [fileOneUrl, fileTwoUrl] = await Promise.all([
+
+                new Promise((resolve, reject) => {
+
+                    // CLOUD'DA BU İSİMDE BİR REFERANS OLUŞTURUYORUZ
+                    const file = bucket.file(file1Name)
+
+                    // START STREAM
+                    // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+                    const stream = file.createWriteStream({
+                        resumable: false,
+                        metadata: {contentType: values.fileOne.type}
+                    })
+
+                    // IF ERROR OCCURED DURING STREAM
+                    stream.on("error", (err) => {
+        
+                        logger.error("WRITING BOOK ADD --> GCS FILE 1 UPLOAD ERROR", {err})
+                        reject(err)
+                    })
+        
+                    // IF STREAM FINISH
+                    stream.on("finish", async () => {
+        
+                        try {
+        
+                            resolve(file.publicUrl())
+                            
+                        } catch (error) {
+                            
+                            logger.error("WRITING BOOK ADD --> STREAM FILE 1 FINISH ERROR", {error})
+                            reject(error)
+                        }
+                    })
+        
+                    // WRITE FILES TO GOOGLE CLOUD STORAGE
+                    stream.end(Buffer.from(bufferForFileOne))
+
+                }),
+
+                new Promise((resolve, reject) => {
+
+                    // CLOUD'DA BU İSİMDE BİR REFERANS OLUŞTURUYORUZ
+                    const file = bucket.file(file2Name)
+
+                    // START STREAM
+                    // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+                    const stream = file.createWriteStream({
+                        resumable: false,
+                        metadata: {contentType: values.fileTwo.type}
+                    })
+
+                    // IF ERROR OCCURED DURING STREAM
+                    stream.on("error", (err) => {
+        
+                        logger.error("WRITING BOOK ADD --> GCS FILE 2 UPLOAD ERROR", {err})
+                        reject(err)
+                    })
+        
+                    // IF STREAM FINISH
+                    stream.on("finish", async () => {
+        
+                        try {
+
+                            resolve(file.publicUrl())
+                            
+                        } catch (error) {
+                            
+                            logger.error("WRITING BOOK ADD --> STREAM FILE 2 FINISH ERROR", {error})
+                            reject(error)
+                        }
+                    })
+        
+                    // WRITE FILES TO GOOGLE CLOUD STORAGE
+                    stream.end(Buffer.from(bufferForFileTwo))
+                })
+            ])
+
+            logger.info("WRITING BOOK ADD --> WRITING BOOK FILE 1 CLOUD URL", {fileOneUrl})
+            logger.info("WRITING BOOK ADD --> WRITING BOOK FILE 2 CLOUD URL", {fileTwoUrl})
+            logger.info("WRITING BOOK ADD --> WRITING BOOK FILES SUCCESSFULLY UPLOADED TO CLOUD")
 
 
             // SAVE TO DATABASE
@@ -624,15 +915,15 @@ export async function WritingAddOrUpdate(prevState : ApiResponse<WritingBook> | 
                     data: {
                         writingId: writing.id,
                         name: values.inputOne!,
-                        imageUrl: fileOneUrl,
+                        imageUrl: fileOneUrl as string,
                         leftColor: leftSideColor!,
-                        sourceUrl: fileTwoUrl
+                        sourceUrl: fileTwoUrl as string
                     }
                 })
 
+                logger.info("WRITING BOOK FILES SUCCESSFULLY CREATED ON DATABASE")
                 return createResponse(true, 200, writingBook, "Writing book created successfully!")
             })
-
 
         }
 
@@ -642,7 +933,7 @@ export async function WritingAddOrUpdate(prevState : ApiResponse<WritingBook> | 
             // GET OLD FILE INFO'S
             const existingRecord = await GetExistingRecord({table: values.table!, itemId: values.itemId})
 
-            if(!existingRecord) throw new Error("Existing Record Not Found!")
+            if(!existingRecord) throw new Error("WRITING BOOK UPDATE: Existing Record Not Found!")
 
             const oldFileOneUrl = existingRecord!.imageUrl
             const oldFileTwoUrl = existingRecord!.sourceUrl
@@ -654,6 +945,8 @@ export async function WritingAddOrUpdate(prevState : ApiResponse<WritingBook> | 
                 const [isExist] = await bucket.file(oldFile1Name).exists()
                 
                 if(isExist) await bucket.file(oldFile1Name).delete()
+
+                logger.info("WRITING BOOK UPDATE: FILE ONE DELETED FROM CLOUD")
             }
 
             if (oldFileTwoUrl) {
@@ -661,7 +954,9 @@ export async function WritingAddOrUpdate(prevState : ApiResponse<WritingBook> | 
                 const oldFile2Name = decodeURIComponent(oldFileTwoUrl.split('/').pop() ?? "") 
                 const [isExist] = await bucket.file(oldFile2Name).exists()
 
-                if(isExist) await bucket.file(oldFile2Name).delete();
+                if(isExist) await bucket.file(oldFile2Name).delete()
+
+                logger.info("WRITING BOOK UPDATE: FILE TWO DELETED FROM CLOUD")
             }
 
 
@@ -669,26 +964,90 @@ export async function WritingAddOrUpdate(prevState : ApiResponse<WritingBook> | 
             const file1Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileOne).name}`
             const file2Name = `${values.userId}/${values.table}/${Date.now()}_${(values.fileTwo).name}`
 
+            logger.info("WRITING BOOK UPDATE: FILE 1 NAME", {file1Name})
+            logger.info("WRITING BOOK UPDATE: FILE 2 NAME", {file2Name})
 
-            // UPLOAD FILES TO GOOGLE CLOUD STORAGE
-            const file1Upload = bucket.file(file1Name).createWriteStream({
-                resumable: false,
-                metadata: { contentType: (values.fileOne).type }
-            })
+            const [fileOneUrl, fileTwoUrl] = await Promise.all([
 
-            const file2Upload = bucket.file(file2Name).createWriteStream({
-                resumable: false,
-                metadata: { contentType: (values.fileTwo).type }
-            })
+                new Promise((resolve, reject) => {
 
+                    // CLOUD'DA BU İSİMDE BİR REFERANS OLUŞTURUYORUZ
+                    const file = bucket.file(file1Name)
 
-            // WRITE FILES TO GOOGLE CLOUD STORAGE
-            file1Upload.end(Buffer.from(bufferForFileOne))
-            file2Upload.end(Buffer.from(bufferForFileTwo))
+                    // START STREAM
+                    // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+                    const stream = file.createWriteStream({
+                        resumable: false,
+                        metadata: {contentType: values.fileOne.type}
+                    })
 
-            // GET FILE'S URL
-            const fileOneUrl = bucket.file(file1Name).publicUrl()
-            const fileTwoUrl = bucket.file(file2Name).publicUrl()
+                    // IF ERROR OCCURED DURING STREAM
+                    stream.on("error", (err) => {
+        
+                        logger.error("WRITING BOOK UPDATE --> GCS FILE 1 UPLOAD ERROR", {err})
+                        reject(err)
+                    })
+        
+                    // IF STREAM FINISH
+                    stream.on("finish", async () => {
+        
+                        try {
+
+                            resolve(file.publicUrl())
+                            
+                        } catch (error) {
+                            
+                            logger.error("WRITING BOOK UPDATE --> STREAM FILE 1 FINISH ERROR", {error})
+                            reject(error)
+                        }
+                    })
+        
+                    // WRITE FILES TO GOOGLE CLOUD STORAGE
+                    stream.end(Buffer.from(bufferForFileOne))
+
+                }),
+
+                new Promise((resolve, reject) => {
+
+                    // CLOUD'DA BU İSİMDE BİR REFERANS OLUŞTURUYORUZ
+                    const file = bucket.file(file2Name)
+
+                    // START STREAM
+                    // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+                    const stream = file.createWriteStream({
+                        resumable: false,
+                        metadata: {contentType: values.fileTwo.type}
+                    })
+
+                    // IF ERROR OCCURED DURING STREAM
+                    stream.on("error", (err) => {
+        
+                        logger.error("WRITING BOOK UPDATE --> GCS FILE 2 UPLOAD ERROR", {err})
+                        reject(err)
+                    })
+        
+                    // IF STREAM FINISH
+                    stream.on("finish", async () => {
+        
+                        try {
+
+                            resolve(file.publicUrl())
+                            
+                        } catch (error) {
+                            
+                            logger.error("WRITING BOOK UPDATE --> STREAM FILE 2 FINISH ERROR", {error})
+                            reject(error)
+                        }
+                    })
+        
+                    // WRITE FILES TO GOOGLE CLOUD STORAGE
+                    stream.end(Buffer.from(bufferForFileTwo))
+                })
+            ])
+
+            logger.info("WRITING BOOK UPDATE --> WRITING BOOK FILE 1 CLOUD URL", {fileOneUrl})
+            logger.info("WRITING BOOK UPDATE --> WRITING BOOK FILE 2 CLOUD URL", {fileTwoUrl})
+            logger.info("WRITING BOOK UPDATE --> WRITING BOOK FILES SUCCESSFULLY UPLOADED TO CLOUD")
 
             // UPDATE DATABASE
             return await prisma.$transaction(async (tx) => {
@@ -729,32 +1088,42 @@ export async function WritingAddOrUpdate(prevState : ApiResponse<WritingBook> | 
                     data: {
                         writingId: writing.id,
                         name: values.inputOne,
-                        imageUrl: fileOneUrl,
+                        imageUrl: fileOneUrl as string,
                         leftColor: leftSideColor!,
-                        sourceUrl: fileTwoUrl
+                        sourceUrl: fileTwoUrl as string
                     }
                 })
 
+                logger.info("WRITING BOOK FILES UPDATED SUCCESSFULLY ON DATABASE")
                 return createResponse(true, 200, writingBook, "Writing book updated successfully!")
             })
 
         }
 
+        let result: ApiResponse<WritingBook>
 
         switch(values.type){
 
             case "Create":
-                return await handleCreate()
+                result = await handleCreate()
+                break
             case "Edit":
-                return handleEdit()
+                result = await handleEdit()
+                break
             default:
                 return createResponse<WritingBook>(false, 500, null, "ERROR: WritingAddOrEdit")
         }
+
+        await invalidateCacheByPrefix(`get_all_wbooks_with_paging:${values.userId}`)
+
+        return result
         
         
     } catch (error) {
         
         console.log(`ERROR: WritingAddOrEdit: ${error}`)
+        logger.error("ERROR: WritingAddOrUpdate", {error})
+
         return createResponse<WritingBook>(false, 500, null, "ERROR: WritingAddOrEdit")
     }
 
@@ -776,6 +1145,7 @@ export async function DeckWordAddOrUpdate(prevState : ApiResponse<DeckWord> | un
         type: formData.get("type")?.toString()
     }
 
+    logger.info("DeckWordAddOrUpdate Form Verileri Alındı:", {values} )
     await DeckWordAddOrUpdateSchema.parseAsync(values)
 
 
@@ -798,6 +1168,7 @@ export async function DeckWordAddOrUpdate(prevState : ApiResponse<DeckWord> | un
                     }
                 })
 
+                logger.info("DeckWord CREATED ON DATABASE SUCCESSFULLY!")
                 return createResponse(true, 200, deckWord, "Deck word created successfully!")
             })
             
@@ -826,24 +1197,35 @@ export async function DeckWordAddOrUpdate(prevState : ApiResponse<DeckWord> | un
                     }
                 })
 
+                logger.info("DeckWord UPDATED ON DATABASE SUCCESSFULLY!")
                 return createResponse(true, 200, deckWord, "Deck word updated successfully!")
             })
         }
+
+        let result: ApiResponse<DeckWord>
 
 
         switch(values.type){
 
             case "Create":
-                return await handleCreate()
+                result = await handleCreate()
+                break
             case "Edit":
-                return await handleEdit()
+                result = await handleEdit()
+                break
             default:
                 return createResponse<DeckWord>(false, 500, null, "ERROR: DeckWordAddOrEdit")
         }
+
+        await invalidateCacheByPrefix(`get_all_fwords_with_paging:${values.userId}`)
+
+        return result
         
     } catch (error) {
         
         console.log(`ERROR: DeckWordAddOrEdit: ${error}`)
+        logger.error("ERROR: DeckWordAddOrUpdate", {error})
+
         return createResponse<DeckWord>(false, 500, null, "ERROR: DeckWordAddOrEdit")
     }
 }
@@ -862,6 +1244,7 @@ export async function FlashcardCategoryAddOrUpdate(prevState : ApiResponse<Flash
         type: formData.get("type")?.toString()
     }
 
+    logger.info("FlashcardCategoryAddOrUpdate Form Verileri Alındı:", {values} )
     await DeckWordAddOrUpdateSchema.parseAsync(values)
 
     try {
@@ -895,6 +1278,7 @@ export async function FlashcardCategoryAddOrUpdate(prevState : ApiResponse<Flash
                     }
                 })
 
+                logger.info("FLASHCARD CATEGORY CREATED ON DATABASE SUCCESSFULLY!")
                 return createResponse(true, 200, flashcardCategory, "Flashcard category created successfully!")
             })
         }
@@ -938,24 +1322,34 @@ export async function FlashcardCategoryAddOrUpdate(prevState : ApiResponse<Flash
                     }
                 })
 
+                logger.info("FLASHCARD CATEGORY UPDATED ON DATABASE SUCCESSFULLY!")
                 return createResponse(true, 200, flashcardCategory, "Flashcard category updated successfully!")
             })
         }
 
+        let result: ApiResponse<FlashcardCategory>
 
         switch(values.type){
 
             case "Create":
-                return await handleCreate()
+                result = await handleCreate()
+                break
             case "Edit":
-                return await handleEdit()
+                result = await handleEdit()
+                break
             default:
                 return createResponse<FlashcardCategory>(false, 500, null, "ERROR: FlashcardCategoryAddOrEdit")
         }
 
+        await invalidateCacheByPrefix(`get_all_fcategories_with_paging:${values.userId}`)
+
+        return result
+
     } catch (error) {
 
         console.log(`ERROR: FlashcardCategoryAddOrEdit: ${error}`)
+        logger.error("ERROR: FlashcardCategoryAddOrUpdate", {error})
+
         return createResponse<FlashcardCategory>(false, 500, null, "ERROR: FlashcardCategoryAddOrEdit")        
     }
 }

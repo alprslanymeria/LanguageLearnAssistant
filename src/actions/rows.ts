@@ -12,6 +12,8 @@ import { GetRowsByIdSchema } from "@/src/zod/actionsSchema"
 // UTLS
 import { getOrSetCache, invalidateCacheByPrefix } from "@/src/utils/redisHelper"
 import { CacheKeys } from "@/src/utils/cache_keys"
+// LIBRARY
+import { logger } from "@/src/lib/logger"
 
 
 export async function GetRowsById(params : GetRowsByIdProps) : Promise<ApiResponse<GetRowsByIdResponse>> {
@@ -110,6 +112,7 @@ export async function GetRowsById(params : GetRowsByIdProps) : Promise<ApiRespon
 
                 }, readingTTL)
 
+                logger.info("GET ROWS BY ID --> READING ROWS AND ITEM SUCCESSFULLY FETCHED!")
                 return createResponse(true , 200 , readingCachedData , "SUCCESS: GetRowsById")
 
             case "writing":
@@ -168,6 +171,7 @@ export async function GetRowsById(params : GetRowsByIdProps) : Promise<ApiRespon
                 
                 }, writingTTL)
 
+                logger.info("GET ROWS BY ID --> WRITING ROWS AND ITEM SUCCESSFULLY FETCHED!")
                 return createResponse(true , 200 , writingCachedData , "SUCCESS: GetRowsById")
 
             case "listening":
@@ -226,6 +230,7 @@ export async function GetRowsById(params : GetRowsByIdProps) : Promise<ApiRespon
                 
                 }, listeningTTL)
 
+                logger.info("GET ROWS BY ID --> LISTENING ROWS AND ITEM SUCCESSFULLY FETCHED!")
                 return createResponse(true , 200 , listeningCachedData , "SUCCESS: GetRowsById")
 
             case "flashcard":
@@ -285,15 +290,19 @@ export async function GetRowsById(params : GetRowsByIdProps) : Promise<ApiRespon
                 
                 }, flashcardTTL)
 
+                logger.info("GET ROWS BY ID --> FLASHCARD ROWS AND ITEM SUCCESSFULLY FETCHED!")
                 return createResponse(true , 200 , flashcardCachedData , "SUCCESS: GetRowsById")
 
             default:
+                logger.error("GET ROWS BY ID --> switch case eşleşmedi!")
                 return createResponse<GetRowsByIdResponse>(false, 500, null, "ERROR: GetRowsById")
         }
 
     } catch (error) {
         
         console.log(`ERROR: GetRowsById: ${error}`)
+        logger.error("ERROR: GetRowsById", {error})
+
         return createResponse<GetRowsByIdResponse>(false, 500, null, "ERROR: GetRowsById")
     }
 }
@@ -302,9 +311,17 @@ export async function SaveRows({rows} : SaveRowsProps) : Promise<ApiResponse<und
 
     try {
 
-        if(!rows) return createResponse<undefined>(false, 400, null, "INVALID PARAMETERS")
+        if(!rows) {
 
-        if(rows.length === 0) return createResponse<undefined>(false, 400, null, "EMPTY ARRAY")
+            logger.error("SAVE ROWS --> INVALID PARAMETERS (ROWS UNDEFINED)")
+            return createResponse<undefined>(false, 400, null, "INVALID PARAMETERS")
+        } 
+
+        if(rows.length === 0) {
+
+            logger.error("SAVE ROWS --> EMPTY ARRAY (ROWS)")
+            return createResponse<undefined>(false, 400, null, "EMPTY ARRAY")
+        } 
         
         for(const row of rows) {
 
@@ -322,7 +339,7 @@ export async function SaveRows({rows} : SaveRowsProps) : Promise<ApiResponse<und
                     })
 
                     await invalidateCacheByPrefix("get_reading_rows")
-
+                    
                     break
 
                 case "writing":
@@ -369,16 +386,20 @@ export async function SaveRows({rows} : SaveRowsProps) : Promise<ApiResponse<und
                     break
 
                 default:
+                    logger.error("SAVE ROWS --> switch case eşleşmedi!")
                     return createResponse<undefined>(false, 500, null, "ERR: SaveRows!")
 
             }
         }
 
+        logger.info("SAVE ROWS --> ROWs SAVED SUCCESSFULLY!")
         return createResponse(true, 201, undefined, "Rows saved successfully!")
 
     } catch (error) {
         
         console.log(`ERROR: SaveRows: ${error}`)
+        logger.error("ERROR: SaveRows!", {error})
+        
         return createResponse<undefined>(false, 500, null, "ERROR: SaveRows!")
     }
 

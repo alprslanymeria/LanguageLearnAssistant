@@ -5,7 +5,6 @@ import {encrypt} from "@/src/lib/crypto"
 //3RD PARTY
 import { v4 as uuidv4 } from 'uuid'
 // ACTIONS
-import { CreateLiveSession } from "@/src/actions/liveSession"
 import { GlobalStore } from "@/src/store/globalStore"
 import  socket  from "@/src/lib/socketClient"
 

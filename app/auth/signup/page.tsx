@@ -17,9 +17,11 @@ import { useAlert } from '@/src/providers/AlertProvider/AlertProvider'
 import { useLoading } from '@/src/providers/LoadingProvider/LoadingProvider'
 // STORE
 import { GlobalStore } from '@/src/store/globalStore'
+import { Suspense } from 'react'
 
 
-export default function Page() {
+// BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.
+function SignupPage() {
 
     // HOOKS
     const searchParams = useSearchParams()
@@ -125,5 +127,16 @@ export default function Page() {
                 </div>
             </div>
         </div>        
+    )
+}
+
+
+export default function Page() {
+
+    return (
+
+        <Suspense>
+            <SignupPage/>
+        </Suspense>
     )
 }

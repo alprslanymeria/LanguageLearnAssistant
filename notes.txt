@@ -56,3 +56,6 @@ ______________________________
 
 SVG'LER VE TABLE COMPONENT BİRDEN FAZLA YERDE KULLANILIYOR VE TİP KARMAŞASI YARATABİLİR.
 BU İLERKİ ZAMANLARDA DÜZELTİLİR.
+
+
+// "start": "NODE_ENV=production tsx server.mts",

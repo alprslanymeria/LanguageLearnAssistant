@@ -3,8 +3,8 @@ services:
   redis:
     image: redis:latest
     container_name: redis-container
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
 
   elasticsearch:
     image: elasticsearch:9.1.4
@@ -12,15 +12,8 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-    ports:
-      - "9200:9200"
-
-  jaeger:
-    image: jaegertracing/jaeger:latest
-    container_name: jaeger-container
-    ports:
-      - "16686:16686"
-      - "6831:6831/udp"
+    expose:
+      - "9200"
 
   kibana:
     image: kibana:9.1.4
@@ -31,3 +24,89 @@ services:
       - "5601:5601"
     depends_on:
       - elasticsearch
+
+  jaeger:
+    image: jaegertracing/jaeger:latest
+    container_name: jaeger-container
+    ports:
+      - "16686:16686" # UI
+    expose:
+      - "6831/udp" # Thrift
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    expose:
+      - "9090"
+    depends_on:
+      - otel-collector
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "4000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    expose:
+      - "4317" # Uygulamadan gRPC protokolü ile telemetry verilerini almak için
+      - "4318" # Uygulamadan HTTP protokolü ile telemetry verilerini almak için
+
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+      - .env.local
+    depends_on:
+      - redis
+      - elasticsearch
+      - jaeger
+      - otel-collector
+      - sqlserver
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: 1
+    volumes:
+      - ./totemic-atom-447420-b0-943ce371ff89.json:/app/gcp-key.json:ro
+    restart: unless-stopped
+
+  
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+      - "1430:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "iA69754."  # Buraya kendi şifrenizi yazın
+    volumes:
+      - sqlserver-data:/var/opt/mssql   # Verilerin kalıcı olacağı volume
+    restart: unless-stopped
+
+volumes:
+  grafana-data:
+  sqlserver-data:
+
+
+# | Port     | Amaç                                      | Erişen                    | Açıklama                                     |
+# | -------- | ----------------------------------------- | ------------------------- | -------------------------------------------- |
+# | **4317** | OTLP gRPC receiver                        | Uygulama (Next.js)        | Trace + metric verilerini Collector’a yollar |
+# | **4318** | OTLP HTTP receiver                        | Alternatif HTTP protokolü | (kullanmak zorunda değilsin)                 |
+# | **8888** | Collector’un *kendi* metrikleri           | Prometheus (isteğe bağlı) | Collector’un iç durumu                       |
+# | **8889** | Uygulama metriklerinin Prometheus formatı | Prometheus                | Asıl scrape edilen metrik endpoint           |

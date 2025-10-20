@@ -7,7 +7,7 @@ import GetCreateItems from "@/src/actions/utils"
 
 
 //BASE
-const BASE = process.env.NEXT_PUBLIC_BASE_URL
+const BASE = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
 
 
 export function useCreatePageCustomEffect(params: UseCreatePageCustomEffectProps) {

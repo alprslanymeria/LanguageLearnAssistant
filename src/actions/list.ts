@@ -13,6 +13,8 @@ import { GetAllFCategoriesSchema, GetAllFCategoriesWithPagingSchema, GetAllFWord
 // UTILS
 import { CacheKeys } from "@/src/utils/cache_keys"
 import { getOrSetCache } from "@/src/utils/redisHelper"
+// LIBRARY
+import { logger } from "@/src/lib/logger"
 
 
 export async function GetAllRBooks(params : GetAllRBooksProps) : Promise<ApiResponse<GetAllRBooksResponse>> {
@@ -55,11 +57,14 @@ export async function GetAllRBooks(params : GetAllRBooksProps) : Promise<ApiResp
 
         }, ttl)
 
+        logger.info("ALL READING BOOKS SUCCESSFULLY FETCHED!")
         return createResponse(true, 200, cachedData , "SUCCESS: GetAllRBooks")
 
     } catch (error) {
 
         console.log(`ERROR: GetAllRBooks: ${error}`)
+        logger.error("ERROR: GetAllRBooks", {error})
+
         return createResponse<GetAllRBooksResponse>(false, 500, null, "ERROR: GetAllRBooks")
     }
 }
@@ -104,11 +109,15 @@ export async function GetAllWBooks(params : GetAllWBooksProps) : Promise<ApiResp
 
         }, ttl)
 
+        logger.info("ALL WRITING BOOKS SUCCESSFULLY FETCHED!")
         return createResponse(true, 200, cachedData , "SUCCESS: GetAllWBooks")
 
     } catch (error) {
 
-       return createResponse<GetAllWBooksResponse>(false, 500, null, "ERROR: GetAllWBooks")
+        console.log(`ERROR: GetAllWBooks: ${error}`)
+        logger.error("ERROR: GetAllWBooks", {error})
+
+        return createResponse<GetAllWBooksResponse>(false, 500, null, "ERROR: GetAllWBooks")
         
     }
 }
@@ -141,9 +150,13 @@ export async function GetAllFCategories(params : GetAllFCategoriesProps) : Promi
 
         }, ttl)
 
+        logger.info("ALL FLASHCARD CATEGORIES SUCCESSFULLY FETCHED!")
         return createResponse(true, 200, {data: categories} , "SUCCESS: GetAllFCategories")
 
     } catch (error) {
+
+        console.log(`ERROR: GetAllFCategories: ${error}`)
+        logger.error("ERROR: GetAllFCategories", {error})
 
         return createResponse<GetAllFCategoriesResponse>(false, 500, null, "ERROR: GetAllFCategories")
     }
@@ -193,9 +206,13 @@ export async function GetAllFCategoriesWithPaging(params : GetAllFCategoriesWith
 
         }, ttl)
 
+        logger.info("ALL FLASHCARD CATEGORIES (WITH PAGING) SUCCESSFULLY FETCHED!")
         return createResponse(true, 200, cachedData , "SUCCESS: GetAllFCategoriesWithPaging")
 
     } catch (error) {
+
+        console.log(`ERROR: GetAllFCategoriesWithPaging: ${error}`)
+        logger.error("ERROR: GetAllFCategoriesWithPaging", {error})
 
         return createResponse<GetAllFCategoriesWithPagingResponse>(false, 500, null, "ERROR: GetAllFCategoriesWithPaging")
     }
@@ -246,9 +263,13 @@ export async function GetAllFWords( params : GetAllFWordsProps) : Promise<ApiRes
 
         }, ttl)
 
+        logger.info("ALL FLASHCARD WORDS SUCCESSFULLY FETCHED!")
         return createResponse(true, 200, cachedData , "SUCCESS: GetAllFWords")
 
     } catch (error) {
+
+        console.log(`ERROR: GetAllFWords: ${error}`)
+        logger.error("ERROR: GetAllFWords", {error})
 
         return createResponse<GetAllFWordsResponse>(false, 500, null, "ERROR: GetAllFWords")
         

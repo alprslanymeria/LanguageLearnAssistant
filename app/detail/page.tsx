@@ -19,9 +19,11 @@ import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
 // STORE
 import { GlobalStore } from "@/src/store/globalStore"
 import { FlashcardSessionRowInput, ListeningSessinRowInput, ReadingSessionRowInput, WritingSessionRowInput } from "@/src/types/actions"
+import { Suspense } from "react"
 
 
-export default function Page() {
+// BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.
+function DetailPage() {
 
     //SEARCH PARAMS
     const searchParams = useSearchParams()
@@ -95,5 +97,15 @@ export default function Page() {
 
             </div>
         </div>
+    )
+}
+
+export default function Page() {
+
+    return (
+
+        <Suspense>
+            <DetailPage/>
+        </Suspense>
     )
 }

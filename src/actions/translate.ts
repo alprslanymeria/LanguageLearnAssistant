@@ -10,6 +10,8 @@ import { ApiResponse } from "@/src/types/response"
 import { createResponse } from "@/src/utils/response"
 // ZOD
 import { TranslateTextSchema } from "@/src/zod/actionsSchema"
+// LIBRARY
+import { logger } from "@/src/lib/logger"
 
 
 const {Translate} = v2
@@ -17,7 +19,8 @@ const {Translate} = v2
 
 //CLIENT
 const translate = new Translate({
-    key: process.env.GOOGLE_TRANSLATE_API_KEY
+    
+    keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
 })
 
 
@@ -81,11 +84,14 @@ export async function TranslateText(params : TranslateTextProps) : Promise<ApiRe
         let [translations] = await translate.translate(selectedText, target)
         translations = Array.isArray(translations) ? translations[0] : translations
 
+        logger.info("TRANSLATE TEXT --> TEXT SUCCESSFULLY TRANSLATED SUCCESSFULLY!")
         return createResponse(true, 200, translations, "SUCCESS: TranslateText!")
         
     } catch (error) {
         
         console.log(`ERROR: TranslateText: ${error}`)
+        logger.error("ERROR: TranslateText!", {error})
+
         return createResponse<string>(false, 500, null, "ERROR: TranslateText!")
     }
 }

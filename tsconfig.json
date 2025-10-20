@@ -1,19 +1,31 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    // Derleme sonucu hangi JavaScript sürümüne dönüştürüleceğini belirler.
+    "target": "ES2017", 
+    // Hangi ortam API’lerinin TypeScript tarafından tanınacağını belirtir.
     "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
+    // .js dosyalarının da derleme sürecine dahil edilmesine izin verir.
+    "allowJs": true, 
+    // node_modules içindeki tip dosyalarının (.d.ts) doğrulanmasını atlar.
     "skipLibCheck": true,
+    // Tüm katı tip denetimi kurallarını aktif eder.
     "strict": true,
+    // (IF TRUE) TypeScript sadece tip kontrolü yapar, JS çıktısı üretmez.
     "noEmit": true,
+    // CommonJS modüllerinin import sözdizimiyle kullanılmasını sağlar.
     "esModuleInterop": true,
+    // 
     "module": "esnext",
+    //
     "moduleResolution": "bundler",
+    //
     "resolveJsonModule": true,
+    //
     "isolatedModules": true,
+    //
     "jsx": "preserve",
+    //
     "incremental": true,
-    "allowImportingTsExtensions": true,
     "plugins": [
       {
         "name": "next"
@@ -24,6 +36,8 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/Auth.js", "app/api/auth/[...nextauth]/route.ts", "src/lib/crypto.js", "src/components/svg/googleSvg.js", "server.mts"],
+  // INCLUDE SADECE BURADA BELİRTİLEN YERLERDEKİ .TS DOSYALARINI DERLER.
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/api/auth/[...nextauth]/route.ts"],
   "exclude": ["node_modules"]
+  // EXCLUDE DERLEME SIRASINDA HANGI DOSYALARI GÖRMEZDEN GELECEĞİNİ BELİRTİR.
 }

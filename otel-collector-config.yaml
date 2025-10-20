@@ -1,0 +1,38 @@
+receivers: #--> UYGULAMADAN COLLECTOR'A HANGİ EXPORTER İLE VERİ GİDECEÜĞİNİ BELİRTİR.
+  otlp:
+    protocols:
+      grpc: # DEFAULT --> 4317
+        endpoint: "0.0.0.0:4317" # “Ben (collector) bu makinedeki tüm IP adreslerinden gelen OTLP verilerini dinliyorum.”
+      http: # DEFAULT --> 4318
+        endpoint: "0.0.0.0:4318" # “Ben (collector) bu makinedeki tüm IP adreslerinden gelen OTLP verilerini dinliyorum.”
+
+# PUSH BASED BACKENDS **> VERİLER COLLECTOR'DAN BACKEND'E PUSH EDİLİR. YANİ COLLECTOR BELİRTİLEN ENDPONIT'E (HEDEF BACKEND) VERİYİ PUSH EDER.
+# PULL BASED BACKENDS --> BACKEND VERİLERİ COLLECTOR'DAN PULL EDER. YANİ COLLECTOR'UN KENDİ AÇTIĞI ADRESTİR. HEDEF BACKEND BU ENDPOINT'I SCRAPE EDER. PULL BASED EXPORTER'LAR COLLECTOR İÇİNDE ÇALIŞIRLAR.
+# BU YÜZDEN OTLE-COLLECTOR'U SCRAPE EDERLER.
+exporters: #--> COLLECTOR ÜZERİNDEN BACKEND'E HANGİ EXPORTER İLE VERİ GİDECEĞİNİ BELİRTİR.
+  otlp:
+    endpoint: "http://otel-collector:4317"
+    tls:
+      insecure: true
+
+  # Data sources: traces
+  otlp/jaeger:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+
+  # Data sources: metrics
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    namespace: default
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: []
+      exporters: [otlp/jaeger]
+    metrics:
+      receivers: [otlp]
+      processors: []
+      exporters: [prometheus]

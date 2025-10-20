@@ -11,6 +11,8 @@ import { CacheKeys } from "@/src/utils/cache_keys"
 import { getOrSetCache } from "@/src/utils/redisHelper"
 // ZOD
 import { GetPracticesSchema } from "@/src/zod/actionsSchema"
+// LIBRARY
+import { logger } from "@/src/lib/logger"
 
 
 export default async function GetPractices(params : GetPracticesProps) : Promise<ApiResponse<GetPracticeResponse>> {
@@ -49,12 +51,14 @@ export default async function GetPractices(params : GetPracticesProps) : Promise
             
         }, ttl)
         
-
+        logger.info("GET PRACTICES: PRACTICES FETCHED SUCCESSFULLY!")
         return createResponse(true, 200, {data: practices}, "SUCCESS: GetPractices")
 
     } catch (error) {
         
         console.log(`ERROR: GetPractices: ${error}`)
+        logger.error("ERROR: GetPractices", {error})
+
         return createResponse<GetPracticeResponse>(false, 500, null, "ERROR: GetPractices")
     }
 }

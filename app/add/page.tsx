@@ -1,7 +1,7 @@
 "use client"
 
 // REACT & NEXT
-import { JSX } from "react"
+import { JSX, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 // COMPONENTS
 import ReadingAddOrEditComponent from "@/src/components/ReadingAddOrEditComponent/ReadingAddOrEdit"
@@ -13,7 +13,8 @@ import { useAddPageReducer } from "@/src/page/AddPage/useAddPageReducer"
 import { useAddPageCustomEffect } from "@/src/page/AddPage/useAddPageCustomEffect"
 
 
-export default function Page(){
+// BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.
+function AddPage() {
 
     //SEARCH PARAMS
     const searchParams = useSearchParams()
@@ -40,5 +41,16 @@ export default function Page(){
             {componentMap[state.activeComponent] || <div></div>}
         </div>
 
+    )
+}
+
+
+export default function Page(){
+
+    return (
+
+        <Suspense>
+            <AddPage/>
+        </Suspense>
     )
 }

@@ -1,19 +1,33 @@
+/*
+    BURADA OLAN OLAY ŞU:
+- Next.JS normalde kendi node.js server'ı üzerinde koşar. Yani uygulama başladığında arkaplan da createServer() metodu ile bir server ayağa kaldırılır
+ve next.js burada çalışır.
+
+- Burada benim kısıtım bunu özelleştiremiyor oluşum. Bu sebeple kendi server dosyam oluşturdum.
+
+- Ben burada socket.io gibi ek özelleştirmeer yapabiliyorum. createServer() ile oluşturdum ve next.js buna arkaplan da bağlanıyor.
+Sonuç olarak next.js ve socket.io aynı HTTP server üzerinde koşuyor.
+
+- Eğer burada socket.io standalone bir şekilde başlatılsaydı yani herhang bir server'a bağlı olmadan çalışsaydı kendi HTTP server'ına
+sahip olmuş olacaktı.
+
+*/
 import {createServer} from "node:http"
 import next from "next"
 import {Server} from "socket.io"
 // TYPES
-import type { CreateLiveSessionProps, DeleteLiveSessionProps } from "./src/types/actions.d.ts"
+import type { CreateLiveSessionProps, DeleteLiveSessionProps } from "@/src/types/actions.d.ts"
 // ZOD
-import { CreateLiveSessionSchema, DeleteLiveSessionSchema } from "./src/zod/actionsSchema.ts"
+import { CreateLiveSessionSchema, DeleteLiveSessionSchema } from "@/src/zod/actionsSchema"
 //LIBRARIES
-import { prisma } from "./src/lib/prisma.ts"
+import { prisma } from "@/src/lib/prisma"
 // UTILS
-import { createResponse } from "./src/utils/response.ts"
+import { createResponse } from "@/src/utils/response"
 
 
 //GET HOSTNAME AND PORT
 const dev = process.env.NODE_ENV !== "production"
-const hostname = process.env.HOSTNAME || "localhost"
+const hostname = "0.0.0.0"
 const port = parseInt(process.env.PORT || "3000", 10)
 
 const app = next({dev, hostname, port})

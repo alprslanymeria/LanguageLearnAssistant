@@ -11,6 +11,8 @@ import { getOrSetCache } from "@/src//utils/redisHelper"
 import { CacheKeys } from "@/src/utils/cache_keys"
 // ZOD
 import { CompareLanguageIdSchema } from "@/src/zod/actionsSchema"
+// LOGGER
+import { logger } from '@/src/lib/logger'
 
 
 // ADDED CACHE FEATURE - NO INVALIDATION REQUIRED
@@ -31,12 +33,15 @@ export async function GetLanguages() : Promise<ApiResponse<GetLanguagesResponse>
             return result
 
         }, ttl)
-        
+
+        logger.info('LANGUAGE VERİLERİ BAŞARILIR BİR ŞEKİLDE ALINDI. BİLDRİEN LOG SERVICE')
         return createResponse(true, 200, {data: languages}, "SUCCESS: GetLanguages")
 
     } catch (error) {
 
         console.log(`ERROR: GetLanguages: ${error}`)
+        logger.error("ERROR: GetLanguages", {error})
+
         return createResponse<GetLanguagesResponse>(false, 500, null, `ERROR: GetLanguages`)
     }
 }
@@ -71,13 +76,20 @@ export async function CompareLanguageId(params : CompareLanguageIdProps) : Promi
 
         }, ttl)
         
-        if(user.nativeLanguageId == languageId) return createResponse(true, 200, true,  "SUCCESS: CompareLanguageId")
-            
+        if(user.nativeLanguageId == languageId) {
+
+            logger.info("CompareLanguageId: Öğrenilmek istenen dil id'si ile user'ın native dil bilgisi aynı ")
+            return createResponse(true, 200, true,  "SUCCESS: CompareLanguageId")
+        } 
+
+        logger.info("CompareLanguageId: Öğrenilmek istenen dil id'si ile user'ın native dil bilgisi farklı ")
         return createResponse(true, 200, false , "SUCCESS: CompareLanguageId")
 
     } catch (error) {
 
         console.log(`ERROR: CompareLanguageId: ${error}`)
+        logger.error("ERROR: CompareLanguageId", {error})
+
         return createResponse<boolean>(false, 500, null, "ERROR: CompareLanguageId")
         
     }

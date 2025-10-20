@@ -13,9 +13,11 @@ import { useListPageCustomEffect } from "@/src/page/ListPage/useListPageCustomEf
 // PROVIDER
 import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { Suspense } from "react"
 
 
-export default function Page(){
+// BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.
+function ListPage() {
 
     //SEARCH PARAMS
     const searchParams = useSearchParams()
@@ -38,5 +40,15 @@ export default function Page(){
     return (
 
         <ListTableComponent  width={500} columnNames={state.columnNames} items={state.items} contents={state.contents} table={state.table} state={state} dispatch={dispatch}/>
+    )
+}
+
+export default function Page(){
+
+    return (
+
+        <Suspense>
+            <ListPage/>
+        </Suspense>
     )
 }

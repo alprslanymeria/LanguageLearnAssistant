@@ -21,9 +21,11 @@ import { GlobalStore } from "@/src/store/globalStore"
 import { useSession } from "next-auth/react"
 // COMPONENTS
 import PaginationComponent from "@/src/components/PaginationComponent/PaginationComponent"
+import { Suspense } from "react"
 
 
-export default function Page() {
+// BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.
+function PracticePage() {
 
     // GET SLUG
     const params = useParams<{ practice: string }>()
@@ -126,5 +128,15 @@ export default function Page() {
                 
             </>
         </>
+    )
+}
+
+export default function Page() {
+
+    return (
+
+        <Suspense>
+            <PracticePage/>
+        </Suspense>
     )
 }

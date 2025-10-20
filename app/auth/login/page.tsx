@@ -15,9 +15,11 @@ import { signIn } from "next-auth/react"
 import { GlobalStore } from "@/src/store/globalStore"
 // PROVIDER
 import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { Suspense } from "react"
 
 
-export default function Page() {
+// BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.
+function LoginPage() {
 
     // HOOKS
     const searchParams = useSearchParams()
@@ -108,4 +110,16 @@ export default function Page() {
             </div>
         </div>  
     )
+}
+
+
+export default function Page() {
+
+    return (
+
+        <Suspense>
+            <LoginPage/>
+        </Suspense>
+    )
+    
 }

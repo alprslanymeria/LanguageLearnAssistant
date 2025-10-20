@@ -13,6 +13,8 @@ import { GetProfileInfosSchema, SaveProfileInfosSchema } from "@/src/zod/actions
 // UTILS
 import { getOrSetCache, invalidateCache } from "@/src/utils/redisHelper"
 import { CacheKeys } from "@/src/utils/cache_keys"
+// LIBRARY
+import { logger } from "@/src/lib/logger"
 
 export async function GetProfileInfos(params : GetProfileInfosProps) : Promise<ApiResponse<GetProfileInfosResponse>> {
 
@@ -46,11 +48,14 @@ export async function GetProfileInfos(params : GetProfileInfosProps) : Promise<A
             return data
         }, ttl)
 
+        logger.info("GET PROFILE INFOS --> USER PROFILE INFOS SUCCESSFULL FETCHED!")
         return createResponse(true, 200, {data: user}, "SUCCESS: GetProfileInfos")
         
     } catch (error) {
 
         console.log(`ERROR: GetProfileInfos: ${error}`)
+        logger.error("ERROR: GetProfileInfos", {error})
+
         return createResponse<GetProfileInfosResponse>(false, 500, null, "ERROR: GetProfileInfos")
         
     }
@@ -68,14 +73,17 @@ export async function SaveProfileInfos(prevState: ApiResponse<SaveProfileInfosRe
             nativeLanguageId: Number(formData.get("nativeLanguageId"))
         }
 
+        logger.info("SaveProfileInfos Form Verileri Alındı:", {values} )
         await SaveProfileInfosSchema.parseAsync(values)
 
         // GOOGLE STORAGE CONFIGURATION
         const projectId = process.env.GCP_PROJECT_ID
+        logger.info("SAVE PROFILE INFOS --> GCP_PROJECT_ID", {projectId})
 
         const storage = new Storage({
 
-            projectId: projectId
+            projectId: projectId,
+            keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
         })
 
         const bucket = storage.bucket('create-items')
@@ -98,6 +106,9 @@ export async function SaveProfileInfos(prevState: ApiResponse<SaveProfileInfosRe
             const [isExist] = await bucket.file(oldImage).exists()
             
             if(isExist) await bucket.file(oldImage).delete()
+
+            logger.info("SAVE PROFILE INFOS --> OLD PROFILE IMAGE SUCCESSFULLY DELETED!")
+
         }
 
         // GET BUFFERS OF IMAGE
@@ -105,21 +116,48 @@ export async function SaveProfileInfos(prevState: ApiResponse<SaveProfileInfosRe
 
         // CREATE UNIQUE NAME FOR IMAGE
         const file1Name = `${values.userId}/profile/${Date.now()}_${(values.image).name}`
-        console.log(`FILE NAME: ${file1Name}`)
+        logger.info("SAVE PROFILE INFOS --> PROFILE IMAGE FILE 1 NAME", {file1Name})
 
-        // UPLOAD FILES TO GOOGLE CLOUD STORAGE
-        const file1Upload = bucket.file(file1Name).createWriteStream({
-            resumable: false,
-            metadata: { contentType: (values.image).type }
+        const fileOneUrl = await new Promise((resolve, reject) => {
+
+            // CLOUD'DA BU İSİMDE BİR REFERANS OLUŞTURUYORUZ
+            const file = bucket.file(file1Name)
+
+            // START STREAM
+            // UPLOAD FILES TO GOOGLE CLOUD STORAGE
+            const stream = file.createWriteStream({
+                resumable: false,
+                metadata: {contentType: values.image.type}
+            })
+
+            // IF ERROR OCCURED DURING STREAM
+            stream.on("error", (err) => {
+
+                logger.error("SAVE PROFILE INFOS --> GCS UPLOAD ERROR", {err})
+                reject(err)
+            })
+
+            // IF STREAM FINISH
+            stream.on("finish", async () => {
+
+                try {
+
+                    resolve(file.publicUrl())
+                    
+                } catch (error) {
+                    
+                    logger.error("SAVE PROFILE INFOS --> STREAM FINISH ERROR", {error})
+                    reject(error)
+                }
+            })
+
+            // WRITE FILES TO GOOGLE CLOUD STORAGE
+            stream.end(Buffer.from(bufferForFileOne))
         })
 
-        // WRITE FILES TO GOOGLE CLOUD STORAGE
-        file1Upload.end(Buffer.from(bufferForFileOne))
 
-        // GET FILE'S URL
-        const fileOneUrl = bucket.file(file1Name).publicUrl()
-        console.log(`FILE URL: ${fileOneUrl}`)
-
+        logger.info("SAVE PROFILE INFOS --> NEW PROFILE IMAGE CLOUD URL", {fileOneUrl})
+        logger.info("SAVE PROFILE INFOS --> NEW PROFILE IMAGE SAVED TO CLOUD SUCCESSFULLY!")
 
         // UPDATE DATABASE
         const updatedUser = await prisma.user.update({
@@ -128,7 +166,7 @@ export async function SaveProfileInfos(prevState: ApiResponse<SaveProfileInfosRe
             },
             data: {
                 name: values.name,
-                image: fileOneUrl,
+                image: fileOneUrl as string,
                 nativeLanguageId: values.nativeLanguageId
             },
             select: {
@@ -142,12 +180,14 @@ export async function SaveProfileInfos(prevState: ApiResponse<SaveProfileInfosRe
 
         await invalidateCache(`profile_infos:${values.userId}`)
 
-
+        logger.info("SAVE PROFILE INFOS --> USER PROFILE INFOS UPDATED ON DATABASE SUCCESSFULLY!")
         return createResponse(true, 200, {data: updatedUser} , "User Updated Successfully!")
         
     } catch (error) {
 
         console.log(`ERROR: SaveProfileInfos`)
+        logger.error("ERROR: SaveProfileInfos", {error})
+        
         return createResponse<SaveProfileInfosResponse>(false, 500, null , "ERROR: SaveProfileInfos")
         
     }
