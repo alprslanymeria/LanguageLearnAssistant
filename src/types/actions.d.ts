@@ -4,6 +4,7 @@ import {
     DeckVideo, DeckWord, FlashcardCategory, FlashcardOldSession, FlashcardSessionRow, Language, 
     ListeningCategory, ListeningOldSession, ListeningSessionRow, LiveSession, Practice, 
     Prisma, ReadingBook, ReadingOldSession, ReadingSessionRow, WritingBook, WritingOldSession, WritingSessionRow } from "@prisma/client"
+import { User } from "better-auth"
 
 
 // LANGUAGE
@@ -362,21 +363,27 @@ type UpdatedUser = Prisma.UserGetPayload<{
 
 
 
+// AUTH
+export type SignInProps = {
 
-
-// LIVE SESSION
-export type CreateLiveSessionProps = {
-
-    userId: string | undefined
-    liveSessionId: string
+    email: string,
+    password: string
 }
 
-export type CreateLiveSessionResponse = {
+export type SignInResponse = {
 
-    data: LiveSession
+    data: User
 }
 
-export type DeleteLiveSessionProps = {
+export type SignUpProps = {
 
-    userId: string | undefined
+    name: string,
+    email: string,
+    password: string,
+    nativeLanguageId: number
+}
+
+export type SignUpResponse = {
+
+    data: User
 }

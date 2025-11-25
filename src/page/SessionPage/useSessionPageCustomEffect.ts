@@ -2,8 +2,6 @@
 import { useEffect } from "react"
 // TYPES
 import { useSessionPageCustomEffectProps } from "@/src/page/SessionPage/prop"
-import socket from "@/src/lib/socketClient"
-
 
 export function useSessionPageCustomEffect(params : useSessionPageCustomEffectProps) {
 

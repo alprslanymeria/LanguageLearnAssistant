@@ -64,20 +64,23 @@ export async function handleChoose(params : HandleChooseProps) {
             if (response?.status !== 201) {
 
                 showAlert({ type: "error", title: "error", message: response?.message })
+                
+                socket.disconnect()
                 return
             }
+
+            //CREATE SAFE URL
+            const encryptedSessionId = encrypt(liveSessionId)
+            const safeUrl = encodeURIComponent(encryptedSessionId)
+
+            //SESSION SAYFASINA YÖNLENDİR
+            router.push(`${BASE}/session?id=${safeUrl}`)
         })
 
-
-        //CREATE SAFE URL
-        const encryptedSessionId = encrypt(liveSessionId)
-        const safeUrl = encodeURIComponent(encryptedSessionId)
-
-        //SESSION SAYFASINA YÖNLENDİR
-        router.push(`${BASE}/session?id=${safeUrl}`)
         
     } catch (error) {
         
+        console.log("ERROR: Create Live Session", error)
         showAlert({type: "error", title: "error", message: "Unexpected error during Create Live Session!"})
 
     } finally {

@@ -22,13 +22,13 @@ export type HandleSubmitProps = {
 
   e: FormEvent<HTMLFormElement>
   setLoading: (props: setLoadingProps) => void
-
+  dispatch: (action: Action) => void
+  
 }
 
 // USE EFFECTS
 export type UseSignupPageCustomEffectProps = {
 
-  searchParams: ReadonlyURLSearchParams | null
   hasHydrated: boolean
   setLoading: (props: setLoadingProps) => void
   showAlert: (props: ShowAlertProps) => void

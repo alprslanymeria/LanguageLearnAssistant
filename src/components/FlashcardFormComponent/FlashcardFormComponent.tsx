@@ -2,8 +2,8 @@
 
 // REACT & NEXT
 import { useRouter } from "next/navigation"
-// NEXT AUTH
-import { useSession } from "next-auth/react"
+// BETTER AUTH
+import { authClient } from "@/src/lib/auth-client"
 // STORE
 import { GlobalStore } from "@/src/store/globalStore"
 // TYPES
@@ -20,8 +20,8 @@ import { useFlashcardFormCustomEffect } from "@/src/components/FlashcardFormComp
 export default function FlashcardFormComponent({dispatch} : FlashcardFormComponentProps) {
 
     //SESSION
-    const {data: session , status} = useSession()
-    const userId = session?.user?.id
+    const {data: session, isPending} = authClient.useSession() 
+    const userId = session?.user.id
 
     //HOOKS
     const router = useRouter()
@@ -50,7 +50,7 @@ export default function FlashcardFormComponent({dispatch} : FlashcardFormCompone
                         <>
                             <button onClick={() => handleNextClick({sessionData, showAlert, updateFlashcardSession})} className="h-full md:h-full w-1/2 md:w-auto px-4 py-2 bg-blue-500 text-white rounded">Next</button>
                             <button 
-                                disabled= {(isLoading && loadingSource === "HandleCloseClick") || status === "loading"}
+                                disabled= {(isLoading && loadingSource === "HandleCloseClick") || isPending}
                                 onClick={() => handleCloseClick({sessionData, oldSessionId, item, dispatch, userId, router, updateFlashcardSession, showAlert, setLoading})} 
                                 className="h-full md:h-full w-1/2 md:w-auto px-4 py-2 bg-yellow-500 text-white rounded"
                             >

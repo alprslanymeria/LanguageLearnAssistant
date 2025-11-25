@@ -2,8 +2,8 @@
 
 // REACT & NEXT
 import { useRouter } from "next/navigation"
-// NEXT-AUTH
-import { useSession } from "next-auth/react"
+// BETTER-AUTH
+import { authClient } from "@/src/lib/auth-client"
 // PROVIDERS
 import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
@@ -20,8 +20,8 @@ export default function ListeningFormComponent({dispatch} : ListeningFormCompone
 
 
     //SESSION
-    const {data: session, status} = useSession()
-    const userId = session?.user?.id
+    const {data: session, isPending} = authClient.useSession() 
+    const userId = session?.user.id
 
     //HOOKS
     const {showAlert} = useAlert()
@@ -96,7 +96,7 @@ export default function ListeningFormComponent({dispatch} : ListeningFormCompone
 
                                 
                                 <button 
-                                    disabled= {(isLoading && loadingSource === "ListeningCloseAndSave") || status === "loading"}   
+                                    disabled= {(isLoading && loadingSource === "ListeningCloseAndSave") || isPending}   
                                     onClick={() => closeAndSave({userId, sessionData, oldSessionId, item, router, updateListeningSession, setLoading, showAlert, dispatch})} 
                                     className="w-full lg:flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200"
                                 >

@@ -17,19 +17,13 @@ export type Action =
 export type HandleSubmitProps = {
   
   e: FormEvent<HTMLFormElement>
+  dispatch: React.Dispatch<Action>
   setLoading: (props: setLoadingProps) => void
 }
 
 // USE EFFECTS
 export type useLoginPageCustomEffectProps = {
   
-  searchParams: ReadonlyURLSearchParams | null
   hasHydrated: boolean
   resetExcept: (keysToKeep?: string | string[] | undefined) => void
-  dispatch: (action: {
-                          type: "SET_AUTH_ERROR";
-                          payload: {
-                              authError: string;
-                          };
-                      }) => void
 }

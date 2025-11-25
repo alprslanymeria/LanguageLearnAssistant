@@ -3,8 +3,8 @@
 // REACT & NEXT
 import { useActionState } from "react"
 import { useRouter } from "next/navigation"
-// NEXT AUTH
-import { useSession } from "next-auth/react"
+// BETTER AUTH
+import { authClient } from "@/src/lib/auth-client"
 // ICONS
 import FileIcon from "@/src/components/svg/FileUpload"
 // TYPES
@@ -34,8 +34,8 @@ export default function ReadingAddOrEditComponent ({type, itemId} : ReadingAddOr
     const {isLoading , loadingSource, setLoading} = useLoading()
 
     //SESSION
-    const {data: session , status} = useSession()
-    const userId = session?.user?.id
+    const {data: session, isPending: isPendingBetterAuth} = authClient.useSession() 
+    const userId = session?.user.id
 
     // USE EFFECT
     useReadingAddOrEditCustomEffect({state, router, itemId, setLoading, dispatch, showAlert})
@@ -197,7 +197,7 @@ export default function ReadingAddOrEditComponent ({type, itemId} : ReadingAddOr
                     </div>
         
                     <button
-                        disabled= {isPending || status === "loading"}
+                        disabled= {isPending || isPendingBetterAuth}
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                     >

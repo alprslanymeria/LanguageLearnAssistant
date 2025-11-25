@@ -1,12 +1,12 @@
-// NEXT AUTH
-import { signIn } from "next-auth/react"
-// TYPES
+// BETTER AUTH
 import { HandleSubmitProps } from "@/src/page/LoginPage/prop"
+// TYPES
+import { SignIn } from "@/src/actions/auth"
 
 
 export async function handleSubmit( params : HandleSubmitProps) {
 
-    const {e, setLoading} = params
+    const {e, dispatch, setLoading} = params
 
     const kese = [e]
 
@@ -17,17 +17,15 @@ export async function handleSubmit( params : HandleSubmitProps) {
     setLoading({value: true , source: "LoginHandleSubmit"})
 
     const form = e.currentTarget
-    const email = form.email.value
-    const password = form.password.value
-    const operation = form.operation.value
+    const email = form.email.value as string
+    const password = form.password.value as string
 
-    await signIn("credentials", {
-        email,
-        password,
-        operation: operation,
-        redirect: true,
-        redirectTo: "/"
-    })
+    const response = await SignIn({email, password})
+
+    if(!response.success) {
+
+        dispatch({type: "SET_AUTH_ERROR", payload: {authError: response.message}})
+    }
 
     setLoading({value: false})
 }

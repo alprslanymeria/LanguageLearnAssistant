@@ -16,35 +16,3 @@ export function calculateSuccessRate(rows: { similarity?: number }[]): number {
 
   return (totalSimilarity / rows.length) * 100
 }
-
-
-export function getErrorMessageLogin(errorCode: string) {
-    switch (errorCode) {
-        case 'code_1':
-            return 'UNEXPECTED ERROR!'
-        case 'code_3':
-            return 'INVALID EMAIL OR PASSWORD!'
-        case 'code_6':
-            return 'PLEASE CHECK EMAIL FORMAT!'
-        case 'code_7':
-            return 'PASSWORD CAN NOT BE SHORTER THAN 8 CHARACTERS!'
-        default:
-            return 'SERVER ERROR'
-    }
-}
-
-export function getErrorMessageSignup(errorCode: string) {
-
-    switch (errorCode) {
-        case 'code_1':
-            return 'UNEXPECTED ERROR!'
-        case 'code_2':
-            return 'USER ALREADY EXIST!'
-        case 'code_4':
-            return 'PLEASE CHECK EMAIL FORMAT!'
-        case 'code_5':
-            return 'PASSWORD CAN NOT BE SHORTER THAN 8 CHARACTERS!'
-        default:
-            return 'SERVER ERROR'
-    }
-}

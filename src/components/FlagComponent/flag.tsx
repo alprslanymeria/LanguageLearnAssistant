@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation"
 import { FlagComponentProps } from "@/src/components/FlagComponent/prop"
 // ASSETS
 import { mitr } from "@/public/fonts"
-// NEXT AUTH
-import { useSession } from "next-auth/react"
+// BETTER AUTH
+import { authClient } from "@/src/lib/auth-client"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useFlagReducer } from "@/src/components/FlagComponent/useFlagReducer"
 import { handleFlagClick, handleStartClick } from "@/src/components/FlagComponent/handlers"
@@ -26,8 +26,8 @@ export default function FlagComponent({languages} : FlagComponentProps) {
     const {isLoading, loadingSource, setLoading} = useLoading()
 
     //SESSION
-    const {data: session , status} = useSession()
-    const userId = session?.user?.id
+    const {data: session, isPending} = authClient.useSession() 
+    const userId = session?.user.id
 
     return (
         
@@ -54,7 +54,7 @@ export default function FlagComponent({languages} : FlagComponentProps) {
             </div>
             <div className="flex justify-center mt-4">
                 <button
-                    disabled= {(isLoading && loadingSource === "HandleStartClick") || status === "loading"}
+                    disabled= {(isLoading && loadingSource === "HandleStartClick") || isPending}
                     onClick={() => handleStartClick({languageInfo: state.languageInfo , userId , router, showAlert , setLoading})}
                     className={` ${mitr.className} mt-20 bg-[#58CC02] text-white font-medium py-3 px-20 rounded-lg shadow-md shadow-[#58A700] hover:bg-[#58A700] transition-colors duration-300`}
                 >

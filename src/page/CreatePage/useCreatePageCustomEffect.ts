@@ -91,6 +91,7 @@ export function useCreatePageCustomEffect(params: UseCreatePageCustomEffectProps
         if(!hasHydrated) return
 
         return () => {
+
             resetExcept(["Language", "Practice", "OldSessions", "CreateItems", "OldSessionId", "SelectedItemId"])
         }
 

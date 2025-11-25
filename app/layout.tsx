@@ -1,6 +1,5 @@
 // REACT & NEXT
 import type { Metadata } from "next"
-import { SessionProvider } from "next-auth/react"
 // ASSETS
 import "@/styles/globals.css"
 // COMPONENTS
@@ -22,18 +21,16 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
     
       <html lang="en">
           <body>
-            <SessionProvider refetchOnWindowFocus={true}>
-                <AlertProvider>
-                  <LoadingProvider>
-                      <div className="container max-w-screen-xl mx-auto px-4">
-                        <NavbarComponent/>
-                      </div>
-                      <div className="w-full">
-                          {children}
-                      </div>
-                  </LoadingProvider>
-                </AlertProvider>
-            </SessionProvider>
+              <AlertProvider>
+                <LoadingProvider>
+                    <div className="container max-w-screen-xl mx-auto px-4">
+                      <NavbarComponent/>
+                    </div>
+                    <div className="w-full">
+                        {children}
+                    </div>
+                </LoadingProvider>
+              </AlertProvider>
           </body>
       </html>
   )

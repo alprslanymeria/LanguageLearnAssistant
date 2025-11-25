@@ -1,3 +1,18 @@
+NOT
+__________
+
+PACKAGE.JSON DA BULUNAN PAKETLERİ OTOMATİK GÜNCELLEMEK İÇİN ŞU ADIMLARI TAKİP ET:
+
+1: npm install -g npm-check-updates
+2: ncu
+3: ncu -u
+4: npm install
+
+Hata alırsan:
+5: npm install --legacy-peer-deps VEYA npm install --force
+
+
+
 NOT 1
 __________
 schema prisma dosyası değiştiğinde şu kodu çalıştır --> npx prisma generate --schema=./prisma/schema.prisma
@@ -59,3 +74,10 @@ BU İLERKİ ZAMANLARDA DÜZELTİLİR.
 
 
 // "start": "NODE_ENV=production tsx server.mts",
+
+
+NOT 6
+______________________________
+
+next build --webpack olarak kullanıyorum çünkü docker ile build aldığım sırada "pino" kütüphanesi yüzünden hata alıyorum.
+ilerleyen zamanlarda bu flag'i kaldırıp tekrar denerim.

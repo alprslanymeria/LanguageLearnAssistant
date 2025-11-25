@@ -5,7 +5,7 @@ export const CacheKeys = {
         all: () => ({
             
             key: "languages:all", 
-            ttl: 120
+            ttl: 2
         })
     },
 
@@ -14,7 +14,7 @@ export const CacheKeys = {
         byLanguage: (language: string) => ({
 
             key: `practices:byLanguage:language:${language}`,
-            ttl: 60
+            ttl: 2
         })
     },
 
@@ -23,13 +23,13 @@ export const CacheKeys = {
         compareLanguage: (userId: string, languageId: number) => ({
             
             key: `compare_language:${userId}:${languageId}`,
-            ttl: 60
+            ttl: 2
         }),
 
         profile: (userId: string) => ({
 
             key: `profile_infos:${userId}`,
-            ttl: 60
+            ttl: 2
         })
     },
 
@@ -38,7 +38,7 @@ export const CacheKeys = {
         paging: (userId: string, page: number, limit: number) => ({
 
             key: `get_all_rbooks_with_paging:${userId}:page:${page}limit:${limit}`,
-            ttl: 60
+            ttl: 2
         })
     },
 
@@ -47,7 +47,7 @@ export const CacheKeys = {
         paging: (userId: string, page: number, limit: number) => ({
 
             key: `get_all_wbooks_with_paging:${userId}:page:${page}limit:${limit}`,
-            ttl: 60
+            ttl: 2
         })
     },
 
@@ -56,13 +56,13 @@ export const CacheKeys = {
         all: (userId: string) => ({
 
             key: `get_all_fcategories:${userId}`,
-            ttl: 60
+            ttl: 2
         }),
 
         paging: (userId: string, page: number, limit: number) => ({
 
             key: `get_all_fcategories_with_paging:${userId}:page:${page}limit:${limit}`,
-            ttl: 60
+            ttl: 2
         })
     },
 
@@ -71,7 +71,7 @@ export const CacheKeys = {
         paging: (userId: string, page: number, limit: number) => ({
 
             key: `get_all_fwords_with_paging:${userId}:page:${page}limit:${limit}`,
-            ttl: 60
+            ttl: 2
         })
     },
 
@@ -80,7 +80,7 @@ export const CacheKeys = {
         paging: (userId: string, languageId: number, practiceId: number, page: number, limit: number) => ({
 
             key: `get_all_reading_oldSessions_with_paging:${userId}:languageId:${languageId}:practiceId:${practiceId}:page:${page}:limit:${limit}`,
-            ttl: 60
+            ttl: 2
         })
     },
 
@@ -89,7 +89,7 @@ export const CacheKeys = {
         paging: (userId: string, languageId: number, practiceId: number, page: number, limit: number) => ({
 
             key: `get_all_writing_oldSessions_with_paging:${userId}:languageId:${languageId}:practiceId:${practiceId}:page:${page}:limit:${limit}`,
-            ttl: 60
+            ttl: 2
         })
     },
 
@@ -98,7 +98,7 @@ export const CacheKeys = {
         paging: (userId: string, languageId: number, practiceId: number, page: number, limit: number) => ({
 
             key: `get_all_flashcard_oldSessions_with_paging:${userId}:languageId:${languageId}:practiceId:${practiceId}:page:${page}:limit:${limit}`,
-            ttl: 60
+            ttl: 2
         })
     },
 
@@ -107,7 +107,7 @@ export const CacheKeys = {
         paging: (userId: string, languageId: number, practiceId: number, page: number, limit: number) => ({
 
             key: `get_all_listening_oldSessions_with_paging:${userId}:languageId:${languageId}:practiceId:${practiceId}:page:${page}:limit:${limit}`,
-            ttl: 60
+            ttl: 2
         })
     },
 
@@ -116,25 +116,25 @@ export const CacheKeys = {
         reading: (userId: string, langId: number, pracId: number, sessionId: string, page: number, limit: number) => ({
 
             key: `get_reading_rows:userId:${userId}:langId:${langId}:pracId:${pracId}:sessionId:${sessionId}:page:${page}:limit:${limit}`,
-            ttl: 60
+            ttl: 2
         }),
 
         writing: (userId: string, langId: number, pracId: number, sessionId: string, page: number, limit: number) => ({
 
             key: `get_writing_rows:userId:${userId}:langId:${langId}:pracId:${pracId}:sessionId:${sessionId}:page:${page}:limit:${limit}`,
-            ttl: 60
+            ttl: 2
         }),
 
         flashcard: (userId: string, langId: number, pracId: number, sessionId: string, page: number, limit: number) => ({
 
             key: `get_flashcard_rows:userId:${userId}:langId:${langId}:pracId:${pracId}:sessionId:${sessionId}:page:${page}:limit:${limit}`,
-            ttl: 60
+            ttl: 2
         }),
 
         listening: (userId: string, langId: number, pracId: number, sessionId: string, page: number, limit: number) => ({
 
             key: `get_listening_rows:userId:${userId}:langId:${langId}:pracId:${pracId}:sessionId:${sessionId}:page:${page}:limit:${limit}`,
-            ttl: 60
+            ttl: 2
         })
     },
 
@@ -143,25 +143,25 @@ export const CacheKeys = {
         reading: (userId: string, langId: number, pracId: number) => ({
 
             key: `reading:userId:${userId}:langId:${langId}:pracId:${pracId}`,
-            ttl: 60
+            ttl: 2
         }),
 
         writing: (userId: string, langId: number, pracId: number) => ({
 
             key: `writing:userId:${userId}:langId:${langId}:pracId:${pracId}`,
-            ttl: 60
+            ttl: 2
         }),
 
         listening: (userId: string, langId: number, pracId: number) => ({
 
             key: `listening:userId:${userId}:langId:${langId}:pracId:${pracId}`,
-            ttl: 60
+            ttl: 2
         }),
 
         flashcard: (userId: string, langId: number, pracId: number) => ({
 
             key: `flashcard:userId:${userId}:langId:${langId}:pracId:${pracId}`,
-            ttl: 60
+            ttl: 2
         })
     }
 }

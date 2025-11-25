@@ -17,8 +17,8 @@ import { handleCreateClick } from "@/src/page/PracticePage/handlers"
 import { usePracticePageReducer } from "@/src/page/PracticePage/usePracticePageReducer"
 // STORE
 import { GlobalStore } from "@/src/store/globalStore"
-// NEXT AUTH
-import { useSession } from "next-auth/react"
+// BETTER AUTH
+import { authClient } from "@/src/lib/auth-client"
 // COMPONENTS
 import PaginationComponent from "@/src/components/PaginationComponent/PaginationComponent"
 import { Suspense } from "react"
@@ -36,8 +36,8 @@ function PracticePage() {
     const language = searchParams!.get("language")
 
     //SESSION
-    const {data: session , status} = useSession()
-    const userId = session?.user?.id
+    const {data: session} = authClient.useSession() 
+    const userId = session?.user.id
 
     // HOOKS
     const {state, dispatch} = usePracticePageReducer()

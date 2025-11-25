@@ -1,9 +1,9 @@
-// NEXT AUTH
-import { signOut } from "next-auth/react"
-// ACTIONS
-import { DeleteLiveSession } from "@/src/actions/liveSession"
 // TYPES
 import { HandleDropdownClickProps, HandleLogoutProps } from "@/src/components/EmailComponent/prop"
+// BETTER AUTH
+import { SignOut } from "@/src/lib/auth-client"
+// LIBRARY
+import socket from "@/src/lib/socketClient"
 // STORE
 import { GlobalStore } from "@/src/store/globalStore"
 
@@ -27,16 +27,16 @@ export async function handleLogout(params : HandleLogoutProps) {
         // CHECK IF REQUEST COME FROM /SESSION
         if(pathName.startsWith('/session'))
         {
-            const response = await DeleteLiveSession({userId})
-            
-            if(response?.status != 204)
-            {
-                showAlert({type: "error" , title: "error" , message: response.message})
+            //DELETE LIVE SESSION
+            socket.emit("delete-live-session", {userId}, (response : any) => {
 
-                return
-            }
+                if (response?.status !== 204) {
 
-            showAlert({type: "success" , title: "success" , message: response.message})
+                    showAlert({ type: "error", title: "error", message: response?.message })
+                    return
+                }
+            })
+
         }
         
     } catch (error) {
@@ -45,7 +45,7 @@ export async function handleLogout(params : HandleLogoutProps) {
         
     } finally {
 
-        await signOut({redirect: true , redirectTo: "/auth/login"})
+        await SignOut()
 
         dispatch({type : "TOGGLE_DROPDOWN"})
 

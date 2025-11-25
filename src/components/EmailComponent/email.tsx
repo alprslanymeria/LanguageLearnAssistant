@@ -3,8 +3,8 @@
 // REACT & NEXT
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-// NEXT AUTH
-import { useSession } from "next-auth/react"
+// BETTER AUTH
+import { authClient } from "@/src/lib/auth-client"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { handleDropdownClick, handleLogout } from "@/src/components/EmailComponent/handlers"
 import { useEmailReducer } from "@/src/components/EmailComponent/useEmailReducer"
@@ -24,9 +24,9 @@ export function EmailComponent() {
     const {isLoading, loadingSource, setLoading} = useLoading()
 
     // SESSION
-    const {data: session, status} = useSession()
-    const userId = session?.user?.id
-    const email = session?.user?.email
+    const {data: session, isPending} = authClient.useSession() 
+    const userId = session?.user.id
+    const email = session?.user.email
 
     //STORE
     const resetExcept = GlobalStore((state) => state.resetExcept)
@@ -37,7 +37,7 @@ export function EmailComponent() {
     return (
 
         <div className="flex items-center space-x-4">
-            {email == null && status != "loading" ? (
+            {email == null && !isPending ? (
                 !isAuthPage && (
                     <>
                         <Link className="bg-blue-500 text-white px-3 py-1 rounded-lg shadow hover:bg-blue-600 transition" href="/auth/login">Login</Link>
@@ -64,7 +64,7 @@ export function EmailComponent() {
                         <Link href="/list?table=rbooks" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold" onClick={() => handleDropdownClick({dispatch})}>📖 Reading Books</Link>
                         <Link href="/list?table=wbooks" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold" onClick={() => handleDropdownClick({dispatch})}>✍️ Writing Books</Link>
                     <button
-                        disabled= {(isLoading && loadingSource === "EmailHandleLogout") || status === "loading"}
+                        disabled= {(isLoading && loadingSource === "EmailHandleLogout") || isPending}
                         onClick={() => handleLogout({ userId, pathName, resetExcept, showAlert, dispatch , setLoading})}
                         className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100 font-semibold"
                     >

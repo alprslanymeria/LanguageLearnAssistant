@@ -1,7 +1,6 @@
 "use client"
 
 // REACT & NEXT
-import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 // ASSETS
 import { mitr } from "@/public/fonts"

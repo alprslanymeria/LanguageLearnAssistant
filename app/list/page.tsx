@@ -2,8 +2,8 @@
 
 // REACT & NEXT
 import { useSearchParams } from "next/navigation"
-// NEXT AUTH
-import { useSession } from "next-auth/react"
+// BETTER AUTH
+import { authClient } from "@/src/lib/auth-client"
 // COMPONENTS
 import ListTableComponent from "@/src/components/ListTableComponent/listTable"
 import Loader from "@/src/components/loader"
@@ -24,8 +24,8 @@ function ListPage() {
     const table = searchParams!.get("table")
 
     //SESSION
-    const {data: session , status} = useSession()
-    const userId = session?.user?.id
+    const {data: session} = authClient.useSession() 
+    const userId = session?.user.id
 
     //HOOKS
     const {state, dispatch} = useListPageReducer()

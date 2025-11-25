@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js'
 
 // GET SECRET KEY
-const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY
+const SECRET_KEY = process.env.NEXT_PUBLIC_CRYPTO_JS_KEY
 
 // ENCRYPT FUNCTION
 export function encrypt(sessionId)

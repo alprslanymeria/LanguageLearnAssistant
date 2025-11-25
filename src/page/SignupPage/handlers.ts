@@ -1,12 +1,12 @@
 // REACT & NEXT
-import { signIn } from "next-auth/react"
-// TYPES
 import { HandleSubmitProps } from "@/src/page/SignupPage/prop"
+// TYPES
+import { SignUp } from "@/src/actions/auth"
 
 
 export async function handleSubmit(params : HandleSubmitProps) {
 
-    const {e, setLoading} = params
+    const {e, dispatch, setLoading} = params
 
     const kese = [e]
 
@@ -17,19 +17,18 @@ export async function handleSubmit(params : HandleSubmitProps) {
     setLoading({value: true , source: "SignupHandleSubmit"})
 
     const form = e.currentTarget
-    const email = form.email.value
-    const password = form.password.value
-    const nativeLanguageId = form.nativeLanguageId.value
-    const operation = form.operation.value
+    const email = form.email.value as string
+    const password = form.password.value as string
+    const nativeLanguageId = Number(form.nativeLanguageId.value)
 
-    await signIn("credentials", {
-        email,
-        password,
-        nativeLanguageId,
-        operation: operation,
-        redirect: true,
-        redirectTo: "/"
-    })
+    const response = await SignUp({name: "test_user", email, password, nativeLanguageId})
+
+    if(!response.success) {
+
+        dispatch({type: "SET_AUTH_ERROR", payload: {authError: response.message}})
+    }
 
     setLoading({value: false})
+
+    return
 }

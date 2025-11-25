@@ -2,8 +2,8 @@
 
 // REACT & NEXT
 import { useRouter } from "next/navigation"
-// NEXT AUTH
-import { useSession } from "next-auth/react"
+// BETTER AUTH
+import { authClient } from "@/src/lib/auth-client"
 // STORE
 import { GlobalStore } from "@/src/store/globalStore"
 // PROVIDER
@@ -19,8 +19,8 @@ import { calculateRate, closeAndSave, handleTextSelection, handleTranslate } fro
 export default function ReadingFormComponent({dispatch} : ReadingFormComponentProps) {
 
     //SESSION
-    const {data: session, status} = useSession()
-    const userId = session?.user?.id
+    const {data: session, isPending} = authClient.useSession() 
+    const userId = session?.user.id
 
     //HOOKS
     const {showAlert} = useAlert()
@@ -89,7 +89,7 @@ export default function ReadingFormComponent({dispatch} : ReadingFormComponentPr
 
                                 {sessionData.data.RInputText && (
                                     <button 
-                                        disabled= {(isLoading && loadingSource === "ReadingHandleTranslate") || status === "loading" }
+                                        disabled= {(isLoading && loadingSource === "ReadingHandleTranslate") || isPending}
                                         onClick={() => handleTranslate({userId, language, practice, sessionData, showAlert, updateReadingSession, setLoading})} 
                                         className="w-full lg:flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200"
                                     >
@@ -122,7 +122,7 @@ export default function ReadingFormComponent({dispatch} : ReadingFormComponentPr
                                     </button>
                                 )}
                                 <button 
-                                    disabled= {(isLoading && loadingSource === "ReadingCloseAndSave") || status === "loading"}   
+                                    disabled= {(isLoading && loadingSource === "ReadingCloseAndSave") || isPending}   
                                     onClick={() => closeAndSave({userId, sessionData, oldSessionId, item, router, dispatch, showAlert, updateReadingSession, setLoading})} 
                                     className="w-full lg:flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200"
                                 >

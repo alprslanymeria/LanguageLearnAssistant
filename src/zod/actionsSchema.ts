@@ -3,301 +3,221 @@ import { z } from "zod"
 // CompareLanguageIdSchema
 export const CompareLanguageIdSchema = z.object({
 
-    userId: z.string().nullable(),
-    languageId: z.number().nullable()
-
-}).refine(
-            data => data.userId !== null
-            &&      data.languageId !== null , {message: "Parameters can not be null!"})
+    userId: z.string(),
+    languageId: z.number()
+})
 
 
 // GetItemByIdSchema
 export const GetItemByIdSchema = z.object({
 
-    itemId: z.string().nullable(),
-    table: z.string().nullable()
-
-}).refine(
-            data => data.itemId !== null
-            &&      data.table !== null , {message: "Parameters can not be null!"})
-
+    itemId: z.string(),
+    table: z.string()
+})
             
 
 // DeleteByIdSchema
 export const DeleteyIdSchema = z.object({
 
-    itemId: z.number().nullable(),
-    table: z.string().nullable()
-
-}).refine(
-            data => data.itemId !== null
-            &&      data.table !== null , {message: "Parameters can not be null!"})
-
+    itemId: z.number(),
+    table: z.string()
+})
 
 
 // ReadingAddOrUpdateSchema
 export const ReadingAddOrUpdateSchema = z.object({
 
-    languageId: z.number().nullable(),
-    inputOne: z.string().nullable(),
-    fileOne: z.instanceof(File).nullable(),
-    fileTwo: z.instanceof(File).nullable(),
+    languageId: z.number(),
+    inputOne: z.string(),
+    fileOne: z.instanceof(File),
+    fileTwo: z.instanceof(File),
 
-    userId: z.string().nullable(),
-    itemId: z.number().nullable(),
-    table: z.string().nullable(),
-    type: z.string().nullable()
-
-}).refine(
-            data => data.languageId !== null
-            &&      data.inputOne !== null
-            &&      data.fileOne !== null
-            &&      data.fileTwo !== null
-            &&      data.userId !== null
-            &&      data.itemId !== null
-            &&      data.table !== null
-            &&      data.type !== null , {message: "Parameters can not be null!"})
-
+    userId: z.string(),
+    itemId: z.number(),
+    table: z.string(),
+    type: z.string()
+})
 
 
 // WritingAddOrUpdateSchema
 export const WritingAddOrUpdateSchema = z.object({
 
-    languageId: z.number().nullable(),
-    inputOne: z.string().nullable(),
-    fileOne: z.instanceof(File).nullable(),
-    fileTwo: z.instanceof(File).nullable(),
+    languageId: z.number(),
+    inputOne: z.string(),
+    fileOne: z.instanceof(File),
+    fileTwo: z.instanceof(File),
 
-    userId: z.string().nullable(),
-    itemId: z.number().nullable(),
-    table: z.string().nullable(),
-    type: z.string().nullable()
-
-}).refine(
-            data => data.languageId !== null
-            &&      data.inputOne !== null
-            &&      data.fileOne !== null
-            &&      data.fileTwo !== null
-            &&      data.userId !== null
-            &&      data.itemId !== null
-            &&      data.table !== null
-            &&      data.type !== null , {message: "Parameters can not be null!"})
+    userId: z.string(),
+    itemId: z.number(),
+    table: z.string(),
+    type: z.string()
+})
 
 
 // DeckWordAddOrUpdateSchema
 export const DeckWordAddOrUpdateSchema = z.object({
 
-    languageId: z.number().nullable(),
-    inputOne: z.string().nullable(),
+    languageId: z.number(),
+    inputOne: z.string(),
 
-    userId: z.string().nullable(),
-    itemId: z.number().nullable(),
-    table: z.string().nullable(),
-    type: z.string().nullable()
+    userId: z.string(),
+    itemId: z.number(),
+    table: z.string(),
+    type: z.string()
 
-}).refine(
-            data => data.languageId !== null
-            &&      data.inputOne !== null
-            &&      data.userId !== null
-            &&      data.itemId !== null
-            &&      data.table !== null
-            &&      data.type !== null , {message: "Parameters can not be null!"})
-
+})
 
 // FlashcardCategoryAddOrUpdateSchema
 export const FlashcardCategoryAddOrUpdateSchema = z.object({
 
-    languageId: z.number().nullable(),
-    inputOne: z.string().nullable(),
+    languageId: z.number(),
+    inputOne: z.string(),
 
-    userId: z.string().nullable(),
-    itemId: z.number().nullable(),
-    table: z.string().nullable(),
-    type: z.string().nullable()
-
-}).refine(
-            data => data.languageId !== null
-            &&      data.inputOne !== null
-            &&      data.userId !== null
-            &&      data.itemId !== null
-            &&      data.table !== null
-            &&      data.type !== null , {message: "Parameters can not be null!"})
-
+    userId: z.string(),
+    itemId: z.number(),
+    table: z.string(),
+    type: z.string()
+})
 
 
 // GetAllRBooksSchema
 export const GetAllRBooksSchema = z.object({
 
-    userId: z.string().nullable(),
+    userId: z.string(),
     page: z.number().int().min(1).optional().default(1),
     limit: z.number().int().min(1).max(100).optional().default(10)
-
-}).refine(
-            data => data.userId !== null , {message: "Parameters can not be null!"})
+})
 
 
 // GetAllWBooksSchema
 export const GetAllWBooksSchema = z.object({
 
-    userId: z.string().nullable(),
+    userId: z.string(),
     page: z.number().int().min(1).optional().default(1),
     limit: z.number().int().min(1).max(100).optional().default(10)
-
-}).refine(
-            data => data.userId !== null , {message: "Parameters can not be null!"})
-
+})
 
 // GetAllFCategoriesSchema
 export const GetAllFCategoriesSchema = z.object({
 
-    userId: z.string().nullable()
-
-}).refine(
-            data => data.userId !== null , {message: "Parameters can not be null!"})
+    userId: z.string()
+})
 
 
 // GetAllFCategoriesWithPagingSchema
 export const GetAllFCategoriesWithPagingSchema = z.object({
 
-    userId: z.string().nullable(),
+    userId: z.string(),
     page: z.number().int().min(1).optional().default(1),
     limit: z.number().int().min(1).max(100).optional().default(10)
-
-}).refine(
-            data => data.userId !== null , {message: "Parameters can not be null!"})
+})
 
 
 // GetAllFWordsSchema
 export const GetAllFWordsSchema = z.object({
 
-    userId: z.string().nullable(),
+    userId: z.string(),
     page: z.number().int().min(1).optional().default(1),
     limit: z.number().int().min(1).max(100).optional().default(10)
-
-}).refine(
-            data => data.userId !== null , {message: "Parameters can not be null!"})
-
-
-// CreateLiveSessionSchema
-export const CreateLiveSessionSchema = z.object({
-
-    userId: z.string().nullable(),
-    liveSessionId: z.string().nullable()
-
-}).refine(
-            data => data.userId !== null
-            &&      data.liveSessionId !== null , {message: "Parameters can not be null!"})
-
-            
-
-// DeleteLiveSessionSchema
-export const DeleteLiveSessionSchema = z.object({
-
-    userId: z.string().nullable()
-
-}).refine(
-            data => data.userId !== null , {message: "Parameters can not be null!"})
+})
 
 
 // GetOldSessionsSchema
 export const GetOldSessionsSchema = z.object({
 
-    userId: z.string().nullable(),
-    language: z.string().nullable(),
-    practice: z.string().nullable(),
+    userId: z.string(),
+    language: z.string(),
+    practice: z.string(),
     page: z.number().int().min(1).optional().default(1),
     limit: z.number().int().min(1).max(100).optional().default(10)
-
-}).refine(
-            data => data.userId !== null
-            &&      data.language !== null
-            &&      data.practice !== null , {message: "Parameters can not be null!"})
-
+})
 
 
 // GetPracticesSchema
 export const GetPracticesSchema = z.object({
 
-    language: z.string().nullable()
-
-}).refine(
-            data => data.language !== null , {message: "Parameters can not be null!"})
+    language: z.string()
+})
 
 
 // CalculateRateSchema
 export const CalculateRateSchema = z.object({
 
-    inputOne: z.string().nullable(),
-    inputTwo: z.string().nullable()
-
-}).refine(
-            data => data.inputOne !== null 
-        &&          data.inputTwo !== null , {message: "Parameters can not be null!"})
+    inputOne: z.string(),
+    inputTwo: z.string()
+})
 
 
 // TranslateTextSchema
 export const TranslateTextSchema = z.object({
 
-    userId: z.string().nullable(),
-    language: z.string().nullable(),
-    practice: z.string().nullable(),
-    selectedText: z.string().nullable()
+    userId: z.string(),
+    language: z.string(),
+    practice: z.string(),
+    selectedText: z.string()
+})
 
-}).refine(
-            data => data.userId !== null
-            &&      data.language !== null
-            &&      data.practice !== null 
-            &&      data.selectedText !== null , {message: "Parameters can not be null!"})
 
 // GetProfileInfosSchema
 export const GetProfileInfosSchema = z.object({
 
-    userId: z.string().nullable()
-
-}).refine(
-            data => data.userId !== null , {message: "Parameters can not be null!"})
+    userId: z.string()
+})
 
 
 // SaveProfileInfosSchema
 export const SaveProfileInfosSchema = z.object({
 
-    userId: z.string().nullable(),
-    name: z.string().nullable(),
-    image: z.instanceof(File).nullable(),
-    nativeLanguageId: z.number().nullable()
-
-}).refine(
-            data => data.userId !== null
-            &&      data.name !== null
-            &&      data.image !== null 
-            &&      data.nativeLanguageId !== null , {message: "Parameters can not be null!"})
-
+    userId: z.string(),
+    name: z.string(),
+    image: z.instanceof(File),
+    nativeLanguageId: z.number()
+})
 
 // GetRowsByIdSchema
 export const GetRowsByIdSchema = z.object({
 
-    userId: z.string().nullable(),
-    language: z.string().nullable(),
-    practice: z.string().nullable(),
-    oldSessionId: z.string().nullable(),
+    userId: z.string(),
+    language: z.string(),
+    practice: z.string(),
+    oldSessionId: z.string(),
     page: z.number().int().min(1).optional().default(1),
     limit: z.number().int().min(1).max(100).optional().default(10)
-
-}).refine(
-            data => data.userId !== null
-            &&      data.language !== null
-            &&      data.practice !== null 
-            &&      data.oldSessionId !== null , {message: "Parameters can not be null!"})
-
+})
 
 // GetCreateItemsSchema
 export const GetCreateItemsSchema = z.object({
 
-    userId: z.string().nullable(),
-    language: z.string().nullable(),
-    practice: z.string().nullable()
+    userId: z.string(),
+    language: z.string(),
+    practice: z.string()
+})
 
-}).refine(
-            data => data.userId !== null
-            &&      data.language !== null
-            &&      data.practice !== null , {message: "Parameters can not be null!"})
+// SignInSchema
+export const SignInSchema = z.object({
+
+    email: z.email("Invalid email address")
+                .min(1, "Email is required"),
+    password: z
+                .string()
+                .min(8, "Password must be at least 8 characters long")
+                .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+                .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+                .regex(/[0-9]/, "Password must contain at least one number")
+                .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character")
+})
+
+export const SignupSchema = z.object({
+
+    name: z.string(),
+    email: z.email("Invalid email address")
+                .min(1, "Email is required"),
+    password: z
+                .string()
+                .min(8, "Password must be at least 8 characters long")
+                .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+                .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+                .regex(/[0-9]/, "Password must contain at least one number")
+                .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
+    nativeLanguageId: z.number()
+})

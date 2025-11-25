@@ -4,34 +4,11 @@ import { useEffect } from "react"
 import { UseSignupPageCustomEffectProps } from "@/src/page/SignupPage/prop"
 // ACTIONS
 import { GetLanguages } from "@/src/actions/language"
-// UTILS
-import { getErrorMessageSignup } from "@/src/utils/helper"
 
 
 export function useSignupPageCustomEffect(params: UseSignupPageCustomEffectProps) {
 
-    const {searchParams, hasHydrated, setLoading, showAlert, resetExcept, dispatch} = params
-
-    useEffect(() => {
-
-        // STORE'DAN VERİ GELMEDİĞİ İÇİN HASHYDRATED KULLANILMADI
-
-        const kese = [searchParams]
-
-        if(kese.some(k => !k)) return
-    
-        const GET = async () => {
-        
-            const code = searchParams!.get('code')
-            
-            if(code) dispatch({type: "SET_AUTH_ERROR", payload: {authError: getErrorMessageSignup(code)}})
-
-        }
-
-        GET()
-
-    }, [searchParams, dispatch])
-
+    const { hasHydrated, setLoading, showAlert, resetExcept, dispatch} = params
 
     useEffect(() => {
         
@@ -66,7 +43,7 @@ export function useSignupPageCustomEffect(params: UseSignupPageCustomEffectProps
 
         GET()
 
-    }, [dispatch])
+    }, [])
 
 
     useEffect(() => {

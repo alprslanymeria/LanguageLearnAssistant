@@ -10,8 +10,8 @@ import { useFlashcardAddOrEditReducer } from "@/src/components/FlashcardAddOrEdi
 import { useFlashcardAddOrEditCustomEffect } from "@/src/components/FlashcardAddOrEditComponent/useFlashcardAddOrEditCustomEffect"
 // TYPES
 import { FlashcardAddOrEditComponentProps } from "@/src/components/FlashcardAddOrEditComponent/prop"
-// NEXT AUTH
-import { useSession } from "next-auth/react"
+// BETTER AUTH
+import { authClient } from "@/src/lib/auth-client"
 // PROVIDERS
 import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
@@ -25,8 +25,8 @@ export default function FlashcardAddOrEditComponent ({type, itemId} : FlashcardA
     const [state, formAction, isPending] = useActionState(FlashcardCategoryAddOrUpdate, undefined)
 
     //SESSION
-    const {data: session , status} = useSession()
-    const userId = session?.user?.id
+    const {data: session, isPending: isPendingBetterAuth} = authClient.useSession() 
+    const userId = session?.user.id
 
     // HOOKS
     const {states , dispatch} = useFlashcardAddOrEditReducer()
@@ -103,7 +103,7 @@ export default function FlashcardAddOrEditComponent ({type, itemId} : FlashcardA
                     </div>
         
                     <button
-                        disabled= {isPending || status === "loading"}
+                        disabled= {isPending || isPendingBetterAuth}
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                     >

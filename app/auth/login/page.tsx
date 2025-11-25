@@ -1,28 +1,26 @@
 "use client"
 
 // REACT & NEXT
+import { Suspense } from "react"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
 // COMPONENTS
 import { GoogleLogo } from "@/src/components/svg/googleSvg"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useLoginReducer } from "@/src/page/LoginPage/useLoginReducer"
 import { handleSubmit } from "@/src/page/LoginPage/handlers"
 import { useLoginPageCustomEffect } from "@/src/page/LoginPage/useLoginPageCustomEffect"
-// NEXT AUTH
-import { signIn } from "next-auth/react"
+// BETTER AUTH
+import { SignInWithGoogle } from "@/src/lib/auth-client"
 // STORE
 import { GlobalStore } from "@/src/store/globalStore"
 // PROVIDER
 import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
-import { Suspense } from "react"
 
 
 // BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.
 function LoginPage() {
 
     // HOOKS
-    const searchParams = useSearchParams()
     const {state , dispatch} = useLoginReducer()
     const {isLoading, loadingSource, setLoading} = useLoading()
 
@@ -33,10 +31,8 @@ function LoginPage() {
     // USE EFFECTS
     useLoginPageCustomEffect({
         
-        searchParams,
         hasHydrated,
-        resetExcept,
-        dispatch
+        resetExcept
     })
 
 
@@ -45,8 +41,7 @@ function LoginPage() {
             <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
                 <h2 className="text-2xl font-bold text-center">Login</h2>
 
-                <form className="space-y-4" method="POST" onSubmit={(e) => handleSubmit({e, setLoading})}>
-                    <input type="hidden" name="operation" value={"login"} />
+                <form className="space-y-4" method="POST" onSubmit={(e) => handleSubmit({e, dispatch, setLoading})}>
                     <div>
                         {state.authError && <p className="text-sm text-red-500 text-center">{state.authError}</p>}
                     </div>
@@ -93,7 +88,7 @@ function LoginPage() {
 
                     <button
                         type="button"
-                        onClick={() => signIn("google")}
+                        onClick={async () => await SignInWithGoogle() }
                         className="flex items-center justify-center w-full gap-2 px-4 py-2 mt-4 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
                     >
                         <GoogleLogo className="w-5 h-5" />

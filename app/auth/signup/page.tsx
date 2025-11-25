@@ -2,7 +2,7 @@
 
 // REACT & NEXT
 import Link from 'next/link'
-import { useSearchParams } from "next/navigation"
+import { Suspense } from 'react'
 // COMPONENTS
 import { GoogleLogo } from "@/src/components/svg/googleSvg"
 import Loader from '@/src/components/loader'
@@ -10,21 +10,19 @@ import Loader from '@/src/components/loader'
 import { useSignupPageCustomEffect } from '@/src/page/SignupPage/useSignupPageCustomEffect'
 import { useSignupReducer } from "@/src/page/SignupPage/useSignupReducer"
 import { handleSubmit } from "@/src/page/SignupPage/handlers"
-// NEXT AUTH
-import { signIn } from "next-auth/react"
 // PROVIDER
 import { useAlert } from '@/src/providers/AlertProvider/AlertProvider'
 import { useLoading } from '@/src/providers/LoadingProvider/LoadingProvider'
 // STORE
 import { GlobalStore } from '@/src/store/globalStore'
-import { Suspense } from 'react'
+// BETTER AUTH
+import { SignInWithGoogle } from '@/src/lib/auth-client'
 
 
 // BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.
 function SignupPage() {
 
     // HOOKS
-    const searchParams = useSearchParams()
     const {state , dispatch} = useSignupReducer()
     const { showAlert } = useAlert()
     const {isLoading, loadingSource, setLoading} = useLoading()
@@ -36,7 +34,6 @@ function SignupPage() {
     // USE EFFECTS
     useSignupPageCustomEffect({
 
-        searchParams,
         hasHydrated,
         setLoading,
         showAlert,
@@ -50,7 +47,7 @@ function SignupPage() {
         <div className="flex items-center justify-center">
             <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
                 <h2 className="text-2xl font-bold text-center">Sign Up</h2>
-                <form className="space-y-4" method="POST" onSubmit={(e) => handleSubmit({e, setLoading})}>
+                <form className="space-y-4" method="POST" onSubmit={(e) => handleSubmit({e, dispatch, setLoading})}>
                     <input type="hidden" name="operation" value={"signup"} />
                     <div>
                         {state.authError && <p className="text-sm text-red-500 text-center">{state.authError}</p>}
@@ -111,7 +108,7 @@ function SignupPage() {
 
                     <button
                         type="button"
-                        onClick={() => signIn("google")}
+                        onClick={async () => await SignInWithGoogle() }
                         className="flex items-center justify-center w-full gap-2 px-4 py-2 mt-4 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
                     >
                         <GoogleLogo className="w-5 h-5" />

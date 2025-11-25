@@ -2,8 +2,8 @@
 
 // REACT & NEXT
 import { useRouter, useSearchParams } from "next/navigation"
-// NEXT AUTH
-import { useSession } from "next-auth/react"
+// BETTER AUTH
+import { authClient } from "@/src/lib/auth-client"
 //COMPONENTS
 import BookSvg from "@/src/components/svg/BookSvg"
 import DeckSvg from "@/src/components/svg/DeckSvg"
@@ -30,8 +30,8 @@ function DetailPage() {
     const oldSessionId = searchParams!.get("id")
 
     //SESSION
-    const {data: session , status} = useSession()
-    const userId = session?.user?.id
+    const {data: session} = authClient.useSession() 
+    const userId = session?.user.id
 
     // HOOKS
     const {state, dispatch} = useDetailPageReducer()

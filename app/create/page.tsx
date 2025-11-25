@@ -2,8 +2,8 @@
 
 // REACT & NEXT
 import { useRouter } from "next/navigation"
-// NEXT AUTH
-import { useSession } from "next-auth/react"
+// BETTER AUTH
+import { authClient } from "@/src/lib/auth-client"
 // STORE
 import { GlobalStore } from "@/src/store/globalStore"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
@@ -31,8 +31,8 @@ export default function Page(){
     const {isLoading, loadingSource, setLoading} = useLoading()
 
     //SESSION
-    const {data: session , status} = useSession()
-    const userId = session?.user?.id
+    const {data: session, isPending} = authClient.useSession() 
+    const userId = session?.user.id
 
     //STORE
     const language = GlobalStore((state) =>  state.Language)
@@ -61,9 +61,6 @@ export default function Page(){
         showAlert,
         resetExcept
     })
-
-    console.log(`CREATE ITEMS`)
-    console.log(createItems)
     
     if(isLoading && loadingSource === "page" ) return <Loader/>
 
@@ -101,7 +98,7 @@ export default function Page(){
 
             <div className="w-full flex justify-center my-2">
                 <button
-                    disabled= {(isLoading && loadingSource === "ChooseHandler") || status === "loading"}
+                    disabled= {(isLoading && loadingSource === "ChooseHandler") || isPending}
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg"
                     onClick={() => handleChoose({userId, selectedItemId, router, showAlert, setOldSessionId, setLoading })}
                 >

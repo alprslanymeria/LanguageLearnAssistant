@@ -3,8 +3,8 @@
 // REACT & NEXT
 import Link from "next/link"
 import { usePathname} from "next/navigation"
-// NEXT AUTH
-import { useSession } from "next-auth/react"
+// BETTER AUTH
+import { authClient } from "@/src/lib/auth-client"
 // ASSETS
 import MenuIcon from "@/public/icons/menuIcon"
 import CloseIcon from "@/public/icons/closeIcon"
@@ -27,9 +27,9 @@ export function MenuComponent() {
   const {isLoading, loadingSource, setLoading} = useLoading()
 
   // SESSION
-  const {data: session, status} = useSession()
-  const userId = session?.user?.id
-  const email = session?.user?.email
+  const {data: session, isPending} = authClient.useSession() 
+  const userId = session?.user.id
+  const email = session?.user.email
 
   //STORE
   const resetExcept = GlobalStore((state) => state.resetExcept)
@@ -53,7 +53,7 @@ export function MenuComponent() {
         } transition-transform duration-300 ease-in-out flex flex-col p-5`}
       >
 
-        {!email && status !== "loading" && (
+        {!email && !isPending && (
 
           <div className="space-y-3 mt-10">
             <Link className="block bg-blue-500 hover:bg-blue-600 text-white text-center py-2 rounded-lg transition" href="/auth/login">Login</Link>
@@ -64,7 +64,7 @@ export function MenuComponent() {
         
 
         {/* EMAIL EXIST*/}
-        {email && status !== "loading" && (
+        {email && !isPending && (
 
           <>
             <div className="bg-gray-800 p-4 rounded-xl mb-6 shadow-inner">

@@ -1,10 +1,10 @@
 "use client"
 
-//REACT & NEXT
+// REACT & NEXT
 import Image from "next/image"
 import { useActionState } from "react"
-// NEXT AUTH
-import { useSession } from "next-auth/react"
+// BETTER AUTH
+import { authClient } from "@/src/lib/auth-client"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useProfilePageReducer } from "@/src/page/ProfilePage/useProfileReducer"
 import { useProfilePageCustomEffect } from "@/src/page/ProfilePage/useProfilePageCustomEffect"
@@ -27,8 +27,8 @@ export default function Page() {
     const {isLoading, loadingSource, setLoading} = useLoading()
 
     //SESSION
-    const {data: session , status} = useSession()
-    const userId = session?.user?.id
+    const {data: session, isPending: isPendingBetterAuth} = authClient.useSession() 
+    const userId = session?.user.id
 
     //USE EFFECTS
     useProfilePageCustomEffect({userId, state, setLoading, showAlert, dispatch})
@@ -139,7 +139,7 @@ export default function Page() {
                 
 
                 <button
-                    disabled= {isPending || status === "loading"}
+                    disabled= {isPending || isPendingBetterAuth}
                     className={`w-full py-2 px-4 rounded-md font-medium transition-colors bg-blue-600 hover:bg-blue-700 text-white cursor-pointer`}
                 >
                     {isPending ? (

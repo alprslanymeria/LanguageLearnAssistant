@@ -3,7 +3,7 @@ import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 // TYPES
 import { FlashcardSession, GlobalStoreState, ListeningSession, ReadingSession, SessionData, WritingSession } from "@/src/types/globalStore"
-import { FlashcardSessionRowInput, ListeningSessinRowInput, ReadingSessionRowInput, WritingSessionRowInput } from "../types/actions"
+import { FlashcardSessionRowInput, ListeningSessinRowInput, ReadingSessionRowInput, WritingSessionRowInput } from "@/src/types/actions"
 
 const defaultFlashcardSession: FlashcardSession = {
 
