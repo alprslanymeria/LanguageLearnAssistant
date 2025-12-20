@@ -107,3 +107,12 @@ volumes:
 # | **4318** | OTLP HTTP receiver                        | Alternatif HTTP protokolü | (kullanmak zorunda değilsin)                 |
 # | **8888** | Collector’un *kendi* metrikleri           | Prometheus (isteğe bağlı) | Collector’un iç durumu                       |
 # | **8889** | Uygulama metriklerinin Prometheus formatı | Prometheus                | Asıl scrape edilen metrik endpoint           |
+
+
+# BİR CONTAINER'IN DİNLEDİĞİ PORT'LARI EXPOSE İLE DEĞİŞTİREMEYİZ. EXPOSE SADECE METADATA BİLGİSİ İÇİN GEREKLİDİR.
+# CONTAINER'IN DEFAULT OLARAK DİNLEDİĞİ PORTLAR OLABİLİR.
+# DİNLEDİĞİ PORT'U DEĞİŞTİRMEK VEYA PORT AÇMAK İÇİN UYGULAMANIN YANİ CONTAINER'IN BUNU BİZE SAĞLAMASI GEREKİR
+# BUNU İKİ YOL İLE BİZE SAĞLAYABİLİR:
+  # UYGULAMANIN SAĞLADIĞI KONFİGÜRASYON DOSYASI İLE
+  # ENVIRONMENT VARIABLES İLE
+# PORTS İSE HOST İLE CONTAINER ARASINDAKİ PORT YÖNLENDİRMESİNİ SAĞLAR
