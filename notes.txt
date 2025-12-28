@@ -81,3 +81,217 @@ ______________________________
 
 next build --webpack olarak kullanıyorum çünkü docker ile build aldığım sırada "pino" kütüphanesi yüzünden hata alıyorum.
 ilerleyen zamanlarda bu flag'i kaldırıp tekrar denerim.
+
+
+
+
+
+
+
+
+WITH-ASP-NET-CORE-CLEAN-ARCH
+_________________________________
+
+- Prisma olmayacak, database backend tarafından yürütülecek.
+- Action metotlar olmayacak. Action metotlar backend tarafında taşınacak.
+- Dockerfile burada kalacak. Nextjs image'ı docker hub'a yüklenecek. docker compose dosyası ve otel collector
+config dosyası, prometheus yaml dosyası backend tarafından tanımlanacak.
+- proxy.js dosyası kontrol edilir.
+- zod schema kaldırılır. Backend tarafında fluent validation ile bunların kontrolü sağlanır.
+
+
+- Backend tarafında controller'lar yazılacak, ilgili entity'ler için servisler ve repository'ler yazılacak.
+- request ve response modelle yazılır.
+
+
+ACTION METHODS
+- auth.ts
+    SignIn
+    SignUp
+
+
+- language.ts
+    GetLanguages
+        # Language Entity
+        # Language Controller                 
+    CompareLanguageId
+        # User Entity
+        # User Controller
+
+
+- practice.ts
+    GetPractices
+        # Practice Entity
+        # Practice Controller
+
+
+
+crud.ts
+    GetItemById
+        # GetReadingBookItemById
+            # ReadingBook Entity
+            # ReadingBook Controller
+        # GetWritingBookItemById
+            # WritingBook Entity
+            # WritingBook Controller
+        # GetFlashcardCategoryItemById
+            # FlashcardCategory Entity
+            # FlashcardCategory Controller
+        # GetDeckWordItemById
+            # DeckWord Entity
+            # DeckWord Controller
+    DeleteById
+        # DeleteReadingBookItemById
+            # ReadingBook Entity
+            # ReadingBook Controller
+        # DeleteWritingBookItemById
+            # WritingBook Entity
+            # WritingBook Controller
+        # DeleteFlashcardCategoryItemById
+            # FlashcardCategory Entity
+            # FlashcardCategory Controller
+        # DeleteDeckWordItemById
+            # DeckWord Entity
+            # DeckWord Controller
+    GetExistingRecord
+        # HELPER METOT NOT ACTION
+    ReadingAddOrUpdate
+        # ReadingBookAdd
+            # ReadingBook Entity
+            # ReadingBook Controller
+        # ReadingBookUpdate
+            # ReadingBook Entity
+            # ReadingBook Controller
+    WritingAddOrUpdate
+        # WritingBookAdd
+            # WritingBook Entity
+            # WritingBook Controller
+        # WritingBookUpdate
+            # WritingBook Entity
+            # WritingBook Controller
+    DeckWordAddOrUpdate
+        # DeckWordAdd
+            # DeckWord Entity
+            # DeckWord Controller
+        # DeckWordUpdate
+            # DeckWord Entity
+            # DeckWord Controller
+    FlashcardCategoryAddOrUpdate
+        # FlashcardCategoryAdd
+            # FlashcardCategory Entity
+            # FlashcardCategory Controller
+        # FlashcardCategoryUpdate
+            # FlashcardCategory Entity
+            # FlashcardCategory Controller
+
+
+
+list.ts
+    GetAllRBooksWithPaging
+        # ReadingBook Entity
+        # ReadingBook Controller
+    GetAllWBooksWithPaging
+        # WritingBook Entity
+        # WritingBook Controller
+    GetAllFCategoriesWithPaging
+        # FlashcardCategory Entity
+        # FlashcardCategory Controller
+    GetAllFWordsWithPaging
+        # DeckWord Entity
+        # DeckWord Controller
+
+
+
+oldSession.ts
+    GetOldSessions 
+        # GetReadingOldSessions
+            # ReadingOldSession Entity
+            # ReadingOldSession Controller
+        # GetFlashcardOldSessions
+            # FlashcardOldSession Entity
+            # FlashcardOldSession Controller
+        # GetWritingOldSessions
+            # WritingOldSession Entity
+            # WritingOldSession Controller
+        # GetListeningOldSessions
+            # ListeningOldSession Entity
+            # ListeningOldSession Controller
+    SaveOldSession
+        # SaveReadingOldSession
+            # ReadingOldSession Entity
+            # ReadingOldSession Controller
+        # SaveFlashcardOldSession
+            # FlashcardOldSession Entity
+            # FlashcardOldSession Controller
+        # SaveWritingOldSession
+            # WritingOldSession Entity
+            # WritingOldSession Controller
+        # SaveListeningOldSession
+            # ListeningOldSession Entity
+            # ListeningOldSession Controller
+
+
+
+profile.ts
+    GetProfileInfos
+        # User Entity
+        # User Controller
+    SaveProfileInfos
+        # User Entity
+        # User Controller
+
+
+rate.ts
+    CalculateRate
+        # HELPER METOT / BURADA KALABİLİR
+
+
+
+rows.ts
+    GetRowsById
+        # GetReadingRowsById
+            # ReadingSessionRow Entity
+            # ReadingSessionRow Controller
+        # GetWritingRowsById
+            # WritingSessionRow Entity
+            # WritingSessionRow Controller
+        # GetFlashcardRowsById
+            # FlashcardSessionRow Entity
+            # FlashcardSessionRow Controller
+        # GetListeningRowsById
+            # ListeningSessionRow Entity
+            # ListeningSessionRow Controller
+    SaveRows
+        # SaveReadingRows
+            # ReadingSessionRow Entity
+            # ReadingSessionRow Controller
+        # SaveWritingRows
+            # WritingSessionRow Entity
+            # WritingSessionRow Controller
+        # SaveFlashcardRows
+            # FlashcardSessionRow Entity
+            # FlashcardSessionRow Controller
+        # SaveListeningRows
+            # ListeningSessionRow Entity
+            # ListeningSessionRow Controller
+
+
+translate.ts
+    TranslateText
+        # HELPER METOT / BURADA KALABİLİR.
+
+
+utils.ts
+    GetCreateItems
+        # GetReadingBookCreateItems
+            # ReadingBook Entity
+            # ReadingBook Controller
+        # GetWritingBookCreateItems
+            # WritingBook Entity
+            # WritingBook Controller
+        # GetFlashcardCategoryCreateItems
+            # FlashcardCategory Entity
+            # FlashcardCategory Controller
+        # GetListeningCreateItems
+            # ListeningCategory Entity
+            # ListeningCategory Controller
