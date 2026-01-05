@@ -21,7 +21,6 @@ model User {
   //REFERANS VERDİKLERİ (CHILD'LARI)
   sessions              Session[]
   accounts              Account[]
-  liveSession           LiveSession?
   flashcards            Flashcard[]
   listenings            Listening[]
   writings              Writing[]
@@ -114,14 +113,6 @@ model Practice {
 
   //UNIQUE CONSTRAINT
   @@unique([languageId, name], name: "languageId_name")
-}
-
-model LiveSession {
-  liveSessionId         String                @id
-  userId                String                @unique
-
-  //REFERANS ALDIKLARI (PARENT'LARI)
-  user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Flashcard {

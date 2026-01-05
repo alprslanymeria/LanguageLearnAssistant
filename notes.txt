@@ -109,6 +109,14 @@ ACTION METHODS
     SignIn
     SignUp
 
+profile.ts
+    GetProfileInfos
+        # User Entity
+        # User Controller
+    SaveProfileInfos
+        # User Entity
+        # User Controller
+
 
 - language.ts
     GetLanguages
@@ -229,16 +237,6 @@ oldSession.ts
         # SaveListeningOldSession
             # ListeningOldSession Entity
             # ListeningOldSession Controller
-
-
-
-profile.ts
-    GetProfileInfos
-        # User Entity
-        # User Controller
-    SaveProfileInfos
-        # User Entity
-        # User Controller
 
 
 rate.ts
