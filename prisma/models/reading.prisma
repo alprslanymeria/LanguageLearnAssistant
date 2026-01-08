@@ -1,0 +1,61 @@
+model Reading {
+  id                    Int                   @id @default(autoincrement())
+  userId                String
+  languageId            Int
+  practiceId            Int
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  language              Language              @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  practice              Practice              @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  //REFERANS VERDİKLERİ (CHILD'LARI)
+  readingBooks          ReadingBook[]
+  readingOldSessions    ReadingOldSession[]
+
+  //UNIQUE CONSTRAINT
+  @@unique([userId, languageId, practiceId], name: "userId_languageId_practiceId")
+}
+
+model ReadingBook {
+  id                    Int                   @id @default(autoincrement())
+  readingId             Int
+  name                  String
+  imageUrl              String
+  leftColor             String
+  sourceUrl             String
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  reading               Reading               @relation(fields: [readingId], references: [id], onDelete: Cascade)
+
+  //REFERANS VERDİKLERİ (CHILD'LARI)
+  readingOldSessions    ReadingOldSession[]
+}
+
+model ReadingOldSession {
+  oldSessionId          String                @id
+  readingId             Int
+  bookId                Int
+  rate                  Decimal
+  createdAt             DateTime              @default(now())
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  reading               Reading               @relation(fields: [readingId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  book                  ReadingBook           @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  //REFERANS VERDİKLERİ (CHILD'LARI)
+  readingSessionRows    ReadingSessionRow[]
+}
+
+
+model ReadingSessionRow {
+  id                    Int                   @id @default(autoincrement())
+  oldSessionId          String
+  selectedSentence      String
+  answer                String
+  answerTranslate       String
+  similarity            Decimal
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  oldSession            ReadingOldSession     @relation(fields: [oldSessionId], references: [oldSessionId], onDelete: Cascade)
+}

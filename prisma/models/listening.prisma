@@ -1,0 +1,67 @@
+model Listening {
+  id                    Int                   @id @default(autoincrement())
+  userId                String
+  languageId            Int
+  practiceId            Int
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  language              Language              @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  practice              Practice              @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  //REFERANS VERDİKLERİ (CHILD'LARI)
+  listeningCategories   ListeningCategory[]
+  listeningOldSessions  ListeningOldSession[]
+
+  //UNIQUE CONSTRAINT
+  @@unique([userId, languageId, practiceId], name: "userId_languageId_practiceId")
+}
+
+model ListeningCategory {
+  id                    Int                   @id @default(autoincrement())
+  listeningId           Int
+  name                  String
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  listening             Listening             @relation(fields: [listeningId], references: [id], onDelete: Cascade)
+
+  //REFERANS VERDİKLERİ (CHILD'LARI)
+  listeningOldSessions  ListeningOldSession[]
+  deckVideos            DeckVideo[]
+}
+
+model ListeningOldSession {
+  oldSessionId          String                @id
+  listeningId           Int
+  categoryId            Int
+  rate                  Decimal
+  createdAt             DateTime              @default(now())
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  listening             Listening             @relation(fields: [listeningId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  category              ListeningCategory     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  //REFERANS VERDİKLERİ (CHILD'LARI)
+  listeningSessionRows  ListeningSessionRow[]
+}
+
+model DeckVideo {
+  id                    Int                   @id @default(autoincrement())
+  categoryId            Int
+  correct               String
+  sourceUrl             String
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  category              ListeningCategory     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model ListeningSessionRow {
+  id                    Int                   @id @default(autoincrement())
+  oldSessionId          String
+  listenedSentence      String
+  answer                String
+  similarity            Decimal
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  oldSession            ListeningOldSession   @relation(fields: [oldSessionId], references: [oldSessionId], onDelete: Cascade)
+}

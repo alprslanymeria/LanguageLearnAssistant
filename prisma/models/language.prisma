@@ -1,0 +1,14 @@
+model Language {
+  id                    Int                   @id @default(autoincrement())
+  name                  String
+  imageUrl              String?
+
+  //REFERANS VERDİKLERİ (CHILD'LARI)
+  practices             Practice[]
+  flashcards            Flashcard[]
+  listenings            Listening[]
+  writings              Writing[]
+  readings              Reading[]
+  user                  User[]
+
+}

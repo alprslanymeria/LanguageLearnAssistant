@@ -1,0 +1,68 @@
+model Flashcard {
+  id                    Int                   @id @default(autoincrement())
+  userId                String
+  languageId            Int
+  practiceId            Int
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  language              Language              @relation(fields: [languageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  practice              Practice              @relation(fields: [practiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  //REFERANS VERDİKLERİ (CHILD'LARI)
+  flashcardCategories   FlashcardCategory[]
+  flashcardOldSessions  FlashcardOldSession[]
+
+  //UNIQUE CONSTRAINT
+  @@unique([userId, languageId, practiceId], name: "userId_languageId_practiceId")
+}
+
+model FlashcardCategory {
+  id                    Int                   @id @default(autoincrement())
+  flashcardId           Int
+  name                  String
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  flashcard             Flashcard             @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
+
+  //REFERANS VERDİKLERİ (CHILD'LARI)
+  flashcardOldSessions  FlashcardOldSession[]
+  deckWords             DeckWord[]
+
+}
+
+model FlashcardOldSession {
+  oldSessionId          String                @id
+  flashcardId           Int
+  categoryId            Int
+  rate                  Decimal
+  createdAt             DateTime              @default(now())
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  flashcard             Flashcard             @relation(fields: [flashcardId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  category              FlashcardCategory     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  //REFERANS VERDİKLERİ (CHILD'LARI)
+  flashcardSessionRows  FlashcardSessionRow[]
+}
+
+model DeckWord {
+  id                    Int                   @id @default(autoincrement())
+  categoryId            Int
+  question              String
+  answer                String
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  category              FlashcardCategory     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model FlashcardSessionRow {
+  id                    Int                   @id @default(autoincrement())
+  oldSessionId          String
+  question              String
+  answer                String
+  status                Boolean
+
+  //REFERANS ALDIKLARI (PARENT'LARI)
+  oldSession            FlashcardOldSession   @relation(fields: [oldSessionId], references: [oldSessionId], onDelete: Cascade)
+}
