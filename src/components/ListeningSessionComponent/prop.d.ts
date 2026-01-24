@@ -1,6 +1,6 @@
 // TYPES
 import { BaseAction, BaseState } from "@/src/page/SessionPage/prop"
-import { ShowAlertProps } from "@/src/providers/AlertProvider/prop"
+import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { ListeningSessinRowInput } from "@/src/types/actions"
 import { ListeningCategoryWithDeckVideos, ListeningSession, SessionData } from "@/src/types/globalStore"
 import { DeckVideo } from "@prisma/client"

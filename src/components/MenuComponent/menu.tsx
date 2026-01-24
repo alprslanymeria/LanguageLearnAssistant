@@ -4,7 +4,7 @@
 import Link from "next/link"
 import { usePathname} from "next/navigation"
 // BETTER AUTH
-import { authClient } from "@/src/lib/auth-client"
+import { authClient } from "@/src/infrastructure/auth/auth-client"
 // ASSETS
 import MenuIcon from "@/public/icons/menuIcon"
 import CloseIcon from "@/public/icons/closeIcon"
@@ -12,10 +12,10 @@ import CloseIcon from "@/public/icons/closeIcon"
 import { useMenuReducer } from "@/src/components/MenuComponent/useMenuReducer"
 import { handleIconClick, handleLogout } from "@/src/components/MenuComponent/handlers"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // PROVIDER
-import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 
 
 export function MenuComponent() {

@@ -8,10 +8,10 @@ import Loader from "@/src/components/loader"
 import { useHomePageReducer } from "@/src/page/HomePage/useHomePageReducer"
 import { useHomePageCustomEffect } from "@/src/page/HomePage/useHomePageCustomEffect"
 // PROVIDER
-import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 
 
 

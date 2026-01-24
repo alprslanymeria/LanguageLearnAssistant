@@ -4,7 +4,7 @@
 import { useActionState } from "react"
 import { useRouter } from "next/navigation"
 // BETTER AUTH
-import { authClient } from "@/src/lib/auth-client"
+import { authClient } from "@/src/infrastructure/auth/auth-client"
 // PRISMA
 import { FlashcardCategory } from "@prisma/client"
 // ACTIONS
@@ -15,8 +15,8 @@ import { WordAddOrEditComponentProps } from "@/src/components/WordAddOrEditCompo
 import { useWordAddOrEditReducer } from "@/src/components/WordAddOrEditComponent/useWordAddOrEditReducer"
 import { useWordAddOrEditCustomEffect } from "@/src/components/WordAddOrEditComponent/useWordAddOrEditCustomEffect"
 // PROVIDERS
-import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // COMPONENTS
 import Loader from "@/src/components/loader"
 

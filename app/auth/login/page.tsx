@@ -10,11 +10,11 @@ import { useLoginReducer } from "@/src/page/LoginPage/useLoginReducer"
 import { handleSubmit } from "@/src/page/LoginPage/handlers"
 import { useLoginPageCustomEffect } from "@/src/page/LoginPage/useLoginPageCustomEffect"
 // BETTER AUTH
-import { SignInWithGoogle } from "@/src/lib/auth-client"
+import { SignInWithGoogle } from "@/src/infrastructure/auth/auth-client"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // PROVIDER
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 
 
 // BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.

@@ -2,8 +2,8 @@
 import { ReadingBook } from "@prisma/client"
 import { Action } from "@/src/components/ReadingSessionComponent/prop"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
-import { ShowAlertProps } from "@/src/providers/AlertProvider/prop"
-import { setLoadingProps } from "@/src/providers/LoadingProvider/prop"
+import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
+import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 import { ReadingSession, SessionData } from "@/src/types/globalStore"
 import { ReadingSessionRowInput } from "@/src/types/actions"
 

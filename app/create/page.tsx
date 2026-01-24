@@ -3,15 +3,15 @@
 // REACT & NEXT
 import { useRouter } from "next/navigation"
 // BETTER AUTH
-import { authClient } from "@/src/lib/auth-client"
+import { authClient } from "@/src/infrastructure/auth/auth-client"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useCreatePageCustomEffect } from "@/src/page/CreatePage/useCreatePageCustomEffect"
 import { handleChoose, handleSvgClick } from "@/src/page/CreatePage/handlers"
 // PROVIDER
-import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // COMPONENTS
 import BookSvg from "@/src/components/svg/BookSvg"
 import DeckSvg from "@/src/components/svg/DeckSvg"

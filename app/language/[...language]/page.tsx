@@ -8,14 +8,14 @@ import { mitr } from "@/public/fonts"
 import InfoMessageComponent from "@/src/components/InfoMessageComponent/infoMessage"
 import Loader from "@/src/components/loader"
 // PROVIDER
-import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useLanguagePageCustomEffect } from "@/src/page/LanguagePage/useLanguagePageCustomEffect"
 import { useLanguagePageReducer } from "@/src/page/LanguagePage/useLanguagePageReducer"
 import { handlePracticeClick } from "@/src/page/LanguagePage/handlers"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 
 
 export default function Page() {

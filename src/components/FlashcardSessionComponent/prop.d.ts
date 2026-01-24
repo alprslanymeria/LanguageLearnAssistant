@@ -1,5 +1,5 @@
 // TYPES
-import { ShowAlertProps } from "@/src/providers/AlertProvider/prop"
+import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { FlashcardSessionRowInput, ListeningSessinRowInput, ReadingSessionRowInput, WritingSessionRowInput } from "@/src/types/actions"
 import { FlashcardCategoryWithDeckWords, SessionData } from "@/src/types/globalStore"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"

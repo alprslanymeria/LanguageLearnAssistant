@@ -6,8 +6,8 @@ import {TranslateText} from "@/src/actions/translate"
 // TYPES
 import { CalculateRateProps, CloseAndSaveProps, HandleTextSelectionProps, HandleTranslateProps } from "@/src/components/ReadingFormComponent/prop"
 // LIBRARIES
-import  socket  from "@/src/lib/socketClient"
-import { GlobalStore } from "@/src/store/globalStore"
+import  socket  from "@/src/infrastructure/socket/socketClient"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 import { ReadingOldSessionInput, ReadingSessionRowInput } from "@/src/types/actions"
 // UTILS
 import { calculateSuccessRate } from "@/src/utils/helper"

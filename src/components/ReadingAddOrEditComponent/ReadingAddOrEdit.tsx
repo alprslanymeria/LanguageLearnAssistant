@@ -4,7 +4,7 @@
 import { useActionState } from "react"
 import { useRouter } from "next/navigation"
 // BETTER AUTH
-import { authClient } from "@/src/lib/auth-client"
+import { authClient } from "@/src/infrastructure/auth/auth-client"
 // ICONS
 import FileIcon from "@/src/components/svg/FileUpload"
 // TYPES
@@ -16,8 +16,8 @@ import { useReadingAddOrEditReducer } from "@/src/components/ReadingAddOrEditCom
 import { handleFileChangeOne, handleFileChangeTwo } from "@/src/components/ReadingAddOrEditComponent/handlers"
 import { useReadingAddOrEditCustomEffect } from "@/src/components/ReadingAddOrEditComponent/useReadingOrEditCustomEffect"
 // PROVIDER
-import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // COMPONENTS
 import Loader from "@/src/components/loader"
 

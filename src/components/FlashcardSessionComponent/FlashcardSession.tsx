@@ -6,7 +6,7 @@ import TableComponent from "@/src/components/TableComponent/table"
 import DeckHalfSvg from "@/src/components/svg/DeckHalfSvg"
 import DeckFullSvg from "@/src/components/svg/DeckFullSvg"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useFlashcardSessionReducer } from "@/src/components/FlashcardSessionComponent/useFlashcardSessionReducer"
 import { useFlashcardSessionCustomEffect } from "@/src/components/FlashcardSessionComponent/useFlashcardSessionCustomEffect"

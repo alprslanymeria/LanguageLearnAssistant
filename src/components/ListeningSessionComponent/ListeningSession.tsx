@@ -4,7 +4,7 @@
 import TableComponent from "@/src/components/TableComponent/table"
 import ListeningFormComponent from "@/src/components/ListeningFormComponent/ListeningFormComponent"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useListeningSessionReducer } from "@/src/components/ListeningSessionComponent/useListeningSessionReducer"
 import { useListeningSessionCustomEffect } from "@/src/components/ListeningSessionComponent/useListeningSessionCustomEffect"

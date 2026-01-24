@@ -1,4 +1,4 @@
-export default function closeIcon() {
+const closeIcon = () => {
 
     return (
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(0 0 0)">
@@ -6,3 +6,5 @@ export default function closeIcon() {
         </svg>
     )
 }
+
+export default closeIcon

@@ -11,12 +11,12 @@ import { useSignupPageCustomEffect } from '@/src/page/SignupPage/useSignupPageCu
 import { useSignupReducer } from "@/src/page/SignupPage/useSignupReducer"
 import { handleSubmit } from "@/src/page/SignupPage/handlers"
 // PROVIDER
-import { useAlert } from '@/src/providers/AlertProvider/AlertProvider'
-import { useLoading } from '@/src/providers/LoadingProvider/LoadingProvider'
+import { useAlert } from '@/src/infrastructure/providers/AlertProvider/AlertProvider'
+import { useLoading } from '@/src/infrastructure/providers/LoadingProvider/LoadingProvider'
 // STORE
-import { GlobalStore } from '@/src/store/globalStore'
+import { GlobalStore } from '@/src/infrastructure/store/globalStore'
 // BETTER AUTH
-import { SignInWithGoogle } from '@/src/lib/auth-client'
+import { SignInWithGoogle } from '@/src/infrastructure/auth/auth-client'
 
 
 // BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.

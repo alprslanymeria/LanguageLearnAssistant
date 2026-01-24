@@ -84,6 +84,26 @@ ilerleyen zamanlarda bu flag'i kaldırıp tekrar denerim.
 
 
 
+NOT 7
+_________________________________
+
+OBSERVABILITY
+- instrumentation.ts
+- instrumentation.node.ts
+
+LOGGING
+- STRATEGY PATTERN
+- FACTORY PATTERN
+- ILogger.ts
+- ILogStream.ts
+    - ConsoleLogStream.ts
+    - ElasticsearchLogStream.ts
+- Logger.ts
+- Log.d.ts
+- LoggerConfig.ts
+- LoggerFactory.ts
+
+
 
 
 

@@ -1,13 +1,24 @@
 import { NextResponse } from "next/server"
-import { decrypt } from "@/src/lib/crypto"
 import { auth } from "@/src/lib/auth"
 import { headers } from "next/headers"
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL
 
-const protectedRoutes = ["/create", "/session", "/language", "/practice", "/profile", "/detail", "/list", "/edit", "/add"]
-const publicRoutes = ["/auth", "/auth/login", "/auth/signup"]
-const passRoutes = ["/api", "/_next", "/favicon.ico"]
+const ROUTES = {
+    protected: ["/create", "/session", "/language", "/practice", "/profile", "/detail", "/list", "/edit", "/add"],
+    public: ["/auth", "/auth/login", "/auth/signup"],
+    pass: ["/api", "/_next", "/favicon.ico"]
+}
+
+// HELPER: CHECK IF ROUTES MATCHING GIVEN LIST
+const isRouteMatching = (path, routes) => 
+    routes.some(route => path.startsWith(route))
+
+// HELPER: GET USER SESSION
+const getSession = async () =>
+     await auth.api.getSession({headers: await headers()})
+
+
 
 export default async function proxy(req){
 
@@ -15,17 +26,14 @@ export default async function proxy(req){
     const path = req.nextUrl.pathname
 
     //PATH CHECK
-    const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route))
-    const isPublicRoute = publicRoutes.some(route => path.startsWith(route))
-    const isPassRoute = passRoutes.some(route => path.startsWith(route))
+    const isPassRoute = isRouteMatching(path, ROUTES.pass);
+    const isProtectedRoute = isRouteMatching(path, ROUTES.protected);
+    const isPublicRoute = isRouteMatching(path, ROUTES.public);
 
     if(isPassRoute) return NextResponse.next()
 
     //GET SESSION
-    const session = await auth.api.getSession({
-    
-        headers: await headers()
-    })
+    const session = await getSession()
 
     if (isProtectedRoute && !session) return NextResponse.redirect(`${BASE}/auth/login`)
 

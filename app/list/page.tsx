@@ -3,7 +3,7 @@
 // REACT & NEXT
 import { useSearchParams } from "next/navigation"
 // BETTER AUTH
-import { authClient } from "@/src/lib/auth-client"
+import { authClient } from "@/src/infrastructure/auth/auth-client"
 // COMPONENTS
 import ListTableComponent from "@/src/components/ListTableComponent/listTable"
 import Loader from "@/src/components/loader"
@@ -11,8 +11,8 @@ import Loader from "@/src/components/loader"
 import { useListPageReducer } from "@/src/page/ListPage/useListPageReducer"
 import { useListPageCustomEffect } from "@/src/page/ListPage/useListPageCustomEffect"
 // PROVIDER
-import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 import { Suspense } from "react"
 
 

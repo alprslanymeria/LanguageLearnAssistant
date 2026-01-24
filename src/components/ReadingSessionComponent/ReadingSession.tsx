@@ -4,7 +4,7 @@
 import ReadingFormComponent from "@/src/components/ReadingFormComponent/ReadingFormComponent"
 import TableComponent from "@/src/components/TableComponent/table"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useReadingSessionReducer } from "@/src/components/ReadingSessionComponent/useReadingSessionReducer"
 import { useReadingSessionCustomEffect } from "@/src/components/ReadingSessionComponent/useReadingSessionCustomEffect"

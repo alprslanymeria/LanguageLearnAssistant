@@ -1,6 +1,6 @@
 // TYPES
-import { ShowAlertProps } from "@/src/providers/AlertProvider/prop"
-import { setLoadingProps } from "@/src/providers/LoadingProvider/prop"
+import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
+import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 import { FlashcardCategoryWithDeckWords, ListeningCategoryWithDeckVideos } from "@/src/types/globalStore"
 import { FlashcardOldSession, ReadingOldSession, WritingOldSession, ListeningOldSession, ReadingBook, WritingBook } from "@prisma/client"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"

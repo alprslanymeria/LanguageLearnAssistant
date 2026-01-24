@@ -6,8 +6,8 @@ import { useParams, useRouter, useSearchParams } from "next/navigation"
 // ASSETS
 import { markazi } from "@/public/fonts"
 // PROVIDER
-import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // COMPONENTS
 import InfoMessageComponent from "@/src/components/InfoMessageComponent/infoMessage"
 import Loader from "@/src/components/loader"
@@ -16,9 +16,9 @@ import { usePracticePageCustomEffect } from "@/src/page/PracticePage/usePractice
 import { handleCreateClick } from "@/src/page/PracticePage/handlers"
 import { usePracticePageReducer } from "@/src/page/PracticePage/usePracticePageReducer"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // BETTER AUTH
-import { authClient } from "@/src/lib/auth-client"
+import { authClient } from "@/src/infrastructure/auth/auth-client"
 // COMPONENTS
 import PaginationComponent from "@/src/components/PaginationComponent/PaginationComponent"
 import { Suspense } from "react"

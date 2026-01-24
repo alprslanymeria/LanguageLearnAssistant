@@ -1,7 +1,7 @@
 // BETTER AUTH
 import { HandleSubmitProps } from "@/src/page/LoginPage/prop"
 // TYPES
-import { SignIn } from "@/src/actions/auth"
+import { SignIn } from "@/src/actions/Auth/Controller"
 
 
 export async function handleSubmit( params : HandleSubmitProps) {

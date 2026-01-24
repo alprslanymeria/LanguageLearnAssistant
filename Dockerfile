@@ -1,8 +1,9 @@
 # syntax=docker.io/docker/dockerfile:1
 
-# Mevcut dockerfile dosyasından apk add kısmında gerekli paketlerin yüklemesi yapıldı.
-# Prisma generate edildi.
-# Prisma dosyalarının kopyalanması sağlandı.
+
+# THE NECESSARY PACKAGES WERE INSTALLED FROM THE EXISTING DOCKERFILE USING THE 'APK ADD' SECTION.
+# PRISMA GENERATE WAS ADDED TO THE BUILD STAGE.
+# THE PRISMA FILES WERE COPIED TO THE RUNNER STAGE.
 
 FROM node:20-alpine AS base
 

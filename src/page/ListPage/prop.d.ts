@@ -1,6 +1,6 @@
 // TYPES
-import { ShowAlertProps } from "@/src/providers/AlertProvider/prop"
-import { setLoadingProps } from "@/src/providers/LoadingProvider/prop"
+import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
+import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 import { ReadingBook, WritingBook , ListeningCategory, DeckVideo, FlashcardCategory, DeckWord} from "@prisma/client"
 import { JSX } from "react"
 

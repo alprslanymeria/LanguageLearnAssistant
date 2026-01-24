@@ -1,12 +1,12 @@
 // TYPES
 import { HandleChooseProps, HandleSvgClickProps } from "@/src/page/CreatePage/prop"
 //LIBRARIES
-import {encrypt} from "@/src/lib/crypto"
+import {encrypt} from "@/src/infrastructure/security/crypto"
 //3RD PARTY
 import { v4 as uuidv4 } from 'uuid'
 // ACTIONS
-import { GlobalStore } from "@/src/store/globalStore"
-import  socket  from "@/src/lib/socketClient"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
+import  socket  from "@/src/infrastructure/socket/socketClient"
 
 //BASE
 const BASE = process.env.NEXT_PUBLIC_BASE_URL

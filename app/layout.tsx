@@ -7,8 +7,8 @@ import NavbarComponent from "@/src/components/NavbarComponent/navbar"
 // TYPES
 import { RootLayoutProps } from "@/src/page/RootLayout/prop"
 // PROVIDERS
-import { AlertProvider } from "@/src/providers/AlertProvider/AlertProvider"
-import { LoadingProvider } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { AlertProvider } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { LoadingProvider } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 
 export const metadata: Metadata = {
   title: "Language Learn Assistant",

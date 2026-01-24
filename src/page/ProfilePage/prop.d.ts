@@ -1,8 +1,8 @@
 // TYPES
-import { ShowAlertProps } from "@/src/providers/AlertProvider/prop"
-import { setLoadingProps } from "@/src/providers/LoadingProvider/prop"
+import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
+import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 import { SaveProfileInfosResponse, SelectedUser } from "@/src/types/actions"
-import { ApiResponse } from "@/src/types/response"
+import { ApiResponse } from "@/src/infrastructure/common/ServiceResult"
 import { Language } from "@prisma/client"
 
 // REDUCER

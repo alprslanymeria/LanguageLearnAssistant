@@ -1,8 +1,8 @@
 // TYPES
 import { FlashcardOldSession, ListeningOldSession, Practice, ReadingOldSession, WritingOldSession } from "@prisma/client"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
-import { setLoadingProps } from "@/src/providers/LoadingProvider/prop"
-import { ShowAlertProps } from "@/src/providers/AlertProvider/prop"
+import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
+import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 
 
 // REDUCER

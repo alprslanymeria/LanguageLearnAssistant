@@ -4,13 +4,13 @@
 import Image from "next/image"
 import { useActionState } from "react"
 // BETTER AUTH
-import { authClient } from "@/src/lib/auth-client"
+import { authClient } from "@/src/infrastructure/auth/auth-client"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useProfilePageReducer } from "@/src/page/ProfilePage/useProfileReducer"
 import { useProfilePageCustomEffect } from "@/src/page/ProfilePage/useProfilePageCustomEffect"
 // PROVIDER
-import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 //COMPONENTS
 import Loader from "@/src/components/loader"
 // ACTIONS

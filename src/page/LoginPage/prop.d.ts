@@ -1,7 +1,7 @@
 // TYPES
 import { FormEvent } from "react"
 import { ReadonlyURLSearchParams } from "next/navigation"
-import { setLoadingProps } from "@/src/providers/LoadingProvider/prop"
+import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 
 // REDUCER
 export type State = {

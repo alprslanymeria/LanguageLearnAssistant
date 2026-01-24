@@ -1,7 +1,7 @@
 // TYPES
-import { ShowAlertProps } from "@/src/providers/AlertProvider/prop"
-import { setLoadingProps } from "@/src/providers/LoadingProvider/prop"
-import { ApiResponse } from "@/src/types/response"
+import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
+import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
+import { ApiResponse } from "@/src/infrastructure/common/ServiceResult"
 import { Language, ReadingBook } from "@prisma/client"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { RBWL, WBWL, LFWL, FCWL, DWWCL } from "@/src/types/actions"

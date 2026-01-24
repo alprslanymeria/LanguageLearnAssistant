@@ -3,15 +3,15 @@
 // REACT & NEXT
 import { useRouter } from "next/navigation"
 // BETTER AUTH
-import { authClient } from "@/src/lib/auth-client"
+import { authClient } from "@/src/infrastructure/auth/auth-client"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // TYPES
 import { FlashcardFormComponentProps } from "@/src/components/FlashcardFormComponent/prop"
 import { FlashcardCategoryWithDeckWords } from "@/src/types/globalStore"
 // PROVIDER
-import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { handleClick, handleCloseClick, handleNextClick } from "@/src/components/FlashcardFormComponent/handlers"
 import { useFlashcardFormCustomEffect } from "@/src/components/FlashcardFormComponent/useFlashcardFormCustomEffect"

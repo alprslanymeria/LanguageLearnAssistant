@@ -1,5 +1,5 @@
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // TYPES
 import { CalculateRateProps, CloseAndSaveProps, HandleNextClickProps } from "@/src/components/ListeningFormComponent/prop"
 import { ListeningOldSessionInput, ListeningSessinRowInput } from "@/src/types/actions"
@@ -10,7 +10,7 @@ import { SaveOldSession } from "@/src/actions/oldSession"
 import { SaveRows } from "@/src/actions/rows"
 import { CalculateRate } from "@/src/actions/rate"
 // LIBRARIES
-import socket from "@/src/lib/socketClient"
+import socket from "@/src/infrastructure/socket/socketClient"
 
 
 

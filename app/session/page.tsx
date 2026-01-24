@@ -9,7 +9,7 @@ import ListeningSessionComponent from "@/src/components/ListeningSessionComponen
 import ReadingSessionComponent from "@/src/components/ReadingSessionComponent/ReadingSession"
 import WritingSessionComponent from "@/src/components/WritingSessionComponent/WritingSession"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useSessionPageReducer } from "@/src/page/SessionPage/useSessionPageReducer"
 import { useSessionPageCustomEffect } from "@/src/page/SessionPage/useSessionPageCustomEffect"

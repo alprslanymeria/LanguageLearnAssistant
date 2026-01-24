@@ -8,9 +8,9 @@ import { CalculateRateProps, CloseAndSaveProps, HandleTextSelectionProps, Handle
 import { WritingOldSessionInput, WritingSessionRowInput } from "@/src/types/actions"
 // UTILS
 import { calculateSuccessRate } from "@/src/utils/helper"
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // LIBRARIES
-import socket from "@/src/lib/socketClient"
+import socket from "@/src/infrastructure/socket/socketClient"
 
 
 export async function handleTextSelection(params : HandleTextSelectionProps) {

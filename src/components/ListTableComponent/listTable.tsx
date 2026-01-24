@@ -10,8 +10,8 @@ import PaginationComponent from "@/src/components/PaginationComponent/Pagination
 import { ListTableComponentProps } from "@/src/components/ListTableComponent/prop"
 import { Item } from "@/src/page/ListPage/prop"
 // PROVIDER
-import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { handleCreate, handleDelete, handleEdit } from "@/src/components/ListTableComponent/handlers"
 

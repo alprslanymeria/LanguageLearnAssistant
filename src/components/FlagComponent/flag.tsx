@@ -8,13 +8,13 @@ import { FlagComponentProps } from "@/src/components/FlagComponent/prop"
 // ASSETS
 import { mitr } from "@/public/fonts"
 // BETTER AUTH
-import { authClient } from "@/src/lib/auth-client"
+import { authClient } from "@/src/infrastructure/auth/auth-client"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useFlagReducer } from "@/src/components/FlagComponent/useFlagReducer"
 import { handleFlagClick, handleStartClick } from "@/src/components/FlagComponent/handlers"
 // PROVIDER
-import { useAlert } from "@/src/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/providers/LoadingProvider/LoadingProvider"
+import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
+import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 
 
 export default function FlagComponent({languages} : FlagComponentProps) {

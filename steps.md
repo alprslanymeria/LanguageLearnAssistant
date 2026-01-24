@@ -1,7 +1,3 @@
-
-
-
-
 *** (/) HOME PAGE ***
 
 * USE EFFECT VAR, İŞLEM LOADING GEREKTİRİYOR.

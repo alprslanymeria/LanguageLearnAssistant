@@ -4,8 +4,8 @@ import { SaveRows } from "@/src/actions/rows"
 // TYPES
 import { HandleClickProps, HandleCloseClickProps, HandleNextClickProps } from "@/src/components/FlashcardFormComponent/prop"
 // LIBRARIES
-import socket from "@/src/lib/socketClient"
-import { GlobalStore } from "@/src/store/globalStore"
+import socket from "@/src/infrastructure/socket/socketClient"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 import { FlashcardOldSessionInput, FlashcardSessionRowInput } from "@/src/types/actions"
 // UTILS
 import { calculateFlashcardSuccessRate } from "@/src/utils/helper"

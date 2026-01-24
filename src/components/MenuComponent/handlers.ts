@@ -1,11 +1,11 @@
 // TYPES
 import { HandleIconClickProps, HandleLogoutProps } from "@/src/components/MenuComponent/prop"
 // BETTER AUTH
-import { SignOut } from "@/src/lib/auth-client"
+import { SignOut } from "@/src/infrastructure/auth/auth-client"
 // LIBRARY
-import socket from "@/src/lib/socketClient"
+import socket from "@/src/infrastructure/socket/socketClient"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 
 // HANDLE LOGOUT
 export async function handleLogout(params : HandleLogoutProps) {

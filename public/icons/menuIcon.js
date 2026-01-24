@@ -1,4 +1,4 @@
-export default function MenuIcon() {
+const MenuIcon = () => {
 
     return(
         <svg width="32" height="32" viewBox="0 0 25 24" fill="red" xmlns="http://www.w3.org/2000/svg" transform="rotate(0 0 0)">
@@ -8,3 +8,5 @@ export default function MenuIcon() {
         </svg>
     )
 }
+
+export default MenuIcon

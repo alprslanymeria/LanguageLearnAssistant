@@ -1,7 +1,7 @@
 // REACT & NEXT
 import { HandleSubmitProps } from "@/src/page/SignupPage/prop"
 // TYPES
-import { SignUp } from "@/src/actions/auth"
+import { SignUp } from "@/src/actions/Auth/Controller"
 
 
 export async function handleSubmit(params : HandleSubmitProps) {

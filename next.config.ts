@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
     ]
   },
   reactStrictMode: false,
-  output: 'standalone'
+  output: 'standalone'   // ENABLE STANDALONE OUTPUT FOR DOCKER DEPLOYMENT
 };
 
 export default nextConfig;

@@ -4,7 +4,7 @@
 import WritingFormComponent from "@/src/components/WritingFormComponent/WritingFormComponent"
 import TableComponent from "@/src/components/TableComponent/table"
 // STORE
-import { GlobalStore } from "@/src/store/globalStore"
+import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useWritingSessionReducer } from "@/src/components/WritingSessionComponent/useWritingSessionReducer"
 import { useWritingSessionCustomEffect } from "@/src/components/WritingSessionComponent/useWritingSessionCustomEffect"

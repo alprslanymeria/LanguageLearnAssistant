@@ -1,22 +1,22 @@
 {
   "compilerOptions": {
-    // Derleme sonucu hangi JavaScript sürümüne dönüştürüleceğini belirler.
+    // THIS DETERMINES WHICH JS VERSION THE COMPILATION RESULT WILL BE CONVERTED TO.
     "target": "ES2017",
-    // Hangi ortam API’lerinin TypeScript tarafından tanınacağını belirtir.
+    // SPECIFIES WHICH ENVIRONMENT APIs WILL BE RECOGNIZED BY TYPESCRIPT.
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
-    // .js dosyalarının da derleme sürecine dahil edilmesine izin verir.
+    // ALLOWS INCLUDING .JS FILES IN THE COMPILATION PROCESS.
     "allowJs": true,
-    // node_modules içindeki tip dosyalarının (.d.ts) doğrulanmasını atlar.
+    // SKIPS TYPE CHECKING OF DECLARATION FILES (.D.TS) INSIDE NODE_MODULES.
     "skipLibCheck": true,
-    // Tüm katı tip denetimi kurallarını aktif eder.
+    // IT ACTIVATES ALL STRICT TYPE-CHECKING OPTIONS.
     "strict": true,
-    // (IF TRUE) TypeScript sadece tip kontrolü yapar, JS çıktısı üretmez.
+    // (IF TRUE) TYPESCRIPT ONLY PERFORMS TYPE CHECKING AND DOES NOT OUTPUT ANY JAVASCRIPT FILES.
     "noEmit": true,
-    // CommonJS modüllerinin import sözdizimiyle kullanılmasını sağlar.
+    //IT ENABLES TO USE OF COMMONJS MODULES WITH THE IMPORT SYNTAX
     "esModuleInterop": true,
     //
     "module": "esnext",
@@ -30,6 +30,9 @@
     "jsx": "react-jsx",
     //
     "incremental": true,
+    // THIS TWO OPTIONS ENABLE DECORATOR SUPPORT IN TYPESCRIPT FOR INVERSIFY
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "plugins": [
       {
         "name": "next"
@@ -45,7 +48,7 @@
       ]
     }
   },
-  // INCLUDE SADECE BURADA BELİRTİLEN YERLERDEKİ .TS DOSYALARINI DERLER.
+  // INCLUDE ONLY COMPILES .TS FILES LOCATED IN THE SPECIFIED LOCATIONS HERE.
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -57,5 +60,19 @@
   "exclude": [
     "node_modules"
   ]
-  // EXCLUDE DERLEME SIRASINDA HANGI DOSYALARI GÖRMEZDEN GELECEĞİNİ BELİRTİR.
+  // THE EXCLUDE OPTION SPECIFIES FILES AND DIRECTORIES TO BE IGNORED DURING THE COMPILATION PROCESS.
 }
+
+
+// MODULE TYPES RELATED WITH WRITIN STYLE OF MODULE
+// MODULE
+  // CommonJS
+  // ESM
+
+// BUNDLER COMBINES MODULES INTO A SINGLE OR SEVERAL FILES.
+// BUNDLER
+  // TURBOPACK
+  // WEBPACK
+  // ROLLUP
+  // ESBUILD
+  // VITE
