@@ -1,7 +1,8 @@
 // TYPES
 import { HandleFlagClickProps, HandleStartClickProps } from "@/src/components/FlagComponent/prop"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 // ACTIONS
-import { CompareLanguageId } from "@/src/actions/language"
+import { CompareLanguageId } from "@/src/actions/User/Controller"
 
 
 
@@ -48,9 +49,9 @@ export async function handleStartClick(params : HandleStartClickProps) {
         //CHECK NATIVE LANGUAGE ID
         const response = await CompareLanguageId({userId, languageId: languageInfo.id})
 
-        if(response && response.status == 500) {
+        if(response && response.status != HttpStatusCode.OK) {
 
-            showAlert({type: "error" , title: "error" , message: response.message})
+            showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
 
             return
         }

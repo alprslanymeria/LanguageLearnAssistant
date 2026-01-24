@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 // TYPES
 import { FlagComponentProps } from "@/src/components/FlagComponent/prop"
 // ASSETS
-import { mitr } from "@/public/fonts"
+import Fonts from "@/public/fonts/fonts"
 // BETTER AUTH
 import { authClient } from "@/src/infrastructure/auth/auth-client"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
@@ -56,7 +56,7 @@ export default function FlagComponent({languages} : FlagComponentProps) {
                 <button
                     disabled= {(isLoading && loadingSource === "HandleStartClick") || isPending}
                     onClick={() => handleStartClick({languageInfo: state.languageInfo , userId , router, showAlert , setLoading})}
-                    className={` ${mitr.className} mt-20 bg-[#58CC02] text-white font-medium py-3 px-20 rounded-lg shadow-md shadow-[#58A700] hover:bg-[#58A700] transition-colors duration-300`}
+                    className={` ${Fonts.mitr.className} mt-20 bg-[#58CC02] text-white font-medium py-3 px-20 rounded-lg shadow-md shadow-[#58A700] hover:bg-[#58A700] transition-colors duration-300`}
                 >
                     {isLoading && loadingSource === "HandleStartClick" ? (
                             <div className="flex items-center justify-center">
