@@ -2,7 +2,7 @@
 import { useEffect } from "react"
 // TYPES
 import { UseReadingSessionCustomEffectProps } from "@/src/components/ReadingSessionComponent/prop"
-import { ReadingSessionRowInput } from "@/src/types/actions"
+import { ReadingRowItemRequest } from "@/src/actions/ReadingSessionRow/Request"
 
 
 export function useReadingSessionCustomEffect(params : UseReadingSessionCustomEffectProps) {
@@ -19,7 +19,7 @@ export function useReadingSessionCustomEffect(params : UseReadingSessionCustomEf
         if(kese.some(k => !k)) return
 
         const start = (state.page - 1) * state.limit
-        const sliced = sessionData.rows.slice(start, start + state.limit) as ReadingSessionRowInput[]
+        const sliced = sessionData.rows.slice(start, start + state.limit) as ReadingRowItemRequest[]
 
         dispatch({type: "SET_PAGINATED_ROWS", payload: {paginatedRows: sliced}})
 

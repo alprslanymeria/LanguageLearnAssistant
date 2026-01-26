@@ -1,12 +1,14 @@
 // ACTIONS
-import { SaveOldSession } from "@/src/actions/oldSession"
-import { SaveRows } from "@/src/actions/rows"
+import { CreateFOS } from "@/src/actions/FlashcardOldSession/Controller"
+import { CreateFRows } from "@/src/actions/FlashcardSessionRow/Controller"
 // TYPES
 import { HandleClickProps, HandleCloseClickProps, HandleNextClickProps } from "@/src/components/FlashcardFormComponent/prop"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
+import { SaveFlashcardOldSessionRequest } from "@/src/actions/FlashcardOldSession/Request"
+import { FlashcardRowItemRequest, SaveFlashcardRowsRequest } from "@/src/actions/FlashcardSessionRow/Request"
 // LIBRARIES
 import socket from "@/src/infrastructure/socket/socketClient"
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
-import { FlashcardOldSessionInput, FlashcardSessionRowInput } from "@/src/types/actions"
 // UTILS
 import { calculateFlashcardSuccessRate } from "@/src/utils/helper"
 
@@ -29,10 +31,8 @@ export function handleClick(params : HandleClickProps) {
         if(sessionData.type === "flashcard") {
 
             //SAVED TO LOCAL STATE
-            const row: FlashcardSessionRowInput = {
+            const row : FlashcardRowItemRequest = {
 
-                from: "flashcard",
-                oldSessionId: oldSessionId!,
                 question: sessionData.data.FQuestion,
                 answer: sessionData.data.FAnswer,
                 status: status
@@ -118,15 +118,20 @@ export async function handleCloseClick(params : HandleCloseClickProps) {
     if(kese.some(k => !k)) return
 
     //CALCULATE AVERAGE RATE
-    const successRate = calculateFlashcardSuccessRate(sessionData!.rows as FlashcardSessionRowInput[])
+    const successRate = calculateFlashcardSuccessRate(sessionData!.rows as FlashcardRowItemRequest[])
 
-    const oldSessionRow: FlashcardOldSessionInput = {
+    const oldSessionRow: SaveFlashcardOldSessionRequest = {
 
-        from: "flashcard",
-        oldSessionId: oldSessionId!,
+        id: oldSessionId!,
         flashcardId: item.flashcardId,
-        categoryId: item.id,
+        flashcardCategoryId: item.id,
         rate: successRate
+    }
+
+    const rowsToSave : SaveFlashcardRowsRequest = {
+
+        flashcardOldSessionId: oldSessionId!,
+        rows: sessionData!.rows
     }
 
     try {
@@ -134,15 +139,15 @@ export async function handleCloseClick(params : HandleCloseClickProps) {
         setLoading({value: true , source: "HandleCloseClick"})
 
         //SAVE OLD SESSION
-        await SaveOldSession({oldSessionRow})
+        await CreateFOS(oldSessionRow)
 
         //SAVE WORDS
-        await SaveRows({rows: sessionData!.rows})
+        await CreateFRows(rowsToSave)
 
         //DELETE LIVE SESSION
         socket.emit("delete-live-session", {userId}, (response : any) => {
 
-            if (response?.status !== 204) {
+            if (response?.status !== HttpStatusCode.NoContent) {
 
                 showAlert({ type: "error", title: "error", message: response?.message })
                 return

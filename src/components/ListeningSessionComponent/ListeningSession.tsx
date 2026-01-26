@@ -9,7 +9,7 @@ import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 import { useListeningSessionReducer } from "@/src/components/ListeningSessionComponent/useListeningSessionReducer"
 import { useListeningSessionCustomEffect } from "@/src/components/ListeningSessionComponent/useListeningSessionCustomEffect"
 // TYPES
-import { ListeningCategoryWithDeckVideos } from "@/src/types/globalStore"
+import { ListeningCategoryWithDeckVideos } from "@/src/infrastructure/store/globalStoreType"
 
 export default function ListeningSessionComponent() {
 

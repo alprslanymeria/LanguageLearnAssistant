@@ -5,7 +5,7 @@ import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/pro
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { SessionData, WritingSession } from "@/src/types/globalStore"
-import { WritingSessionRowInput } from "@/src/types/actions"
+import { WritingRowItemRequest } from "@/src/actions/WritingSessionRow/Request"
 
 // COMPONENT PROPS
 export type WritingFormComponentProps = {
@@ -16,7 +16,7 @@ export type WritingFormComponentProps = {
 // HANDLERS
 export type HandleTextSelectionProps = {
     
-    updateWritingSession: (update: { data?: Partial<WritingSession["data"]>, rows?: WritingSessionRowInput[]}) => void
+    updateWritingSession: (update: { data?: Partial<WritingSession["data"]>, rows?: WritingRowItemRequest[]}) => void
 }
 
 export type HandleTranslateProps = {
@@ -26,7 +26,7 @@ export type HandleTranslateProps = {
     practice: string | null
     sessionData: SessionData
     showAlert: (props: ShowAlertProps) => void
-    updateWritingSession: (update: { data?: Partial<WritingSession["data"]>, rows?: WritingSessionRowInput[]}) => void
+    updateWritingSession: (update: { data?: Partial<WritingSession["data"]>, rows?: WritingRowItemRequest[]}) => void
     setLoading: (props: setLoadingProps) => void
 }
 
@@ -35,7 +35,7 @@ export type CalculateRateProps = {
     oldSessionId: string | null
     sessionData: SessionData
     showAlert: (props: ShowAlertProps) => void
-    updateWritingSession: (update: { data?: Partial<WritingSession["data"]>, rows?: WritingSessionRowInput[]}) => void
+    updateWritingSession: (update: { data?: Partial<WritingSession["data"]>, rows?: WritingRowItemRequest[]}) => void
     setLoading: (props: setLoadingProps) => void
 }
 
@@ -48,6 +48,6 @@ export type CloseAndSaveProps = {
     router: AppRouterInstance
     dispatch: (action: Action) => void
     showAlert: (props: ShowAlertProps) => void
-    updateWritingSession: (update: { data?: Partial<WritingSession["data"]>, rows?: WritingSessionRowInput[]}) => void
+    updateWritingSession: (update: { data?: Partial<WritingSession["data"]>, rows?: WritingRowItemRequest[]}) => void
     setLoading: (props: setLoadingProps) => void
 }

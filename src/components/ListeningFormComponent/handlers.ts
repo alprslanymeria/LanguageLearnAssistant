@@ -2,13 +2,14 @@
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // TYPES
 import { CalculateRateProps, CloseAndSaveProps, HandleNextClickProps } from "@/src/components/ListeningFormComponent/prop"
-import { ListeningOldSessionInput, ListeningSessinRowInput } from "@/src/types/actions"
+import { ListeningRowItemRequest, SaveListeningRowsRequest } from "@/src/actions/ListeningSessionRow/Request"
+import { SaveListeningOldSessionRequest } from "@/src/actions/ListeningOldSession/Request"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 // UTILS
-import { calculateSuccessRate } from "@/src/utils/helper"
+import { calculateSimilarityRate, calculateSuccessRate } from "@/src/utils/helper"
 // ACTIONS
-import { SaveOldSession } from "@/src/actions/oldSession"
-import { SaveRows } from "@/src/actions/rows"
-import { CalculateRate } from "@/src/actions/rate"
+import { CreateLOS } from "@/src/actions/ListeningOldSession/Controller"
+import { CreateLRows } from "@/src/actions/ListeningSessionRow/Controller"
 // LIBRARIES
 import socket from "@/src/infrastructure/socket/socketClient"
 
@@ -90,25 +91,16 @@ export async function calculateRate(params : CalculateRateProps) {
                 }
             })
 
-            const response = await CalculateRate({inputOne: sessionData.data.LTextHeardByUser, inputTwo: correct})
+            const similarity = calculateSimilarityRate({inputOne: sessionData.data.LTextHeardByUser, inputTwo: correct})
 
-            if(response.status != 200) {
-
-                showAlert({type: "error" , title: "error", message: response.message})
-
-                return
-            }
-
-            showAlert({type: "info", title: "info", message: `Similarity rate: ${(response.data! * 100).toFixed(2)}%`})
+            showAlert({type: "info", title: "info", message: `Similarity rate: ${similarity}%`})
 
             // SAVED TO LOCAL STATE
-            const row: ListeningSessinRowInput = {
+            const row : ListeningRowItemRequest = {
 
-                from: "listening",
-                oldSessionId: oldSessionId!,
                 listenedSentence: correct,
                 answer: sessionData.data.LTextHeardByUser,
-                similarity: response.data!
+                similarity: similarity
             }
 
             //UPDATE ROWS
@@ -134,7 +126,7 @@ export async function calculateRate(params : CalculateRateProps) {
     }
 }
 
-
+// CLOSE AND SAVE
 export async function closeAndSave(params : CloseAndSaveProps) {
 
     const {userId, sessionData, oldSessionId, item, router, updateListeningSession, setLoading, showAlert, dispatch} = params
@@ -148,15 +140,20 @@ export async function closeAndSave(params : CloseAndSaveProps) {
     if(kese.some(k => !k)) return
 
     //CALCULATE AVERAGE RATE
-    const successRate = calculateSuccessRate(sessionData!.rows as ListeningSessinRowInput[])
+    const successRate = calculateSuccessRate(sessionData!.rows as ListeningRowItemRequest[])
 
-    const oldSessionRow: ListeningOldSessionInput = {
+    const oldSessionRow : SaveListeningOldSessionRequest = {
 
-        from: "listening",
-        oldSessionId: oldSessionId!,
+        id: oldSessionId!,
         listeningId: item.listeningId,
-        categoryId: item.id,
+        listeningCategoryId: item.id,
         rate: successRate
+    }
+
+    const rowsToSave : SaveListeningRowsRequest = {
+
+        listeningSessionId: oldSessionId!,
+        rows: sessionData!.rows
     }
 
     try {
@@ -164,15 +161,15 @@ export async function closeAndSave(params : CloseAndSaveProps) {
         setLoading({value: true , source: "ListeningCloseAndSave"})
                 
         //SAVE OLD SESSION
-        await SaveOldSession({oldSessionRow})
+        await CreateLOS(oldSessionRow)
             
         //SAVE SENTENCES
-        await SaveRows({rows: sessionData!.rows})
+        await CreateLRows(rowsToSave)
     
         //DELETE LIVE SESSION
         socket.emit("delete-live-session", {userId}, (response : any) => {
 
-            if (response?.status !== 204) {
+            if (response?.status !== HttpStatusCode.NoContent) {
 
                 showAlert({ type: "error", title: "error", message: response?.message })
                 return

@@ -8,10 +8,9 @@ import { TYPES } from "@/src/di/type"
 import { IEntityVerificationService } from "@/src/services/IEntityVerificationService"
 import { Flashcard, Reading, Writing } from "@/src/generated/prisma/client"
 import type { ILanguageRepository } from "@/src/infrastructure/persistence/contracts/ILanguageRepository"
-import { NoLanguageFound } from "@/src/exceptions/NoLanguageFound"
 import type { IPracticeRepository } from "@/src/infrastructure/persistence/contracts/IPracticeRepository"
-import { NoPracticeFound } from "@/src/exceptions/NoPracticeFound"
 import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
+import { NoLanguageFound, NoPracticeFound } from "@/src/exceptions/NotFound"
 
 @injectable()
 export class EntityVerificationService implements IEntityVerificationService {
@@ -42,13 +41,13 @@ export class EntityVerificationService implements IEntityVerificationService {
         this.writingRepository = writingRepository
     }
 
-    async verifyOrCreateFlashcardAsync(flashcardId: number, userId: string, languageId: number): Promise<ServiceResult<Flashcard>> {
+    async verifyOrCreateFlashcardAsync(practiceId: number, userId: string, languageId: number): Promise<ServiceResult<Flashcard>> {
         
-        const flashcard = await this.flashcardRepository.getByIdAsync(flashcardId)
+        const flashcard = await this.flashcardRepository.getByPracticeIdUserIdLanguageIdAsync(practiceId, userId, languageId)
 
         if (flashcard) return ServiceResult.success(flashcard)
 
-        this.logger.info(`EntityVerificationService: Flashcard with ID ${flashcardId} not found. Creating new flashcard for User ${userId} and Language ${languageId}.`)
+        this.logger.info(`EntityVerificationService: Flashcard with Practice ID ${practiceId}, User ID ${userId}, and Language ID ${languageId} not found. Creating new flashcard for User ${userId} and Language ${languageId}.`)
 
         const language = await this.languageRepository.getByIdAsync(languageId)
 
@@ -74,14 +73,14 @@ export class EntityVerificationService implements IEntityVerificationService {
         return ServiceResult.success(createdFlashcard!)
     }
 
-    async verifyOrCreateReadingAsync(readingId: number, userId: string, languageId: number): Promise<ServiceResult<Reading>> {
+    async verifyOrCreateReadingAsync(practiceId: number, userId: string, languageId: number): Promise<ServiceResult<Reading>> {
         
-        const reading = await this.readingRepository.getByIdAsync(readingId)
+        const reading = await this.readingRepository.getByPracticeIdUserIdLanguageIdAsync(practiceId, userId, languageId)
 
         if (reading) return ServiceResult.success(reading)
 
-        this.logger.info(`EntityVerificationService: Reading with ID ${readingId} not found. Creating new reading for User ${userId} and Language ${languageId}.`)
-
+        this.logger.info(`EntityVerificationService: Reading with Practice ID ${practiceId}, User ID ${userId}, and Language ID ${languageId} not found. Creating new reading for User ${userId} and Language ${languageId}.`)
+        
         const language = await this.languageRepository.getByIdAsync(languageId)
 
         if (!language) throw new NoLanguageFound()
@@ -107,14 +106,14 @@ export class EntityVerificationService implements IEntityVerificationService {
         
     }
 
-    async verifyOrCreateWritingAsync(writingId: number, userId: string, languageId: number): Promise<ServiceResult<Writing>> {
+    async verifyOrCreateWritingAsync(practiceId: number, userId: string, languageId: number): Promise<ServiceResult<Writing>> {
         
-        const writing = await this.writingRepository.getByIdAsync(writingId)
+        const writing = await this.writingRepository.getByPracticeIdUserIdLanguageIdAsync(practiceId, userId, languageId)
 
         if (writing) return ServiceResult.success(writing)
 
-        this.logger.info(`EntityVerificationService: Writing with ID ${writingId} not found. Creating new writing for User ${userId} and Language ${languageId}.`)
-
+        this.logger.info(`EntityVerificationService: Writing with Practice ID ${practiceId}, User ID ${userId}, and Language ID ${languageId} not found. Creating new writing for User ${userId} and Language ${languageId}.`)
+        
         const language = await this.languageRepository.getByIdAsync(languageId)
 
         if (!language) throw new NoLanguageFound()

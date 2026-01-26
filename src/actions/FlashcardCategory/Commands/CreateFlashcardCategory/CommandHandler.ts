@@ -9,6 +9,8 @@ import type { ICacheService } from "@/src/infrastructure/caching/ICacheService"
 import type { IEntityVerificationService } from "@/src/services/IEntityVerificationService"
 import { CacheKeys } from "@/src/infrastructure/caching/CacheKeys"
 import { FlashcardResultNotSuccess } from "@/src/exceptions/NotSuccess"
+import type { IPracticeRepository } from "@/src/infrastructure/persistence/contracts/IPracticeRepository"
+import { NoPracticeFound } from "@/src/exceptions/NotFound"
 
 @injectable()
 export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<CreateFlashcardCategoryCommand, number> {
@@ -16,6 +18,7 @@ export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<Cr
     // FIELDS
     private readonly logger : ILogger
     private readonly cacheService: ICacheService
+    private readonly practiceRepository : IPracticeRepository
     private readonly flashcardCategoryRepository : IFlashcardCategoryRepository
     private readonly entityVerificationService: IEntityVerificationService
 
@@ -24,6 +27,7 @@ export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<Cr
         
         @inject(TYPES.Logger) logger : ILogger,
         @inject(TYPES.CacheService) cacheService: ICacheService,
+        @inject(TYPES.PracticeRepository) practiceRepository : IPracticeRepository,
         @inject(TYPES.FlashcardCategoryRepository) flashcardCategoryRepository : IFlashcardCategoryRepository,
         @inject(TYPES.EntityVerificationService) entityVerificationService: IEntityVerificationService
     
@@ -31,20 +35,31 @@ export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<Cr
         
         this.logger = logger;
         this.cacheService = cacheService;
+        this.practiceRepository = practiceRepository;
         this.flashcardCategoryRepository = flashcardCategoryRepository;
         this.entityVerificationService = entityVerificationService;
     }
 
     async Handle(request: CreateFlashcardCategoryCommand): Promise<number> {
+
+        // FORM DATA'S
+        const name = request.formData.get("name")?.toString()!
+        const userId = request.formData.get("userId")?.toString()!
+        const languageId = Number(request.formData.get("languageId"))
+
         
         // LOG MESSAGE
-        this.logger.info(`CreateFlashcardCategoryCommandHandler: Creating flashcard category with name  ${request.request.name}`)
+        this.logger.info(`CreateFlashcardCategoryCommandHandler: Creating flashcard category with name  ${name}`)
+
+        const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
+
+        if (!practice) throw new NoPracticeFound()
     
         const flashcardResult = await this.entityVerificationService.verifyOrCreateFlashcardAsync(
 
-            request.request.flashcardId,
-            request.request.userId,
-            request.request.languageId
+            practice.id,
+            userId,
+            languageId
         )
 
         // FAST FAIL
@@ -52,7 +67,7 @@ export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<Cr
              
         const data : CreateFlashcardCategoryData = {
 
-            name: request.request.name,
+            name: name,
             flashcardId: flashcardResult.data!.id,
         }
 
@@ -61,7 +76,7 @@ export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<Cr
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.flashcardCategory.prefix)
 
-        this.logger.info(`CreateFlashcardCategoryCommandHandler: Successfully created flashcard category with name  ${request.request.name}`)
+        this.logger.info(`CreateFlashcardCategoryCommandHandler: Successfully created flashcard category with name  ${name}`)
     
         return flashcardCategoryId
     }

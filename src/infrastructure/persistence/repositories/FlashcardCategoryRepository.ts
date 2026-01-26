@@ -6,7 +6,7 @@ import { CreateFlashcardCategoryData, FlashcardCategoryWithLanguage, IFlashcardC
 
 @injectable()
 export class FlashcardCategoryRepository implements IFlashcardCategoryRepository {
-
+    
 
     async getFlashcardCategoryItemByIdAsync(id: number): Promise<FlashcardCategoryWithLanguage | null> {
 
@@ -24,6 +24,26 @@ export class FlashcardCategoryRepository implements IFlashcardCategoryRepository
                 }
             }
         })
+    }
+
+    async getAllFCategoriesAsync(userId: string): Promise<{ items: FlashcardCategory[]; totalCount: number }> {
+        
+        const whereClause = {
+            flashcard: {
+                userId: userId
+            }
+        }
+
+        const totalCount = await prisma.flashcardCategory.count({
+            where: whereClause
+        })
+
+        const items = await prisma.flashcardCategory.findMany({
+            where: whereClause,
+            orderBy: { id: 'desc' }
+        })
+
+        return { items, totalCount }
     }
 
     async getAllFCategoriesWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: FlashcardCategory[]; totalCount: number }> {

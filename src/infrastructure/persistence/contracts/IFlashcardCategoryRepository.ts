@@ -28,6 +28,7 @@ export interface IFlashcardCategoryRepository {
     // HELPER
     getFlashcardCategoryItemByIdAsync(id: number): Promise<FlashcardCategoryWithLanguage | null>
     getAllFCategoriesWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: FlashcardCategory[], totalCount: number}>
+    getAllFCategoriesAsync(userId: string): Promise<{ items: FlashcardCategory[], totalCount: number}>
     getFCategoryCreateItemsAsync(userId: string, languageId: number, practiceId: number): Promise<FlashcardCategory[]>
 
     // CRUD

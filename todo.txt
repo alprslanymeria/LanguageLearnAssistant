@@ -7,7 +7,6 @@
 4- dockerfile içerisindeki prisma işlemleri olası bir problem olabilir.
 
 
-
 REFACTOR (İNCELENEN) EDILEN DOSYALAR:
 -------------------------
 ** YORUMLAR UPPERCASE, İNGİLİZCE VE TEK SATIR OLACAK.

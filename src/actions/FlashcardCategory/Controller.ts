@@ -6,7 +6,6 @@ import { TYPES } from "@/src/di/type"
 import { ServiceResult, ServiceResultBase } from "@/src/infrastructure/common/ServiceResult"
 import { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { CommandBus } from "@/src/infrastructure/mediatR/CommandBus"
-import { CreateFlashcardCategoryRequest, UpdateFlashcardCategoryRequest } from "@/src/actions/FlashcardCategory/Request"
 import { createFlashcardCategoryCommandFactory } from "@/src/actions/FlashcardCategory/Commands/CreateFlashcardCategory/CommandFactory"
 import { createFlashcardCategoryCommandValidator } from "@/src/actions/FlashcardCategory/Commands/CreateFlashcardCategory/CommandValidator"
 import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
@@ -26,8 +25,10 @@ import { getFCategoryCreateItemsQuery } from "@/src/actions/FlashcardCategory/Qu
 import { GetFCategoryCreateItemsQueryValidator } from "@/src/actions/FlashcardCategory/Queries/GetFCategoryCreateItems/QueryValidator"
 import { getFlashcardCategoryByIdQuery } from "@/src/actions/FlashcardCategory/Queries/GetFlashcardCategoryById/QueryFactory"
 import { GetFlashcardCategoryByIdQueryValidator } from "@/src/actions/FlashcardCategory/Queries/GetFlashcardCategoryById/QueryValidator"
+import { getAllFCategories } from "./Queries/GetAllFCategories/QueryFactory"
+import { GetAllFCategoriesQueryValidator } from "./Queries/GetAllFCategories/QueryValidator"
 
-export async function CreateFlashcardCategory(request: CreateFlashcardCategoryRequest) : Promise<ServiceResult<number>> {
+export async function CreateFlashcardCategory(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -38,14 +39,17 @@ export async function CreateFlashcardCategory(request: CreateFlashcardCategoryRe
         // LOG INFO
         logger.info("CreateFlashcardCategory: Request received")
 
-        // COMMAND
-        const command = createFlashcardCategoryCommandFactory(request)
+        // TURN FORM DATA TO PLAIN OBJECT
+        const plainObject = Object.fromEntries(formData.entries())
 
         // ZOD VALIDATION
-        const validatedCommand = await createFlashcardCategoryCommandValidator.parseAsync(command)
+        await createFlashcardCategoryCommandValidator.parseAsync(plainObject)
+
+        // COMMAND
+        const command = createFlashcardCategoryCommandFactory(prevState, formData)
 
         // SEND COMMAND TO BUS
-        const flashcardCategoryId = await commandBus.send(validatedCommand)
+        const flashcardCategoryId = await commandBus.send(command)
 
         return ServiceResult.success<number>(flashcardCategoryId as number)
         
@@ -57,6 +61,18 @@ export async function CreateFlashcardCategory(request: CreateFlashcardCategoryRe
             logger.error("CreateFlashcardCategory: INVALID FORM DATA!", {firstError})
             // SHOW TO USER
             return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
+        }
+
+        if(error instanceof NoPracticeFound) {
+
+            logger.error("CreateFlashcardCategory: NO PRACTICE FOUND!", {error})
+            return ServiceResult.failOne<number>(error.message, HttpStatusCode.NotFound)
+        }
+
+        if(error instanceof FlashcardResultNotSuccess) {
+
+            logger.error("CreateFlashcardCategory: FLASHCARD RESULT NOT SUCCESS!", {error})
+            return ServiceResult.failOne<number>(error.message, HttpStatusCode.InternalServerError)
         }
 
         logger.error("CreateFlashcardCategory: FAIL", {error})
@@ -109,7 +125,7 @@ export async function DeleteFCategoryItemById(id: number) : Promise<ServiceResul
     }
 }
 
-export async function UpdateFlashcardCategory(request: UpdateFlashcardCategoryRequest) : Promise<ServiceResult<number>> {
+export async function UpdateFlashcardCategory(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -118,16 +134,19 @@ export async function UpdateFlashcardCategory(request: UpdateFlashcardCategoryRe
     try {
 
         // LOG INFO
-        logger.info(`UpdateFlashcardCategory: Request received for Id ${request.id}`)
+        logger.info(`UpdateFlashcardCategory: Request received...`)
 
-        // COMMAND
-        const command = updateFlashcardCategoryCommandFactory(request)
+        // TURN FORM DATA TO PLAIN OBJECT
+        const plainObject = Object.fromEntries(formData.entries())
 
         // ZOD VALIDATION
-        const validatedCommand = await UpdateFlashcardCategoryCommandValidator.parseAsync(command)
+        await UpdateFlashcardCategoryCommandValidator.parseAsync(plainObject)
+
+        // COMMAND
+        const command = updateFlashcardCategoryCommandFactory(prevState, formData)
 
         // SEND COMMAND TO BUS
-        const updatedId = await commandBus.send(validatedCommand)
+        const updatedId = await commandBus.send(command)
 
         return ServiceResult.success<number>(updatedId as number)
         
@@ -141,6 +160,18 @@ export async function UpdateFlashcardCategory(request: UpdateFlashcardCategoryRe
             return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
         }
 
+        if(error instanceof NoPracticeFound) {
+
+            logger.error("UpdateFlashcardCategory: NO PRACTICE FOUND!", {error})
+            return ServiceResult.failOne<number>(error.message, HttpStatusCode.NotFound)
+        }
+
+        if(error instanceof FlashcardCategoryNotFound) {
+
+            logger.error("UpdateFlashcardCategory: FLASHCARD CATEGORY NOT FOUND!", {error})
+            return ServiceResult.failOne<number>(error.message, HttpStatusCode.NotFound)
+        }
+
         if(error instanceof FlashcardResultNotSuccess) {
 
             logger.error("UpdateFlashcardCategory: FLASHCARD RESULT NOT SUCCESS!", {error})
@@ -152,7 +183,6 @@ export async function UpdateFlashcardCategory(request: UpdateFlashcardCategoryRe
         return ServiceResult.failOne<number>("SERVER ERROR!", HttpStatusCode.InternalServerError)
     }
 }
-
 
 export async function GetAllFCategoriesWithPaging(userId: string, request: PagedRequest) : Promise<ServiceResult<PagedResult<FlashcardCategoryWithTotalCount>>> {
 
@@ -188,6 +218,44 @@ export async function GetAllFCategoriesWithPaging(userId: string, request: Paged
 
         logger.error("GetAllFCategoriesWithPaging: FAIL", {error})
         return ServiceResult.failOne<PagedResult<FlashcardCategoryWithTotalCount>>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+    }
+}
+
+export async function GetAllFCategories(userId: string) : Promise<ServiceResult<FlashcardCategoryWithTotalCount>> {
+
+    // SERVICES
+    const logger = container.get<ILogger>(TYPES.Logger)
+    const queryBus = container.get<QueryBus>(TYPES.QueryBus)
+
+    try {
+
+        // LOG INFO
+        logger.info("GetAllFCategories: Request received", {userId})
+
+        // QUERY
+        const query = getAllFCategories(userId)
+
+        // ZOD VALIDATION
+        const validatedQuery = await GetAllFCategoriesQueryValidator.parseAsync(query)
+
+        // SEND QUERY TO BUS
+        const flashcardCategories = await queryBus.send(validatedQuery)
+
+        return ServiceResult.success<FlashcardCategoryWithTotalCount>(flashcardCategories as FlashcardCategoryWithTotalCount)
+        
+    } catch (error) {
+        
+        if(error instanceof ZodError) {
+
+            const firstError = error.issues?.[0]?.message
+            logger.error("GetAllFCategories: INVALID FORM DATA!", {firstError})
+            // SHOW TO USER
+            return ServiceResult.failOne<FlashcardCategoryWithTotalCount>(firstError, HttpStatusCode.BadRequest)
+        }
+
+        logger.error("GetAllFCategories: FAIL", {error})
+        return ServiceResult.failOne<FlashcardCategoryWithTotalCount>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+
     }
 }
 
@@ -241,7 +309,6 @@ export async function GetFCategoryCreateItems(userId: string, language: string, 
         return ServiceResult.failOne<FlashcardCategoryDto[]>("SERVER ERROR!", HttpStatusCode.InternalServerError)
     }
 }
-
 
 export async function GetFlashcardCategoryById(id: number) : Promise<ServiceResult<FlashcardCategoryWithLanguageId>> {
 

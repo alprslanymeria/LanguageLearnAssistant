@@ -6,7 +6,6 @@ import { TYPES } from "@/src/di/type"
 import { ServiceResult, ServiceResultBase } from "@/src/infrastructure/common/ServiceResult"
 import { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { CommandBus } from "@/src/infrastructure/mediatR/CommandBus"
-import { CreateReadingBookRequest, UpdateReadingBookRequest } from "@/src/actions/ReadingBook/Request"
 import { createReadingBookCommandFactory } from "@/src/actions/ReadingBook/Commands/CreateReadingBook/CommandFactory"
 import { CreateReadingBookCommandValidator } from "@/src/actions/ReadingBook/Commands/CreateReadingBook/CommandValidator"
 import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
@@ -26,7 +25,7 @@ import { GetRBookCreateItemsQueryValidator } from "@/src/actions/ReadingBook/Que
 import { getReadingBookByIdQuery } from "@/src/actions/ReadingBook/Queries/GetReadingBookById/QueryFactory"
 import { GetReadingBookByIdQueryValidator } from "@/src/actions/ReadingBook/Queries/GetReadingBookById/QueryValidator"
 
-export async function CreateReadingBook(request: CreateReadingBookRequest) : Promise<ServiceResult<number>> {
+export async function CreateReadingBook(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -35,16 +34,19 @@ export async function CreateReadingBook(request: CreateReadingBookRequest) : Pro
     try {
 
         // LOG INFO
-        logger.info("CreateReadingBook: CreateReadingBookRequest data:", {request})
+        logger.info("CreateReadingBook: CreateReadingBookRequest data:", {formData})
 
-        // COMMAND
-        const command = createReadingBookCommandFactory(request)
+        // TURN FORM DATA TO PLAIN OBJECT
+        const plainObject = Object.fromEntries(formData.entries())
 
         // ZOD VALIDATION
-        const validatedCommand = await CreateReadingBookCommandValidator.parseAsync(command)
+        await CreateReadingBookCommandValidator.parseAsync(plainObject)
+
+        // COMMAND
+        const command = createReadingBookCommandFactory(prevState, formData)
 
         // SEND COMMAND TO BUS
-        const readingBookId = await commandBus.send(validatedCommand)
+        const readingBookId = await commandBus.send(command)
 
         return ServiceResult.successAsCreated<number>(readingBookId as number, "")
         
@@ -56,6 +58,12 @@ export async function CreateReadingBook(request: CreateReadingBookRequest) : Pro
             logger.error("CreateReadingBook: INVALID FORM DATA!", {firstError})
             // SHOW TO USER
             return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
+        }
+
+        if(error instanceof NoPracticeFound) {
+
+            logger.error("CreateReadingBook: No practice found!", {error})
+            return ServiceResult.failOne<number>("No practice found!", HttpStatusCode.NotFound)
         }
 
         if(error instanceof ReadingResultNotSuccess) {
@@ -114,7 +122,7 @@ export async function DeleteRBookItemById(id : number) : Promise<ServiceResultBa
 
 }
 
-export async function UpdateReadingBook(request: UpdateReadingBookRequest) : Promise<ServiceResult<number>> {
+export async function UpdateReadingBook(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -123,16 +131,19 @@ export async function UpdateReadingBook(request: UpdateReadingBookRequest) : Pro
     try {
 
         // LOG INFO
-        logger.info("UpdateReadingBook: UpdateReadingBookRequest data:", {request})
+        logger.info("UpdateReadingBook: UpdateReadingBookRequest data:", {formData})
 
-        // COMMAND
-        const command = updateReadingBookCommandFactory(request)
+        // TURN FORM DATA TO PLAIN OBJECT
+        const plainObject = Object.fromEntries(formData.entries())
 
         // ZOD VALIDATION
-        const validatedCommand = await UpdateReadingBookCommandValidator.parseAsync(command)
+        await UpdateReadingBookCommandValidator.parseAsync(plainObject)
+
+        // COMMAND
+        const command = updateReadingBookCommandFactory(prevState, formData)
 
         // SEND COMMAND TO BUS
-        const readingBookId = await commandBus.send(validatedCommand)
+        const readingBookId = await commandBus.send(command)
 
         return ServiceResult.success<number>(readingBookId as number)
         
@@ -146,10 +157,22 @@ export async function UpdateReadingBook(request: UpdateReadingBookRequest) : Pro
             return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
         }
 
+        if(error instanceof NoPracticeFound) {
+
+            logger.error("UpdateReadingBook: No practice found!", {error})
+            return ServiceResult.failOne<number>("No practice found!", HttpStatusCode.NotFound)
+        }
+
         if(error instanceof ReadingBookNotFound) {
 
             logger.error("UpdateReadingBook: Reading book not found!", {error})
             return ServiceResult.failOne<number>("Reading book not found!", HttpStatusCode.NotFound)
+        }
+
+        if(error instanceof ReadingResultNotSuccess) {
+
+            logger.error("UpdateReadingBook: Reading verification failed.", {error})
+            return ServiceResult.failOne<number>("Reading verification failed.", HttpStatusCode.BadRequest)
         }
 
         logger.error("UpdateReadingBook: FAIL", {error})

@@ -17,6 +17,9 @@ export interface UpdateWritingData {
 
 export interface IWritingRepository {
 
+    // HELPER
+    getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Writing | null>
+
     // CRUD
     createAsync(data: CreateWritingData): Promise<number>
     getByIdAsync(id: number): Promise<Writing | null>

@@ -2,8 +2,11 @@
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 // TYPES
-import { FlashcardSession, GlobalStoreState, ListeningSession, ReadingSession, SessionData, WritingSession } from "@/src/types/globalStore"
-import { FlashcardSessionRowInput, ListeningSessinRowInput, ReadingSessionRowInput, WritingSessionRowInput } from "@/src/types/actions"
+import { FlashcardSession, GlobalStoreState, ListeningSession, ReadingSession, SessionData, WritingSession } from "@/src/infrastructure/store/globalStoreType"
+import { FlashcardRowItemRequest } from "@/src/actions/FlashcardSessionRow/Request"
+import { ReadingRowItemRequest } from "@/src/actions/ReadingSessionRow/Request"
+import { WritingRowItemRequest } from "@/src/actions/WritingSessionRow/Request"
+import { ListeningRowItemRequest } from "@/src/actions/ListeningSessionRow/Request"
 
 const defaultFlashcardSession: FlashcardSession = {
 
@@ -109,7 +112,7 @@ export const GlobalStore = create<GlobalStoreState>()(
         })),
 
         // FLASHCARD
-        updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardSessionRowInput[] }) =>
+        updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardRowItemRequest[] }) =>
         set((state) => {
             if (state.SessionData?.type !== "flashcard") return state
             return {
@@ -122,7 +125,7 @@ export const GlobalStore = create<GlobalStoreState>()(
         }),
 
         // READING
-        updateReadingSession: (update: {data?: Partial<ReadingSession["data"]>, rows?: ReadingSessionRowInput[] }) =>
+        updateReadingSession: (update: {data?: Partial<ReadingSession["data"]>, rows?: ReadingRowItemRequest[] }) =>
         set((state) => {
             if (state.SessionData?.type !== "reading") return state
             return {
@@ -135,7 +138,7 @@ export const GlobalStore = create<GlobalStoreState>()(
         }),
 
         // WRITING
-        updateWritingSession: (update: { data?: Partial<WritingSession["data"]>, rows?: WritingSessionRowInput[]}) =>
+        updateWritingSession: (update: { data?: Partial<WritingSession["data"]>, rows?: WritingRowItemRequest[]}) =>
         set((state) => {
             if (state.SessionData?.type !== "writing") return state
             return {
@@ -148,7 +151,7 @@ export const GlobalStore = create<GlobalStoreState>()(
         }),
 
         // LISTENING
-        updateListeningSession: (update: {data?: Partial<ListeningSession["data"]>, rows?: ListeningSessinRowInput[]}) =>
+        updateListeningSession: (update: {data?: Partial<ListeningSession["data"]>, rows?: ListeningRowItemRequest[]}) =>
         set((state) => {
             if (state.SessionData?.type !== "listening") return state
             return {

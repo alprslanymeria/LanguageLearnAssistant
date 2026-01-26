@@ -9,6 +9,7 @@ export const UpdateDeckWordCommandValidator = z.object({
     request: z.object({
 
       id: z
+        .coerce
         .number()
         .int()
         .gt(0, {
@@ -16,6 +17,7 @@ export const UpdateDeckWordCommandValidator = z.object({
         }),
 
       flashcardCategoryId: z
+        .coerce
         .number()
         .int()
         .gt(0, {

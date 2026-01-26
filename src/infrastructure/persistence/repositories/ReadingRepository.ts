@@ -7,6 +7,20 @@ import { IReadingRepository, CreateReadingData, UpdateReadingData } from "@/src/
 @injectable()
 export class ReadingRepository implements IReadingRepository {
 
+
+    async getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Reading | null> {
+        
+        const reading = await prisma.reading.findFirst({
+            where: {
+                practiceId: practiceId,
+                userId: userId,
+                languageId: languageId
+            }
+        })
+
+        return reading
+    }
+
     async createAsync(data: CreateReadingData): Promise<number> {
     
         const created = await prisma.reading.create({

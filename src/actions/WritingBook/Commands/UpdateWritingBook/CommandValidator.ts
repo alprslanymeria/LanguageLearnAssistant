@@ -21,20 +21,20 @@ export const UpdateWritingBookCommandValidator = z.object({
 
     type: z.literal(UPDATE_WRITING_BOOK_COMMAND),
 
-    request: z.object({
-
-        id: z
+    id: z
+        .coerce
         .number()
         .int()
         .gt(0, {
         message: "ID MUST BE GREATER THAN 0"
         }),
 
-    writingId: z
+    languageId: z
+        .coerce
         .number()
         .int()
         .gt(0, {
-        message: "WRITING ID MUST BE GREATER THAN 0"
+        message: "LANGUAGE ID MUST BE GREATER THAN 0"
         }),
 
     name: z
@@ -59,14 +59,12 @@ export const UpdateWritingBookCommandValidator = z.object({
         file => !file || file.size <= MAX_IMAGE_FILE_SIZE,
         {
             message: "IMAGE FILE SIZE MUST NOT EXCEED 5MB"
-        }
-        )
+        })
         .refine(
         file => !file || hasAllowedExtension(file, ALLOWED_IMAGE_EXTENSIONS),
         {
             message: `IMAGE FILE MUST BE ONE OF THE FOLLOWING TYPES: ${ALLOWED_IMAGE_EXTENSIONS.join(", ")}`
-        }
-        ),
+        }),
 
     sourceFile: z
         .instanceof(File)
@@ -75,13 +73,10 @@ export const UpdateWritingBookCommandValidator = z.object({
         file => !file || file.size <= MAX_SOURCE_FILE_SIZE,
         {
             message: "SOURCE FILE SIZE MUST NOT EXCEED 50MB"
-        }
-        )
+        })
         .refine(
         file => !file || hasAllowedExtension(file, ALLOWED_SOURCE_EXTENSIONS),
         {
             message: `SOURCE FILE MUST BE ONE OF THE FOLLOWING TYPES: ${ALLOWED_SOURCE_EXTENSIONS.join(", ")}`
-        }
-        )
-    })
+        })
 })

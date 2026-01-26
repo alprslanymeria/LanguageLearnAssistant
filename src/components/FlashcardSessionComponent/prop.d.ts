@@ -1,12 +1,12 @@
 // TYPES
+import { FlashcardRowItemRequest } from "@/src/actions/FlashcardSessionRow/Request"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
-import { FlashcardSessionRowInput, ListeningSessinRowInput, ReadingSessionRowInput, WritingSessionRowInput } from "@/src/types/actions"
 import { FlashcardCategoryWithDeckWords, SessionData } from "@/src/types/globalStore"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
 // REDUCER
-export type State = BaseState<FlashcardSessionRowInput>
-export type Action = BaseAction<FlashcardSessionRowInput>
+export type State = BaseState<FlashcardRowItemRequest>
+export type Action = BaseAction<FlashcardRowItemRequest>
 
 
 // USE EFFECT

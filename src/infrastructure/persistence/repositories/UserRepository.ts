@@ -1,7 +1,7 @@
 // IMPORTS
 import { injectable } from "inversify"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
-import { IUserRepository } from "@/src/infrastructure/persistence/contracts/IUserRepository"
+import { IUserRepository, UpdateUserData } from "@/src/infrastructure/persistence/contracts/IUserRepository"
 import { User } from "@/src/generated/prisma/client"
 
 @injectable()
@@ -40,17 +40,17 @@ export class UserRepository implements IUserRepository {
         return user
     }
 
-    update(user: User): User {
+    async update(id: string, data: UpdateUserData): Promise<string> {
 
-        prisma.user.update({
+        const updatedUser = await prisma.user.update({
 
             where: {
-                id: user.id
+                id: id
             },
-            data: user
+            data: data
         })
 
-        return user
+        return updatedUser.id
     }
 
     delete(user: User): void {

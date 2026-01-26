@@ -17,6 +17,9 @@ export interface UpdateReadingData {
 
 export interface IReadingRepository {
 
+    // HELPER
+    getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Reading | null>
+
     // CRUD
     createAsync(data: CreateReadingData): Promise<number>
     getByIdAsync(id: number): Promise<Reading | null>

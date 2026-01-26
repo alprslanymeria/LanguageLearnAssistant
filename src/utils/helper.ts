@@ -1,4 +1,7 @@
+// 3RD PARTY
+import stringSimilarity from 'string-similarity'
 
+// FOR FLASHCARD SUCCESS RATE
 export function calculateFlashcardSuccessRate( rows: { status: boolean }[] ) : number {
 
   if (rows.length === 0) return 0
@@ -8,6 +11,15 @@ export function calculateFlashcardSuccessRate( rows: { status: boolean }[] ) : n
   return (successCount / rows.length) * 100
 }
 
+// FOR LISTENING SUCCESS RATE
+export function calculateSimilarityRate(params : {inputOne: string, inputTwo: string}) : number {
+
+    const similarity = stringSimilarity.compareTwoStrings(params.inputOne, params.inputTwo)
+
+    return (similarity * 100).toFixed(2) as unknown as number
+}
+
+// FOR READING & WRITING & LISTENING SUCCESS RATE
 export function calculateSuccessRate(rows: { similarity?: number }[]): number {
 
   if (rows.length === 0) return 0

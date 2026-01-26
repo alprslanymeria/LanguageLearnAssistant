@@ -77,6 +77,11 @@ import { GET_WOS_WITH_PAGING_QUERY } from "@/src/actions/WritingOldSession/Queri
 // WRITING SESSION ROW QUERIES
 import { GET_WROWS_BY_ID_WITH_PAGING_QUERY } from "@/src/actions/WritingSessionRow/Queries/GetWRowsByIdWithPaging/Query"
 import { GetWRowsByIdWithPagingQueryHandler } from "@/src/actions/WritingSessionRow/Queries/GetWRowsByIdWithPaging/QueryHandler"
+import { CompareLanguageIdQueryHandler } from "@/src/actions/User/Queries/CompareLanguageId/QueryHandler"
+import { GetProfileInfos } from "@/src/actions/User/Controller"
+import { GetProfileInfosQueryHandler } from "@/src/actions/User/Queries/GetProfileInfos/QueryHandler"
+import { GET_PROFILE_INFOS_QUERY } from "@/src/actions/User/Queries/GetProfileInfos/Query"
+import { COMPARE_LANGUAGE_ID_QUERY } from "@/src/actions/User/Queries/CompareLanguageId/Query"
 
 export class QueryModule implements IContainerModule {
 
@@ -105,6 +110,8 @@ export class QueryModule implements IContainerModule {
         container.bind(GetWritingBookByIdQueryHandler).toSelf()
         container.bind(GetWOSWithPagingQueryHandler).toSelf()
         container.bind(GetWRowsByIdWithPagingQueryHandler).toSelf()
+        container.bind(CompareLanguageIdQueryHandler).toSelf()
+        container.bind(GetProfileInfosQueryHandler).toSelf()
 
         // REGISTRY AND BUS BINDING
         container.bind(QueryHandlerRegistry).toSelf().inSingletonScope()
@@ -134,6 +141,8 @@ export class QueryModule implements IContainerModule {
             registry.register(GET_WRITING_BOOK_BY_ID_QUERY, context.get(GetWritingBookByIdQueryHandler))
             registry.register(GET_WOS_WITH_PAGING_QUERY, context.get(GetWOSWithPagingQueryHandler))
             registry.register(GET_WROWS_BY_ID_WITH_PAGING_QUERY, context.get(GetWRowsByIdWithPagingQueryHandler))
+            registry.register(COMPARE_LANGUAGE_ID_QUERY, context.get(CompareLanguageIdQueryHandler))
+            registry.register(GET_PROFILE_INFOS_QUERY, context.get(GetProfileInfosQueryHandler))
 
             return new QueryBus(registry)
             

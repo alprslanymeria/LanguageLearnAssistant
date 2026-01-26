@@ -4,7 +4,7 @@ import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/
 import { FlashcardCategoryWithDeckWords, FlashcardSession, SessionData } from "@/src/types/globalStore"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { Action } from "@/src/components/FlashcardSessionComponent/prop"
-import { FlashcardSessionRowInput } from "@/src/types/actions"
+import { FlashcardRowItemRequest } from "@/src/actions/FlashcardSessionRow/Request"
 
 // COMPONENT PROPS
 export type FlashcardFormComponentProps = {
@@ -17,7 +17,7 @@ export type UseFlashcardFormCustomEffectProps = {
 
     item: FlashcardCategoryWithDeckWords
     hasHydrated: boolean
-    updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardSessionRowInput[] }) => void
+    updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardRowItemRequest[] }) => void
 }
 
 
@@ -28,7 +28,7 @@ export type HandleClickProps = {
     sessionData: SessionData
     oldSessionId: string | null | undefined
     showAlert: (props: ShowAlertProps) => void
-    updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardSessionRowInput[] }) => void
+    updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardRowItemRequest[] }) => void
 
 }
 
@@ -36,7 +36,7 @@ export type HandleNextClickProps = {
 
     sessionData: SessionData
     showAlert: (props: ShowAlertProps) => void
-    updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardSessionRowInput[] }) => void
+    updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardRowItemRequest[] }) => void
 
 }
 
@@ -50,6 +50,6 @@ export type HandleCloseClickProps = {
     showAlert: (props: ShowAlertProps) => void
     setLoading: (props: setLoadingProps) => void
     dispatch: (action: Action) => void
-    updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardSessionRowInput[] }) => void
+    updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardRowItemRequest[] }) => void
     
 }

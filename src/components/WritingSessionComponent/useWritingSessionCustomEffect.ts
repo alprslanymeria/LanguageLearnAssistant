@@ -2,7 +2,7 @@
 import { useEffect } from "react"
 // TYPES
 import { UseWritingSessionCustomEffectProps } from "@/src/components/WritingSessionComponent/prop"
-import { WritingSessionRowInput } from "@/src/types/actions"
+import { WritingRowItemRequest } from "@/src/actions/WritingSessionRow/Request"
 
 
 export function useWritingSessionCustomEffect(params: UseWritingSessionCustomEffectProps) {
@@ -19,7 +19,7 @@ export function useWritingSessionCustomEffect(params: UseWritingSessionCustomEff
         if(kese.some(k => !k)) return
 
         const start = (state.page - 1) * state.limit
-        const sliced = sessionData.rows.slice(start, start + state.limit) as WritingSessionRowInput[]
+        const sliced = sessionData.rows.slice(start, start + state.limit) as WritingRowItemRequest[]
 
         dispatch({type: "SET_PAGINATED_ROWS", payload: {paginatedRows: sliced}})
 

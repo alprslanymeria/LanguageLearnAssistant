@@ -1,7 +1,11 @@
 // ACTIONS
-import { DeleteById } from "@/src/actions/crud"
+import { DeleteDWordItemById } from "@/src/actions/DeckWord/Controller"
+import { DeleteFCategoryItemById } from "@/src/actions/FlashcardCategory/Controller"
+import { DeleteRBookItemById } from "@/src/actions/ReadingBook/Controller"
+import { DeleteWBookItemById } from "@/src/actions/WritingBook/Controller"
 // TYPES
 import { HandleCreateProps, HandleDeleteProps, HandleEditProps } from "@/src/components/ListTableComponent/prop"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 
 
 // BASE
@@ -18,7 +22,6 @@ export function handleCreate(params : HandleCreateProps) {
     router.push(`${BASE}/add?table=${table}`)
 }
 
-
 export function handleEdit(params: HandleEditProps) {
 
     const {itemId, table, router} = params
@@ -29,7 +32,6 @@ export function handleEdit(params: HandleEditProps) {
     
     router.push(`${BASE}/edit?id=${itemId}&table=${table}`)
 }
-
 
 export async function handleDelete(params : HandleDeleteProps) {
 
@@ -43,18 +45,36 @@ export async function handleDelete(params : HandleDeleteProps) {
 
         setLoading({value: true , source: "HandleDelete"})
 
-        const response = await DeleteById({itemId, table})
+        let response;
 
-        if(response?.status != 204) {
+        switch (table) {
 
-            showAlert({type: "error", title: "error", message: response?.message})
+            case "rbooks":
+                response = await DeleteRBookItemById(itemId)
+                break;
+            case "wbooks":
+                response = await DeleteWBookItemById(itemId)
+                break;
+            case "fcategories":
+                response = await DeleteFCategoryItemById(itemId)
+                break;
+            case "fwords":
+                response = await DeleteDWordItemById(itemId)
+                break;
+            default:
+                break;
+        }
+
+        if(response?.status != HttpStatusCode.NoContent) {
+
+            showAlert({type: "error", title: "error", message: response?.errorMessage![0]!})
 
             return
         }
 
         dispatch({type: "REMOVE_ITEM", payload: { id: itemId }})
 
-        showAlert({type: "success", title: "success", message: response?.message})
+        showAlert({type: "success", title: "success", message: response?.errorMessage![0]})
 
     } catch (error) {
 

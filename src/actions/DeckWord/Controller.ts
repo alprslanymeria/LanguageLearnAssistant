@@ -5,7 +5,6 @@ import container from "@/src/di/container"
 import { TYPES } from "@/src/di/type"
 import { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { CommandBus } from "@/src/infrastructure/mediatR/CommandBus"
-import { CreateDeckWordRequest, UpdateDeckWordRequest } from "@/src/actions/DeckWord/Request"
 import { createDeckWordFactory } from "@/src/actions/DeckWord/Commands/CreateDeckWord/CommandFactory"
 import { CreateDeckWordCommandValidator } from "@/src/actions/DeckWord/Commands/CreateDeckWord/CommandValidator"
 import { ServiceResult, ServiceResultBase } from "@/src/infrastructure/common/ServiceResult"
@@ -24,7 +23,7 @@ import { DeckWordWithLanguageId, DeckWordWithTotalCount } from "@/src/actions/De
 import { getDeckWordByIdQuery } from "@/src/actions/DeckWord/Queries/GetDeckWordById/QueryFactory"
 import { GetDeckWordByIdQueryValidator } from "@/src/actions/DeckWord/Queries/GetDeckWordById/QueryValidator"
 
-export async function CreateDeckWord(request: CreateDeckWordRequest) : Promise<ServiceResult<number>> {
+export async function CreateDeckWord(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -33,16 +32,19 @@ export async function CreateDeckWord(request: CreateDeckWordRequest) : Promise<S
     try {
 
         // LOG INFO
-        logger.info("CreateDeckWord: CreateDeckWordRequest data:", {request})
+        logger.info("CreateDeckWord: CreateDeckWordRequest data:", {formData})
 
-        // COMMAND
-        const command = createDeckWordFactory(request)
+        // TURN FORM DATA TO PLAIN OBJECT
+        const plainObject = Object.fromEntries(formData.entries())
 
         // ZOD VALIDATION
-        const validatedCommand = await CreateDeckWordCommandValidator.parseAsync(command)
+        await CreateDeckWordCommandValidator.parseAsync(plainObject)
+
+        // COMMAND
+        const command = createDeckWordFactory(prevState, formData)
 
         // SEND COMMAND TO BUS
-        const deckWordId = await commandBus.send(validatedCommand)
+        const deckWordId = await commandBus.send(command)
 
         return ServiceResult.successAsCreated<number>(deckWordId as number, "")
         
@@ -61,7 +63,6 @@ export async function CreateDeckWord(request: CreateDeckWordRequest) : Promise<S
         return ServiceResult.failOne<number>("SERVER ERROR!", HttpStatusCode.InternalServerError)
     }
 }
-
 
 export async function DeleteDWordItemById(id: number) : Promise<ServiceResultBase> {
 
@@ -107,7 +108,7 @@ export async function DeleteDWordItemById(id: number) : Promise<ServiceResultBas
     }
 }
 
-export async function UpdateDeckWord(request: UpdateDeckWordRequest) : Promise<ServiceResult<number>> {
+export async function UpdateDeckWord(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -116,16 +117,19 @@ export async function UpdateDeckWord(request: UpdateDeckWordRequest) : Promise<S
     try {
 
         // LOG INFO
-        logger.info("UpdateDeckWord: UpdateDeckWordRequest data:", {request})
+        logger.info("UpdateDeckWord: UpdateDeckWordRequest data:", {formData})
 
-        // COMMAND
-        const command = updateDeckWordCommandFactory(request)
+        // TURN FORM DATA TO PLAIN OBJECT
+        const plainObject = Object.fromEntries(formData.entries())
 
         // ZOD VALIDATION
-        const validatedCommand = await UpdateDeckWordCommandValidator.parseAsync(command)
+        await UpdateDeckWordCommandValidator.parseAsync(plainObject)
+
+        // COMMAND
+        const command = updateDeckWordCommandFactory(prevState, formData)
 
         // SEND COMMAND TO BUS
-        const updatedId = await commandBus.send(validatedCommand)
+        const updatedId = await commandBus.send(command)
 
         return ServiceResult.success<number>(updatedId as number)
         
@@ -188,7 +192,6 @@ export async function GetAllDWordsWithPaging(categoryId: number, request: PagedR
         return ServiceResult.failOne<PagedResult<DeckWordWithTotalCount>>("SERVER ERROR!", HttpStatusCode.InternalServerError)
     }   
 }
-
 
 export async function GetDeckWordById(id: number) : Promise<ServiceResult<DeckWordWithLanguageId>> {
 

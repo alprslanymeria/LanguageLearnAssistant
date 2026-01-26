@@ -1,7 +1,5 @@
 "use client"
 
-// REACT & NEXT
-import React from "react"
 // ICONS
 import { ChevronLeft, ChevronRight } from "lucide-react"
 // TYPES

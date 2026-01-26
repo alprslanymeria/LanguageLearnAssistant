@@ -24,7 +24,6 @@ export class CompareLanguageIdQueryHandler implements IQueryHandler<CompareLangu
         
         this.logger = logger
         this.userRepository = userRepository
-        
     }
 
     async Handle(request: CompareLanguageIdQuery): Promise<boolean> {

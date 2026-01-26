@@ -2,7 +2,6 @@
 
 import { ZodError } from "zod"
 import { ServiceResult, ServiceResultBase } from "@/src/infrastructure/common/ServiceResult"
-import { CreateWritingBookRequest, UpdateWritingBookRequest } from "@/src/actions/WritingBook/Request"
 import container from "@/src/di/container"
 import { TYPES } from "@/src/di/type"
 import { ILogger } from "@/src/infrastructure/logging/ILogger"
@@ -27,7 +26,7 @@ import { getWBookCreateItemsQuery } from "@/src/actions/WritingBook/Queries/GetW
 import { getWritingBookByIdQuery } from "@/src/actions/WritingBook/Queries/GetWritingBookById/QueryFactory"
 import { GetWritingBookByIdQueryValidator } from "@/src/actions/WritingBook/Queries/GetWritingBookById/QueryValidator"
 
-export async function CreateWritingBook(request: CreateWritingBookRequest) : Promise<ServiceResult<number>> {
+export async function CreateWritingBook(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -36,16 +35,19 @@ export async function CreateWritingBook(request: CreateWritingBookRequest) : Pro
     try {
 
         // LOG INFO
-        logger.info("CreateWritingBook: CreateWritingBookRequest data:", {request})
+        logger.info("CreateWritingBook: CreateWritingBookRequest data:", {formData})
 
-        // COMMAND
-        const command = createWritingBookCommandFactory(request)
+        // TURN FORM DATA TO PLAIN OBJECT
+        const plainObject = Object.fromEntries(formData.entries())
 
         // ZOD VALIDATION
-        const validatedCommand = await CreateWritingBookCommandValidator.parseAsync(command)
+        await CreateWritingBookCommandValidator.parseAsync(plainObject)
+
+        // COMMAND
+        const command = createWritingBookCommandFactory(prevState, formData)
 
         // SEND COMMAND TO BUS
-        const writingBookId = await commandBus.send(validatedCommand)
+        const writingBookId = await commandBus.send(command)
 
         return ServiceResult.successAsCreated<number>(writingBookId as number, "")
         
@@ -57,6 +59,18 @@ export async function CreateWritingBook(request: CreateWritingBookRequest) : Pro
             logger.error("CreateWritingBook: INVALID FORM DATA!", {firstError})
             // SHOW TO USER
             return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
+        }
+
+        if(error instanceof NoPracticeFound) {
+
+            logger.error("CreateWritingBook: PRACTICE NOT FOUND!", {error})
+            return ServiceResult.failOne<number>(error.message, HttpStatusCode.NotFound)
+        }
+
+        if(error instanceof WritingResultNotSuccess) {
+
+            logger.error("CreateWritingBook: WRITING RESULT NOT SUCCESS!", {error})
+            return ServiceResult.failOne<number>("WRITING RESULT NOT SUCCESS!", HttpStatusCode.InternalServerError)
         }
 
         logger.error("CreateWritingBook: FAIL", {error})
@@ -107,8 +121,7 @@ export async function DeleteWBookItemById(id: number) : Promise<ServiceResultBas
     }
 }
 
-
-export async function UpdateWritingBook(request: UpdateWritingBookRequest) : Promise<ServiceResult<number>> {
+export async function UpdateWritingBook(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -117,16 +130,19 @@ export async function UpdateWritingBook(request: UpdateWritingBookRequest) : Pro
     try {
 
         // LOG INFO
-        logger.info("UpdateWritingBook: UpdateWritingBookRequest data:", {request})
+        logger.info("UpdateWritingBook: UpdateWritingBookRequest data:", {formData})
 
-        // COMMAND
-        const command = updateWritingBookCommandFactory(request)
+        // TURN FORM DATA TO PLAIN OBJECT
+        const plainObject = Object.fromEntries(formData.entries())
 
         // ZOD VALIDATION
-        const validatedCommand = await UpdateWritingBookCommandValidator.parseAsync(command)
+        await UpdateWritingBookCommandValidator.parseAsync(plainObject)
+
+        // COMMAND
+        const command = updateWritingBookCommandFactory(prevState, formData)
 
         // SEND COMMAND TO BUS
-        const writingBookId = await commandBus.send(validatedCommand)
+        const writingBookId = await commandBus.send(command)
 
         return ServiceResult.success<number>(writingBookId as number)
         
@@ -138,6 +154,18 @@ export async function UpdateWritingBook(request: UpdateWritingBookRequest) : Pro
             logger.error("UpdateWritingBook: INVALID FORM DATA!", {firstError})
             // SHOW TO USER
             return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
+        }
+
+        if(error instanceof NoPracticeFound) {
+
+            logger.error("UpdateWritingBook: PRACTICE NOT FOUND!", {error})
+            return ServiceResult.failOne<number>(error.message, HttpStatusCode.NotFound)
+        }
+
+        if(error instanceof WritingBookNotFound) {
+
+            logger.error("UpdateWritingBook: WRITING BOOK NOT FOUND!", {error})
+            return ServiceResult.failOne<number>(error.message, HttpStatusCode.NotFound)
         }
 
         if(error instanceof WritingResultNotSuccess) {

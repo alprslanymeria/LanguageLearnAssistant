@@ -1,11 +1,12 @@
 // IMPORTS
-import { UpdateFlashcardCategoryRequest } from "@/src/actions/FlashcardCategory/Request"
 import { UPDATE_FLASHCARD_CATEGORY_COMMAND, UpdateFlashcardCategoryCommand } from "@/src/actions/FlashcardCategory/Commands/UpdateFlashcardCategory/Command"
+import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
 
-export function updateFlashcardCategoryCommandFactory( request: UpdateFlashcardCategoryRequest ): UpdateFlashcardCategoryCommand 
+export function updateFlashcardCategoryCommandFactory( prevState: ServiceResult<number> | undefined, formData: FormData ): UpdateFlashcardCategoryCommand 
 {
   return {
     type: UPDATE_FLASHCARD_CATEGORY_COMMAND,
-    request
+    prevState,
+    formData
   }
 }

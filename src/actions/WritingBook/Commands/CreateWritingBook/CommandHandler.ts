@@ -11,6 +11,8 @@ import type { IEntityVerificationService } from "@/src/services/IEntityVerificat
 import type { IImageProcessingService } from "@/src/services/IImageProcessingService"
 import { WritingResultNotSuccess } from "@/src/exceptions/NotSuccess"
 import { CacheKeys } from "@/src/infrastructure/caching/CacheKeys"
+import type { IPracticeRepository } from "@/src/infrastructure/persistence/contracts/IPracticeRepository"
+import { NoPracticeFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
@@ -20,6 +22,7 @@ export class CreateWritingBookCommandHandler implements ICommandHandler<CreateWr
     private readonly logger : ILogger
     private readonly writingBookRepository : IWritingBookRepository
     private readonly cacheService : ICacheService
+    private readonly practiceRepository : IPracticeRepository
     private readonly entityVerificationService : IEntityVerificationService
     private readonly imageProcessingService : IImageProcessingService
     private readonly fileStorageHelper : IFileStorageHelper
@@ -30,6 +33,7 @@ export class CreateWritingBookCommandHandler implements ICommandHandler<CreateWr
         @inject(TYPES.Logger) logger : ILogger,
         @inject(TYPES.WritingBookRepository) writingBookRepository : IWritingBookRepository,
         @inject(TYPES.CacheService) cacheService : ICacheService,
+        @inject(TYPES.PracticeRepository) practiceRepository : IPracticeRepository,
         @inject(TYPES.EntityVerificationService) entityVerificationService : IEntityVerificationService,
         @inject(TYPES.ImageProcessingService) imageProcessingService : IImageProcessingService,
         @inject(TYPES.FileStorageHelper) fileStorageHelper : IFileStorageHelper
@@ -39,50 +43,62 @@ export class CreateWritingBookCommandHandler implements ICommandHandler<CreateWr
         this.logger = logger;
         this.writingBookRepository = writingBookRepository;
         this.cacheService = cacheService;
+        this.practiceRepository = practiceRepository;
         this.entityVerificationService = entityVerificationService;
         this.imageProcessingService = imageProcessingService;
         this.fileStorageHelper = fileStorageHelper;
     }
 
     async Handle(request: CreateWritingBookCommand): Promise<number> {
+
+        // FORM DATA'S
+        const name = request.formData.get("name")?.toString()!
+        const userId = request.formData.get("userId")?.toString()!
+        const languageId = Number(request.formData.get("languageId"))
+        const imageFile = request.formData.get("imageFile") as File
+        const sourceFile = request.formData.get("sourceFile") as File
         
         // LOG MESSAGE
-        this.logger.info(`CreateWritingBookCommandHandler: Creating writing book with name  ${request.request.name}`)
+        this.logger.info(`CreateWritingBookCommandHandler: Creating writing book with name  ${name}`)
+
+        const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
+        
+        if (!practice) throw new NoPracticeFound()
 
         const writingResult = await this.entityVerificationService.verifyOrCreateWritingAsync(
 
-            request.request.writingId,
-            request.request.userId,
-            request.request.languageId
+            practice.id,
+            userId,
+            languageId
         )
 
         // FAST FAIL
         if (!writingResult.isSuccess) throw new WritingResultNotSuccess()
 
         // UPLOAD FILES TO STORAGE
-        this.logger.info(`CreateWritingBookCommandHandler: Uploading files to storage for writing book with name  ${request.request.name}`)
+        this.logger.info(`CreateWritingBookCommandHandler: Uploading files to storage for writing book with name  ${name}`)
 
         const imageUrl = await this.fileStorageHelper.uploadFileToStorageAsync(
 
-            request.request.imageFile,
-            request.request.userId,
+            imageFile,
+            userId,
             `wbooks`
         )
 
 
         const sourceUrl = await this.fileStorageHelper.uploadFileToStorageAsync(
 
-            request.request.sourceFile,
-            request.request.userId,
+            sourceFile,
+            userId,
             `wbooks`
         )
 
         // EXTRACT LEFT SIDE COLOR FROM IMAGE
-        const leftSideColor = await this.imageProcessingService.extractLeftSideColorAsync(request.request.imageFile)
+        const leftSideColor = await this.imageProcessingService.extractLeftSideColorAsync(imageFile)
 
         const data : CreateWritingBookData = {
 
-            name: request.request.name,
+            name: name,
             writingId: writingResult.data!.id,
             imageUrl: imageUrl,
             sourceUrl: sourceUrl,

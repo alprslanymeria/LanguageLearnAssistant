@@ -7,6 +7,20 @@ import { prisma } from "@/src/infrastructure/persistence/prisma"
 @injectable()
 export class WritingRepository implements IWritingRepository {
 
+
+    async getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Writing | null> {
+        
+        const writing = await prisma.writing.findFirst({
+            where: {
+                practiceId: practiceId,
+                userId: userId,
+                languageId: languageId
+            }
+        })
+
+        return writing
+    }
+
     async createAsync(data: CreateWritingData): Promise<number> {
     
         const created = await prisma.writing.create({

@@ -4,10 +4,10 @@
 import { JSX, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 // COMPONENTS
-import ReadingAddOrEditComponent from "@/src/components/ReadingAddOrEditComponent/ReadingAddOrEdit"
-import WritingAddOrEditComponent from "@/src/components/WritingAddOrEditComponent/WritingAddOrEdit"
-import FlashcardAddOrEditComponent from "@/src/components/FlashcardAddOrEditComponent/FlashcardAddOrEdit"
-import WordAddOrEditComponent from "@/src/components/WordAddOrEditComponent/WordAddOrEdit"
+import ReadingAddOrEditComponent from "@/src/components/ReadingEditComponent/ReadingEdit"
+import WritingAddOrEditComponent from "@/src/components/WritingEditComponent/WritingEdit"
+import FlashcardAddOrEditComponent from "@/src/components/FlashcardAddComponent/FlashcardAdd"
+import WordAddOrEditComponent from "@/src/components/WordEditComponent/WordEdit"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useAddPageReducer } from "@/src/page/AddPage/useAddPageReducer"
 import { useAddPageCustomEffect } from "@/src/page/AddPage/useAddPageCustomEffect"

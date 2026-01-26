@@ -21,58 +21,55 @@ export const CreateReadingBookCommandValidator = z.object({
 
   type: z.literal(CREATE_READING_BOOK_COMMAND),
 
-  request: z.object({
+  languageId: z
+    .coerce
+    .number()
+    .int()
+    .gt(0, {
+      message: "LANGUAGE ID MUST BE GREATER THAN 0"
+    }),
 
-    readingId: z
-      .number()
-      .int()
-      .gt(0, {
-        message: "READING ID MUST BE GREATER THAN 0"
-      }),
+  name: z
+    .string()
+    .min(1, {
+      message: "NAME IS REQUIRED"
+    })
+    .max(200, {
+      message: "NAME MUST NOT EXCEED 200 CHARACTERS"
+    }),
 
-    name: z
-      .string()
-      .min(1, {
-        message: "NAME IS REQUIRED"
-      })
-      .max(200, {
-        message: "NAME MUST NOT EXCEED 200 CHARACTERS"
-      }),
+  userId: z
+    .string()
+    .min(1, {
+      message: "USER ID IS REQUIRED"
+    }),
 
-    userId: z
-      .string()
-      .min(1, {
-        message: "USER ID IS REQUIRED"
-      }),
+  imageFile: z
+    .instanceof(File, {
+      message: "IMAGE FILE IS REQUIRED"
+    })
+    .refine(file => file.size > 0, {
+      message: "IMAGE FILE CANNOT BE EMPTY"
+    })
+    .refine(file => file.size <= MAX_IMAGE_FILE_SIZE, {
+      message: "IMAGE FILE SIZE MUST NOT EXCEED 5MB"
+    })
+    .refine(file => hasAllowedExtension(file, ALLOWED_IMAGE_EXTENSIONS), {
+      message: `IMAGE FILE MUST BE ONE OF THE FOLLOWING TYPES: ${ALLOWED_IMAGE_EXTENSIONS.join(", ")}`
+    }),
 
-    imageFile: z
-      .instanceof(File, {
-        message: "IMAGE FILE IS REQUIRED"
-      })
-      .refine(file => file.size > 0, {
-        message: "IMAGE FILE CANNOT BE EMPTY"
-      })
-      .refine(file => file.size <= MAX_IMAGE_FILE_SIZE, {
-        message: "IMAGE FILE SIZE MUST NOT EXCEED 5MB"
-      })
-      .refine(file => hasAllowedExtension(file, ALLOWED_IMAGE_EXTENSIONS), {
-        message: `IMAGE FILE MUST BE ONE OF THE FOLLOWING TYPES: ${ALLOWED_IMAGE_EXTENSIONS.join(", ")}`
-      }),
-
-    sourceFile: z
-      .instanceof(File, {
-        message: "SOURCE FILE IS REQUIRED"
-      })
-      .refine(file => file.size > 0, {
-        message: "SOURCE FILE CANNOT BE EMPTY"
-      })
-      .refine(file => file.size <= MAX_SOURCE_FILE_SIZE, {
-        message: "SOURCE FILE SIZE MUST NOT EXCEED 50MB"
-      })
-      .refine(file => hasAllowedExtension(file, ALLOWED_SOURCE_EXTENSIONS), {
-        message: `SOURCE FILE MUST BE ONE OF THE FOLLOWING TYPES: ${ALLOWED_SOURCE_EXTENSIONS.join(", ")}`
-      })
-
-  })
+  sourceFile: z
+    .instanceof(File, {
+      message: "SOURCE FILE IS REQUIRED"
+    })
+    .refine(file => file.size > 0, {
+      message: "SOURCE FILE CANNOT BE EMPTY"
+    })
+    .refine(file => file.size <= MAX_SOURCE_FILE_SIZE, {
+      message: "SOURCE FILE SIZE MUST NOT EXCEED 50MB"
+    })
+    .refine(file => hasAllowedExtension(file, ALLOWED_SOURCE_EXTENSIONS), {
+      message: `SOURCE FILE MUST BE ONE OF THE FOLLOWING TYPES: ${ALLOWED_SOURCE_EXTENSIONS.join(", ")}`
+    })
 
 })

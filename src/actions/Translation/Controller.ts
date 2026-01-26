@@ -13,7 +13,7 @@ import { TranslateTextQueryValidator } from "@/src/actions/Translation/Queries/T
 import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 import { InvalidPracticeType, UncertainTargetLanguage } from "@/src/exceptions/invalid"
 
-export async function TranslateTextQuery(userId: string, request: TranslateTextRequest) : Promise<ServiceResult<TranslateTextResponse>> {
+export async function TranslateText(userId: string, request: TranslateTextRequest) : Promise<ServiceResult<TranslateTextResponse>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)

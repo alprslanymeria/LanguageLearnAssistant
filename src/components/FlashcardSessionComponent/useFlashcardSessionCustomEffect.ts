@@ -2,7 +2,7 @@
 import { useEffect } from "react"
 // TYPES
 import { UseFlashcardSessionCustomEffectProps } from "@/src/components/FlashcardSessionComponent/prop"
-import { FlashcardSessionRowInput } from "@/src/types/actions"
+import { FlashcardRowItemRequest } from "@/src/actions/FlashcardSessionRow/Request"
 
 
 export function useFlashcardSessionCustomEffect(params : UseFlashcardSessionCustomEffectProps) {
@@ -19,7 +19,7 @@ export function useFlashcardSessionCustomEffect(params : UseFlashcardSessionCust
         if(kese.some(k => !k)) return
 
         const start = (state.page - 1) * state.limit
-        const sliced = sessionData.rows.slice(start, start + state.limit) as FlashcardSessionRowInput[]
+        const sliced = sessionData.rows.slice(start, start + state.limit) as FlashcardRowItemRequest[]
 
         dispatch({type: "SET_PAGINATED_ROWS", payload: {paginatedRows: sliced}})
 

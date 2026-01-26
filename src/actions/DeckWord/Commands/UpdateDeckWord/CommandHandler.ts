@@ -33,31 +33,37 @@ export class UpdateDeckWordCommandHandler implements ICommandHandler<UpdateDeckW
     }
 
     async Handle(request: UpdateDeckWordCommand): Promise<number> {
+
+        // FORM DATA'S
+        const id = Number(request.formData.get("id"))
+        const flashcardCategoryId = Number(request.formData.get("flashcardCategoryId"))
+        const question = request.formData.get("question")?.toString()!
+        const answer = request.formData.get("answer")?.toString()!
         
         // LOG MESSAGE
-        this.logger.info(`UpdateDeckWordCommandHandler: Updating deck word with Id ${request.request.id}`)
+        this.logger.info(`UpdateDeckWordCommandHandler: Updating deck word with Id ${id}`)
 
-        const existingDeckWord = await this.deckWordRepository.getByIdAsync(request.request.id)
+        const existingDeckWord = await this.deckWordRepository.getByIdAsync(id)
 
         if(!existingDeckWord) {
 
-            this.logger.error(`UpdateDeckWordCommandHandler: Deck word with Id ${request.request.id} not found!`)
+            this.logger.error(`UpdateDeckWordCommandHandler: Deck word with Id ${id} not found!`)
             throw new DeckWordNotFound()
         }
 
         const data : UpdateDeckWordData = {
 
-            categoryId: request.request.flashcardCategoryId,
-            question: request.request.question,
-            answer: request.request.answer
+            categoryId: flashcardCategoryId,
+            question: question,
+            answer: answer
         }
 
-        const updatedId = await this.deckWordRepository.update(request.request.id, data)
+        const updatedId = await this.deckWordRepository.update(id, data)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.deckWord.prefix)
 
-        this.logger.info(`UpdateDeckWordCommandHandler: Successfully updated deck word with Id ${request.request.id}`)
+        this.logger.info(`UpdateDeckWordCommandHandler: Successfully updated deck word with Id ${id}`)
 
         return updatedId
     }

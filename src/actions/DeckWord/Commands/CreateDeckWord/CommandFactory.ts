@@ -1,11 +1,12 @@
 // IMPORTS
 import { CREATE_DECK_WORD_COMMAND, CreateDeckWordCommand } from "@/src/actions/DeckWord/Commands/CreateDeckWord/Command"
-import { CreateDeckWordRequest } from "@/src/actions/DeckWord/Request"
+import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
 
-export function createDeckWordFactory(request: CreateDeckWordRequest): CreateDeckWordCommand
+export function createDeckWordFactory(prevState: ServiceResult<number> | undefined, formData: FormData): CreateDeckWordCommand
 {
     return {
         type: CREATE_DECK_WORD_COMMAND,
-        request
+        prevState,
+        formData
     }
 }

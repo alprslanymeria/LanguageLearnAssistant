@@ -1,16 +1,17 @@
 // ACTIONS
-import { SaveOldSession } from "@/src/actions/oldSession"
-import { CalculateRate } from "@/src/actions/rate"
-import { SaveRows } from "@/src/actions/rows"
-import {TranslateText} from "@/src/actions/translate"
+import { TranslateText } from "@/src/actions/Translation/Controller"
+import { CreateRRows } from "@/src/actions/ReadingSessionRow/Controller"
+import { CreateROS } from "@/src/actions/ReadingOldSession/Controller"
 // TYPES
+import { SaveReadingOldSessionRequest } from "@/src/actions/ReadingOldSession/Request"
+import { ReadingRowItemRequest, SaveReadingRowsRequest } from "@/src/actions/ReadingSessionRow/Request"
 import { CalculateRateProps, CloseAndSaveProps, HandleTextSelectionProps, HandleTranslateProps } from "@/src/components/ReadingFormComponent/prop"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 // LIBRARIES
 import  socket  from "@/src/infrastructure/socket/socketClient"
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
-import { ReadingOldSessionInput, ReadingSessionRowInput } from "@/src/types/actions"
 // UTILS
-import { calculateSuccessRate } from "@/src/utils/helper"
+import { calculateSimilarityRate, calculateSuccessRate } from "@/src/utils/helper"
 
 
 export async function handleTextSelection(params : HandleTextSelectionProps) {
@@ -47,7 +48,12 @@ export async function handleTranslate(params : HandleTranslateProps) {
             setLoading({value: true , source: "ReadingHandleTranslate"})
 
             // GET TRANSLATIONS
-            const translations = await TranslateText({userId, language: language!, practice: practice!, selectedText: sessionData.data.RSelectedText})
+            const translations = await TranslateText(userId!, {
+
+                selectedText: sessionData.data.RSelectedText!,
+                practice: practice!,
+                language: language!
+            })
 
             // UPDATE SESSION DATA
             updateReadingSession({
@@ -94,26 +100,17 @@ export async function calculateRate(params : CalculateRateProps) {
 
             setLoading({value: true , source: "ReadingCalculateRate"})
 
-            const response = await CalculateRate({inputOne: sessionData.data.RInputText , inputTwo: sessionData.data.RTranslatedText})
+            const similarity = calculateSimilarityRate({inputOne: sessionData.data.RInputText!, inputTwo: sessionData.data.RTranslatedText!})
 
-            if(response.status != 200) {
-
-                showAlert({type: "error" , title: "error", message: response.message})
-
-                return
-            }
-
-            showAlert({type: "info", title: "info", message: `Similarity rate: ${(response.data! * 100).toFixed(2)}%`})
+            showAlert({type: "info", title: "info", message: `Similarity rate: ${similarity}%`})
 
             //SAVED TO LOCAL STATE
-            const row: ReadingSessionRowInput = {
+            const row: ReadingRowItemRequest = {
 
-                from : "reading",
-                oldSessionId: oldSessionId!,
-                selectedSentence: sessionData.data.RSelectedText,
-                answer: sessionData.data.RInputText,
-                answerTranslate: sessionData.data.RTranslatedText,
-                similarity: response.data!
+                selectedSentence: sessionData.data.RSelectedText!,
+                answer: sessionData.data.RInputText!,
+                answerTranslate: sessionData.data.RTranslatedText!,
+                similarity: similarity
             }
 
             // UPDATE ROWS
@@ -150,15 +147,20 @@ export async function closeAndSave(params : CloseAndSaveProps) {
     if(kese.some(k => !k)) return
 
     //CALCULATE AVERAGE RATE
-    const successRate = calculateSuccessRate(sessionData!.rows as ReadingSessionRowInput[])
+    const successRate = calculateSuccessRate(sessionData!.rows as ReadingRowItemRequest[])
 
-    const oldSessionRow: ReadingOldSessionInput = {
+    const oldSessionRow : SaveReadingOldSessionRequest = {
 
-        from : "reading",
-        oldSessionId: oldSessionId!,
+        id: oldSessionId!,
         readingId: item.readingId,
-        bookId: item.id,
+        readingBookId: item.id,
         rate: successRate
+    }
+
+    const rowsToSave : SaveReadingRowsRequest = {
+
+        readingOldSessionId: oldSessionId!,
+        rows: sessionData!.rows
     }
 
     try {
@@ -166,15 +168,15 @@ export async function closeAndSave(params : CloseAndSaveProps) {
         setLoading({value: true , source: "ReadingCloseAndSave"})
         
         //SAVE OLD SESSION
-        await SaveOldSession({oldSessionRow})
+        await CreateROS(oldSessionRow)
             
         //SAVE SENTENCES
-        await SaveRows({rows: sessionData!.rows})
+        await CreateRRows(rowsToSave)
     
         //DELETE LIVE SESSION
         socket.emit("delete-live-session", {userId}, (response : any) => {
 
-            if (response?.status !== 204) {
+            if (response?.status !== HttpStatusCode.NoContent) {
 
                 showAlert({ type: "error", title: "error", message: response?.message })
                 return

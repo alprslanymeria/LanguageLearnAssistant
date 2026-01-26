@@ -5,9 +5,9 @@ import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
 export interface IEntityVerificationService  {
 
 
-    verifyOrCreateFlashcardAsync(flashcardId: number, userId: string, languageId: number): Promise<ServiceResult<Flashcard>>
+    verifyOrCreateFlashcardAsync(practiceId: number, userId: string, languageId: number): Promise<ServiceResult<Flashcard>>
 
-    verifyOrCreateReadingAsync(readingId: number, userId: string, languageId: number): Promise<ServiceResult<Reading>>
+    verifyOrCreateReadingAsync(practiceId: number, userId: string, languageId: number): Promise<ServiceResult<Reading>>
 
-    verifyOrCreateWritingAsync(writingId: number, userId: string, languageId: number): Promise<ServiceResult<Writing>>
+    verifyOrCreateWritingAsync(practiceId: number, userId: string, languageId: number): Promise<ServiceResult<Writing>>
 }

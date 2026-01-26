@@ -2,13 +2,13 @@
 import { BaseAction, BaseState } from "@/src/page/SessionPage/prop"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
-import { WritingSessionRowInput } from "@/src/types/actions"
 import { SessionData } from "@/src/types/globalStore"
 import { WritingBook } from "@prisma/client"
+import { WritingRowItemRequest } from "@/src/actions/WritingSessionRow/Request"
 
 // REDUCER
-export type State = BaseState<WritingSessionRowInput>
-export type Action = BaseAction<WritingSessionRowInput>
+export type State = BaseState<WritingRowItemRequest>
+export type Action = BaseAction<WritingRowItemRequest>
 
 
 // USE EFFECT

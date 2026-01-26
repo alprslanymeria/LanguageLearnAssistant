@@ -4,7 +4,7 @@ import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/
 import { ListeningCategoryWithDeckVideos, ListeningSession, SessionData } from "@/src/types/globalStore"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { Action } from "@/src/components/ListeningSessionComponent/prop"
-import { ListeningSessinRowInput } from "@/src/types/actions"
+import { ListeningRowItemRequest } from "@/src/actions/ListeningSessionRow/Request"
 
 
 // COMPONENT PROPS
@@ -20,14 +20,14 @@ export type CalculateRateProps = {
     oldSessionId: string | null
     setLoading: (props: setLoadingProps) => void
     showAlert: (props: ShowAlertProps) => void
-    updateListeningSession: (update: {data?: Partial<ListeningSession["data"]>, rows?: ListeningSessinRowInput[]}) => void
+    updateListeningSession: (update: {data?: Partial<ListeningSession["data"]>, rows?: ListeningRowItemRequest[]}) => void
 }
 
 export type HandleNextClickProps = {
 
     sessionData: SessionData
     showAlert: (props: ShowAlertProps) => void
-    updateListeningSession: (update: {data?: Partial<ListeningSession["data"]>, rows?: ListeningSessinRowInput[]}) => void
+    updateListeningSession: (update: {data?: Partial<ListeningSession["data"]>, rows?: ListeningRowItemRequest[]}) => void
 }
 
 export type CloseAndSaveProps = {
@@ -37,7 +37,7 @@ export type CloseAndSaveProps = {
     oldSessionId: string | null
     item: ListeningCategoryWithDeckVideos
     router: AppRouterInstance
-    updateListeningSession: (update: {data?: Partial<ListeningSession["data"]>, rows?: ListeningSessinRowInput[]}) => void
+    updateListeningSession: (update: {data?: Partial<ListeningSession["data"]>, rows?: ListeningRowItemRequest[]}) => void
     setLoading: (props: setLoadingProps) => void
     showAlert: (props: ShowAlertProps) => void
     dispatch: (action: Action) => void

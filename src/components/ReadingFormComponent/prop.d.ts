@@ -5,7 +5,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 import { ReadingSession, SessionData } from "@/src/types/globalStore"
-import { ReadingSessionRowInput } from "@/src/types/actions"
+import { ReadingRowItemRequest } from "@/src/actions/ReadingSessionRow/Request"
 
 // COMPONENT PROPS
 export type ReadingFormComponentProps = {
@@ -16,7 +16,7 @@ export type ReadingFormComponentProps = {
 // HANDLERS
 export type HandleTextSelectionProps = {
 
-    updateReadingSession: (update: {data?: Partial<ReadingSession["data"]>, rows?: ReadingSessionRowInput[] }) => void
+    updateReadingSession: (update: {data?: Partial<ReadingSession["data"]>, rows?: ReadingRowItemRequest[] }) => void
 }
 
 export type HandleTranslateProps = {
@@ -26,7 +26,7 @@ export type HandleTranslateProps = {
     practice: string | null
     sessionData: SessionData
     showAlert: (props: ShowAlertProps) => void
-    updateReadingSession: (update: {data?: Partial<ReadingSession["data"]>, rows?: ReadingSessionRowInput[] }) => void
+    updateReadingSession: (update: {data?: Partial<ReadingSession["data"]>, rows?: ReadingRowItemRequest[] }) => void
     setLoading: (props: setLoadingProps) => void
 }
 
@@ -35,7 +35,7 @@ export type CalculateRateProps = {
     oldSessionId: string | null
     sessionData: SessionData
     showAlert: (props: ShowAlertProps) => void
-    updateReadingSession: (update: {data?: Partial<ReadingSession["data"]>, rows?: ReadingSessionRowInput[] }) => void
+    updateReadingSession: (update: {data?: Partial<ReadingSession["data"]>, rows?: ReadingRowItemRequest[] }) => void
     setLoading: (props: setLoadingProps) => void
 }
 
@@ -48,6 +48,6 @@ export type CloseAndSaveProps = {
     router: AppRouterInstance
     dispatch: (action: Action) => void
     showAlert: (props: ShowAlertProps) => void
-    updateReadingSession: (update: {data?: Partial<ReadingSession["data"]>, rows?: ReadingSessionRowInput[] }) => void
+    updateReadingSession: (update: {data?: Partial<ReadingSession["data"]>, rows?: ReadingRowItemRequest[] }) => void
     setLoading: (props: setLoadingProps) => void
 }

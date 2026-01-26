@@ -7,6 +7,20 @@ import { IFlashcardRepository, CreateFlashcardData, UpdateFlashcardData } from "
 @injectable()
 export class FlashcardRepository implements IFlashcardRepository {
 
+
+    async getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Flashcard | null> {
+        
+        const flashcard = await prisma.flashcard.findFirst({
+            where: {
+                practiceId: practiceId,
+                userId: userId,
+                languageId: languageId
+            }
+        })
+
+        return flashcard
+    }
+
     async createAsync(data: CreateFlashcardData): Promise<number> {
     
         const created = await prisma.flashcard.create({

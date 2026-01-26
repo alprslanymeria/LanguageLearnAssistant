@@ -21,13 +21,12 @@ export const CreateWritingBookCommandValidator = z.object({
 
   type: z.literal(CREATE_WRITING_BOOK_COMMAND),
 
-  request: z.object({
-
-    writingId: z
+  languageId: z
+    .coerce
     .number()
     .int()
     .gt(0, {
-      message: "WRITING ID MUST BE GREATER THAN 0"
+      message: "LANGUAGE ID MUST BE GREATER THAN 0"
     }),
 
   name: z
@@ -73,6 +72,4 @@ export const CreateWritingBookCommandValidator = z.object({
       message: `SOURCE FILE MUST BE ONE OF THE FOLLOWING TYPES: ${ALLOWED_SOURCE_EXTENSIONS.join(", ")}`
     })
 
-  })
-  
 })

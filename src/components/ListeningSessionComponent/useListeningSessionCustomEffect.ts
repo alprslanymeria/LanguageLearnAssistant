@@ -2,7 +2,7 @@
 import { useEffect } from "react"
 // TYPES
 import { UseListeningSessionCustomEffectProps } from "@/src/components/ListeningSessionComponent/prop"
-import { ListeningSessinRowInput } from "@/src/types/actions"
+import { ListeningRowItemRequest } from "@/src/actions/ListeningSessionRow/Request"
 
 export function useListeningSessionCustomEffect(params : UseListeningSessionCustomEffectProps) {
 
@@ -39,7 +39,7 @@ export function useListeningSessionCustomEffect(params : UseListeningSessionCust
         if(kese.some(k => !k)) return
 
         const start = (state.page - 1) * state.limit
-        const sliced = sessionData.rows.slice(start, start + state.limit) as ListeningSessinRowInput[]
+        const sliced = sessionData.rows.slice(start, start + state.limit) as ListeningRowItemRequest[]
 
         dispatch({type: "SET_PAGINATED_ROWS", payload: {paginatedRows: sliced}})
 

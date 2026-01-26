@@ -73,6 +73,8 @@ import { CREATE_WOS_COMMAND } from "@/src/actions/WritingOldSession/Commands/Cre
 // WRITING SESSION ROW COMMANDS
 import { CreateWRowsCommandHandler } from "@/src/actions/WritingSessionRow/Commands/CreateWRows/CommandHandler"
 import { CREATE_WROWS_COMMAND } from "@/src/actions/WritingSessionRow/Commands/CreateWRows/Command"
+import { UpdateProfileInfosHandler } from "@/src/actions/User/Commands/UpdateProfileInfos/CommandHandler"
+import { UPDATE_PROFILE_INFOS_COMMAND } from "@/src/actions/User/Commands/UpdateProfileInfos/Command"
 
 export class CommandModule implements IContainerModule {
 
@@ -101,6 +103,7 @@ export class CommandModule implements IContainerModule {
         container.bind(UpdateWritingBookCommandHandler).toSelf()
         container.bind(CreateWOSCommandHandler).toSelf()
         container.bind(CreateWRowsCommandHandler).toSelf()
+        container.bind(UpdateProfileInfosHandler).toSelf()
 
         // BIND REGISTRY AND BUS
         container.bind(CommandHandlerRegistry).toSelf().inSingletonScope()
@@ -130,6 +133,7 @@ export class CommandModule implements IContainerModule {
             registry.register(UPDATE_WRITING_BOOK_COMMAND, context.get(UpdateWritingBookCommandHandler))
             registry.register(CREATE_WOS_COMMAND, context.get(CreateWOSCommandHandler))
             registry.register(CREATE_WROWS_COMMAND, context.get(CreateWRowsCommandHandler))
+            registry.register(UPDATE_PROFILE_INFOS_COMMAND, context.get(UpdateProfileInfosHandler))
 
             return new CommandBus(registry)
 
