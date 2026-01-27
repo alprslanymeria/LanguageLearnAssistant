@@ -1,24 +1,24 @@
 // TYPES
+import { PracticeDto } from "@/src/actions/Practice/Response"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
-import { Practice } from "@prisma/client"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
 
 // REDUCER
 export type State = {
   
-  practices: Practice[]
+  practices: PracticeDto[]
 }
 
 export type Action =
-  | { type: "SET_PRACTICES", payload: {practices: Practice[]} }
+  | { type: "SET_PRACTICES", payload: {practices: PracticeDto[]} }
 
   
 // HANDLERS
 export type HandlePracticeClickProps = {
 
-  practice: Practice
+  practice: PracticeDto
   language: string | undefined
   router: AppRouterInstance
 }
@@ -33,5 +33,5 @@ export type UseLanguagePageCustomEffectProps = {
   setLoading: (props: setLoadingProps) => void
   setLanguage: (newLanguage: string) => void
   resetExcept: (keysToKeep?: string | string[] | undefined) => void
-  dispatch: (action: { type: "SET_PRACTICES"; payload: { practices: Practice[] } }) => void
+  dispatch: (action: { type: "SET_PRACTICES"; payload: { practices: PracticeDto[] } }) => void
 }

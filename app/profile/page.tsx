@@ -14,12 +14,12 @@ import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/Loadi
 //COMPONENTS
 import Loader from "@/src/components/loader"
 // ACTIONS
-import { SaveProfileInfos } from "@/src/actions/profile"
+import { UpdateProfileInfos } from "@/src/actions/User/Controller"
 
 
 export default function Page() {
 
-    const [state, formAction, isPending] = useActionState(SaveProfileInfos, undefined)
+    const [state, formAction, isPending] = useActionState(UpdateProfileInfos, undefined)
 
     //HOOKS
     const {states, dispatch} = useProfilePageReducer()

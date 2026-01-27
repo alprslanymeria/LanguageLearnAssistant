@@ -156,7 +156,7 @@ export async function UpdateDeckWord(prevState: ServiceResult<number> | undefine
     }
 }
 
-export async function GetAllDWordsWithPaging(categoryId: number, request: PagedRequest): Promise<ServiceResult<PagedResult<DeckWordWithTotalCount>>> {
+export async function GetAllDWordsWithPaging(userId: string, request: PagedRequest): Promise<ServiceResult<PagedResult<DeckWordWithTotalCount>>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -165,10 +165,10 @@ export async function GetAllDWordsWithPaging(categoryId: number, request: PagedR
     try {
 
         // LOG INFO
-        logger.info("GetAllDWordsWithPaging: Request received", {categoryId, request})
+        logger.info("GetAllDWordsWithPaging: Request received", {userId, request})
 
         // QUERY
-        const query = getAllDWordsWithPagingQuery(categoryId, request)
+        const query = getAllDWordsWithPagingQuery(userId, request)
 
         // ZOD VALIDATION
         const validatedQuery = await GetAllDWordsWithPagingQueryValidator.parseAsync(query)

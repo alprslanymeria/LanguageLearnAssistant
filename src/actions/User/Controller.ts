@@ -71,7 +71,7 @@ export async function CompareLanguageId(request: CompareLanguageIdRequest) : Pro
     try {
 
         // LOG INFO
-        logger.info(`CompareLanguageId: Comparing language ID ${request.languageId} for User ID ${request.userId}`)
+        logger.info(`CompareLanguageId: Comparing language ID ${request.languageName} for User ID ${request.userId}`)
 
         // QUERY
         const query = compareLanguageIdQuery(request)

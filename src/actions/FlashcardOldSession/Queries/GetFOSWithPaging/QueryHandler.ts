@@ -38,6 +38,7 @@ export class GetFOSWithPagingQueryHandler implements IQueryHandler<GetFOSWithPag
         // MAP ITEMS TO FLASHCARD OLDSESSION DTO
         const flashcardOldSessionDtos: FlashcardOldSessionDto[] = items.map(fos => ({
 
+            id: fos.oldSessionId,
             flashcardId: fos.flashcardId,
             flashcardCategoryId: fos.categoryId,
             rate: fos.rate.toNumber(),

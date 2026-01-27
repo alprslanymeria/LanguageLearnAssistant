@@ -42,6 +42,7 @@ export class GetLanguagesQueryHandler implements IQueryHandler<GetLanguagesQuery
         // MAP TO RESPONSE DTO
         const response: LanguageDto[] = languages.map(lang => ({
 
+            id: lang.id,
             name: lang.name!,
             imageUrl: lang.imageUrl!
         }))

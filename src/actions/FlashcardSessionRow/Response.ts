@@ -1,17 +1,19 @@
 // IMPORTS
-import { FlashcardCategory } from "@/src/generated/prisma/client"
+import { FlashcardCategoryWithDeckWords } from "@/src/actions/FlashcardCategory/Response"
 
 export type FlashcardSessionRowDto = {
 
+    id: number
     flashcardOldSessionId: string
     question: string
     answer: string
     status: boolean
 }
 
+
 export type FlashcardRowsResponse = {
 
-    item: FlashcardCategory
+    item: FlashcardCategoryWithDeckWords
     contents: FlashcardSessionRowDto[]
     total: number
 }

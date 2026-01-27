@@ -20,7 +20,7 @@ export class CacheService implements ICacheService {
 
     ) {
 
-        this.cacheStrategy = this.cacheFactory.createStrategy('redis')
+        this.cacheStrategy = this.cacheFactory.createStrategy('memory')
     }
 
     // INTERFACE IMPLEMENTATION

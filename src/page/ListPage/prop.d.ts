@@ -1,10 +1,13 @@
 // TYPES
+import { JSX } from "react"
+import { DeckWordDto } from "@/src/actions/DeckWord/Response"
+import { ReadingBookDto } from "@/src/actions/ReadingBook/Response"
+import { WritingBookDto } from "@/src/actions/WritingBook/Response"
+import { FlashcardCategoryDto } from "@/src/actions/FlashcardCategory/Response"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
-import { ReadingBook, WritingBook , ListeningCategory, DeckVideo, FlashcardCategory, DeckWord} from "@prisma/client"
-import { JSX } from "react"
 
-export type Item = ReadingBook | WritingBook | ListeningCategory | DeckVideo | FlashcardCategory | DeckWord
+export type Item = ReadingBookDto | WritingBookDto | FlashcardCategoryDto | DeckWordDto
 
 export type State<T extends Item = Item> = {
 

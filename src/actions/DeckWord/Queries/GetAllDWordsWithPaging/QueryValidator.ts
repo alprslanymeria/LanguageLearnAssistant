@@ -6,12 +6,11 @@ export const GetAllDWordsWithPagingQueryValidator = z.object({
 
     type: z.literal(GET_ALL_DWORDS_WITH_PAGING_QUERY),
 
-    categoryId: z
-        .number()
-        .int()
-        .gt(0, {
-            message: "CATEGORY ID MUST BE GREATER THAN 0"
-    }),
+    userId: z
+        .string()
+        .min(1, {
+            message: "USER ID IS REQUIRED"
+        }),
 
     request: z.object({
         page: z

@@ -22,7 +22,7 @@ export function useReadingEditCustomEffect(params : useReadingEditCustomEffectPr
 
         if (state!.isSuccess) {
 
-            if (state!.errorMessage) showAlert({ type: "success", title: "success", message: state!.errorMessage[0] })
+            showAlert({ type: "success", title: "success", message: "Reading book updated successfully!" })
 
             router.push(`/list/?table=rbooks`)
 

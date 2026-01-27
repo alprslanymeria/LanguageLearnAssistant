@@ -35,35 +35,35 @@ export class UpdateDeckWordCommandHandler implements ICommandHandler<UpdateDeckW
     async Handle(request: UpdateDeckWordCommand): Promise<number> {
 
         // FORM DATA'S
-        const id = Number(request.formData.get("id"))
-        const flashcardCategoryId = Number(request.formData.get("flashcardCategoryId"))
-        const question = request.formData.get("question")?.toString()!
+        const itemId = Number(request.formData.get("itemId"))
+        const categoryId = Number(request.formData.get("categoryId"))
+        const word = request.formData.get("word")?.toString()!
         const answer = request.formData.get("answer")?.toString()!
         
         // LOG MESSAGE
-        this.logger.info(`UpdateDeckWordCommandHandler: Updating deck word with Id ${id}`)
+        this.logger.info(`UpdateDeckWordCommandHandler: Updating deck word with Id ${itemId}`)
 
-        const existingDeckWord = await this.deckWordRepository.getByIdAsync(id)
+        const existingDeckWord = await this.deckWordRepository.getByIdAsync(itemId)
 
         if(!existingDeckWord) {
 
-            this.logger.error(`UpdateDeckWordCommandHandler: Deck word with Id ${id} not found!`)
+            this.logger.error(`UpdateDeckWordCommandHandler: Deck word with Id ${itemId} not found!`)
             throw new DeckWordNotFound()
         }
 
         const data : UpdateDeckWordData = {
 
-            categoryId: flashcardCategoryId,
-            question: question,
+            categoryId: categoryId,
+            question: word,
             answer: answer
         }
 
-        const updatedId = await this.deckWordRepository.update(id, data)
+        const updatedId = await this.deckWordRepository.update(itemId, data)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.deckWord.prefix)
 
-        this.logger.info(`UpdateDeckWordCommandHandler: Successfully updated deck word with Id ${id}`)
+        this.logger.info(`UpdateDeckWordCommandHandler: Successfully updated deck word with Id ${itemId}`)
 
         return updatedId
     }

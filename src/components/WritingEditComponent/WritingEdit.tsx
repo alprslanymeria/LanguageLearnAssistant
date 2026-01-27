@@ -105,10 +105,10 @@ export default function WritingEditComponent({ itemId } : WritingEditComponentPr
                         />
                     </div>
         
-                    {/* FILE 1*/}
+                    {/* IMAGE FILE */}
                     <div>
                         <label 
-                            htmlFor="fileOne" 
+                            htmlFor="imageFile" 
                             className="block text-sm font-medium text-gray-700 mb-1"
                             >
                                 Book Image
@@ -118,13 +118,13 @@ export default function WritingEditComponent({ itemId } : WritingEditComponentPr
                             <FileIcon/>
                             <div className="flex text-sm text-gray-600">
                                 <label
-                                htmlFor="fileOne"
+                                htmlFor="imageFile"
                                 className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
                                 >
                                 <span>Choose File</span>
                                 <input
-                                    id="fileOne"
-                                    name="fileOne"
+                                    id="imageFile"
+                                    name="imageFile"
                                     type="file"
                                     className="sr-only"
                                     accept=".png,.jpg,.jpeg"
@@ -149,10 +149,10 @@ export default function WritingEditComponent({ itemId } : WritingEditComponentPr
                         </div>
                     </div>
         
-                    {/* FILE 2*/}
+                    {/* SOURCE FILE */}
                     <div>
                         <label 
-                        htmlFor="fileTwo" 
+                        htmlFor="sourceFile" 
                         className="block text-sm font-medium text-gray-700 mb-1"
                         >
                             Book Pdf
@@ -162,13 +162,13 @@ export default function WritingEditComponent({ itemId } : WritingEditComponentPr
                             <FileIcon></FileIcon>
                             <div className="flex text-sm text-gray-600">
                                 <label
-                                htmlFor="fileTwo"
+                                htmlFor="sourceFile"
                                 className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
                                 >
                                 <span>Choose File</span>
                                 <input
-                                    id="fileTwo"
-                                    name="fileTwo"
+                                    id="sourceFile"
+                                    name="sourceFile"
                                     type="file"
                                     className="sr-only"
                                     accept=".pdf,.mp4,.mov,.avi,.webm"

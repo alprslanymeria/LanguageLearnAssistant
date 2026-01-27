@@ -1,8 +1,9 @@
 // IMPORTS
-import { ReadingBook } from "@/src/generated/prisma/client"
+import { ReadingBookDto } from "@/src/actions/ReadingBook/Response"
 
 export type ReadingSessionRowDto = {
 
+    id: number
     readingOldSessionId: string
     selectedSentence: string
     answer: string
@@ -12,7 +13,7 @@ export type ReadingSessionRowDto = {
 
 export type ReadingRowsResponse = {
 
-    item: ReadingBook
+    item: ReadingBookDto
     contents: ReadingSessionRowDto[]
     total: number
 }

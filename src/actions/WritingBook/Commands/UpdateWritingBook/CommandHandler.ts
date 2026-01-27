@@ -52,7 +52,7 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
     async Handle(request: UpdateWritingBookCommand): Promise<number> {
 
         // FORM DATA'S
-        const id = Number(request.formData.get("id"))
+        const itemId = Number(request.formData.get("itemId"))
         const name = request.formData.get("name")?.toString()!
         const userId = request.formData.get("userId")?.toString()!
         const languageId = Number(request.formData.get("languageId"))
@@ -60,17 +60,17 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
         const sourceFile = request.formData.get("sourceFile") as File
         
         // LOG MESSAGE
-        this.logger.info(`UpdateWritingBookCommandHandler: Updating writing book with Id ${id}`)
+        this.logger.info(`UpdateWritingBookCommandHandler: Updating writing book with Id ${itemId}`)
 
         const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
         
         if (!practice) throw new NoPracticeFound()
 
-        const existingWritingBook = await this.writingBookRepository.getByIdAsync(id)
+        const existingWritingBook = await this.writingBookRepository.getByIdAsync(itemId)
 
         if(!existingWritingBook) {
             
-            this.logger.error(`UpdateWritingBookCommandHandler: Writing book with Id ${id} not found!`)
+            this.logger.error(`UpdateWritingBookCommandHandler: Writing book with Id ${itemId} not found!`)
             throw new WritingBookNotFound()
         }
 
@@ -95,7 +95,7 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
         // UPDATE IMAGE IF NEW FILE PROVIDED
         if(imageFile) {
 
-            this.logger.info(`UpdateWritingBookCommandHandler: Processing new image file for writing book with Id ${id}`)
+            this.logger.info(`UpdateWritingBookCommandHandler: Processing new image file for writing book with Id ${itemId}`)
 
             newImageUrl = await this.fileStorageHelper.uploadFileToStorageAsync(
 
@@ -110,7 +110,7 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
         // UPDATE SOURCE IF NEW FILE PROVIDED
         if(sourceFile) {
 
-            this.logger.info(`UpdateWritingBookCommandHandler: Processing new source file for writing book with Id ${id}`)
+            this.logger.info(`UpdateWritingBookCommandHandler: Processing new source file for writing book with Id ${itemId}`)
 
             newSourceUrl = await this.fileStorageHelper.uploadFileToStorageAsync(
 
@@ -129,7 +129,7 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
             leftColor: newLeftColor
         }
 
-        const updatedId = await this.writingBookRepository.update(id, data)
+        const updatedId = await this.writingBookRepository.update(itemId, data)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.writingBook.prefix)

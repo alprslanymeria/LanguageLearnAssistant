@@ -23,9 +23,9 @@ export async function handleSubmit(params : HandleSubmitProps) {
 
     const response = await SignUp({name: "test_user", email, password, nativeLanguageId})
 
-    if(!response.success) {
+    if(response.isFail) {
 
-        dispatch({type: "SET_AUTH_ERROR", payload: {authError: response.message}})
+        dispatch({type: "SET_AUTH_ERROR", payload: {authError: response.errorMessage![0]}})
     }
 
     setLoading({value: false})

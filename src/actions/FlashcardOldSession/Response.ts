@@ -1,5 +1,6 @@
 export type FlashcardOldSessionDto = {
 
+    oldSessionId: string
     flashcardId: number
     flashcardCategoryId: number
     rate: number

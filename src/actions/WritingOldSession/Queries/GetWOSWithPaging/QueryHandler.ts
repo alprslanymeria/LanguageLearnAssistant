@@ -39,6 +39,7 @@ export class GetWOSWithPagingQueryHandler implements IQueryHandler<GetWOSWithPag
         // MAP ITEMS TO WRITING OLDSESSION DTO
         const writingOldSessionDtos : WritingOldSessionDto[] = items.map(wos => ({
 
+            id: wos.oldSessionId,
             writingId: wos.writingId,
             writingBookId: wos.bookId,
             rate: wos.rate.toNumber(),

@@ -1,6 +1,7 @@
 "use client"
 
 // REACT & NEXT
+import { Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 // BETTER AUTH
 import { authClient } from "@/src/infrastructure/auth/auth-client"
@@ -10,6 +11,10 @@ import DeckSvg from "@/src/components/svg/DeckSvg"
 import HeadphonesSvg from "@/src/components/svg/HeadphonesSvg"
 import TableComponent from "@/src/components/TableComponent/table"
 import Loader from "@/src/components/loader"
+import { ReadingSessionRowDto } from "@/src/actions/ReadingSessionRow/Response"
+import { ListeningSessionRowDto } from "@/src/actions/ListeningSessionRow/Response"
+import { FlashcardSessionRowDto } from "@/src/actions/FlashcardSessionRow/Response"
+import { WritingSessionRowDto } from "@/src/actions/WritingSessionRow/Response"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useDetailPageReducer } from "@/src/page/DetailPage/useDetailPageReducer"
 import { useDetailPageCustomEffect } from "@/src/page/DetailPage/useDetailPageCustomEffect"
@@ -18,8 +23,6 @@ import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProv
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // STORE
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
-import { FlashcardSessionRowInput, ListeningSessinRowInput, ReadingSessionRowInput, WritingSessionRowInput } from "@/src/types/actions"
-import { Suspense } from "react"
 
 
 // BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.
@@ -85,13 +88,13 @@ function DetailPage() {
             <div className="flex-[2]">
 
                 {practice === "reading"
-                    ? (<TableComponent contents={state.reading!.contents! as unknown as ReadingSessionRowInput[]} type="readingBook" columns={["Sentence", "Answer", "Translate", "Similarity"]} page={state.page} limit={state.limit} total={state.total} dispatch={dispatch}/>)
+                    ? (<TableComponent contents={state.reading!.contents! as unknown as ReadingSessionRowDto[]} type="readingBook" columns={["Sentence", "Answer", "Translate", "Similarity"]} page={state.page} limit={state.limit} total={state.total} dispatch={dispatch}/>)
                     : practice == "writing" 
-                    ? <TableComponent contents={state.writing!.contents! as unknown as WritingSessionRowInput[]} type="writingBook" columns={["Sentence", "Answer", "Translate", "Similarity"]} page={state.page} limit={state.limit} total={state.total} dispatch={dispatch}/>
+                    ? <TableComponent contents={state.writing!.contents! as unknown as WritingSessionRowDto[]} type="writingBook" columns={["Sentence", "Answer", "Translate", "Similarity"]} page={state.page} limit={state.limit} total={state.total} dispatch={dispatch}/>
                     : practice == "flashcard" 
-                    ?  <TableComponent contents={state.flashcard!.contents! as unknown as FlashcardSessionRowInput[]} type="flashcard" columns={["Question", "Answer", "Status"]} page={state.page} limit={state.limit} total={state.total} dispatch={dispatch}/>
+                    ?  <TableComponent contents={state.flashcard!.contents! as unknown as FlashcardSessionRowDto[]} type="flashcard" columns={["Question", "Answer", "Status"]} page={state.page} limit={state.limit} total={state.total} dispatch={dispatch}/>
                     :practice == "listening"
-                    ?  <TableComponent contents={state.listening!.contents! as unknown as ListeningSessinRowInput[]} type="listening" columns={["Listened Sentence", "Answer", "Similarity"]} page={state.page} limit={state.limit} total={state.total} dispatch={dispatch}/>
+                    ?  <TableComponent contents={state.listening!.contents! as unknown as ListeningSessionRowDto[]} type="listening" columns={["Listened Sentence", "Answer", "Similarity"]} page={state.page} limit={state.limit} total={state.total} dispatch={dispatch}/>
                     : <p></p>
                 }
 

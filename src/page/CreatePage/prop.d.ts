@@ -1,7 +1,13 @@
 // TYPES
+import { FlashcardOldSessionDto } from "@/src/actions/FlashcardOldSession/Response"
+import { ListeningOldSessionDto } from "@/src/actions/ListeningOldSession/Response"
+import { ReadingBookDto } from "@/src/actions/ReadingBook/Response"
+import { ReadingOldSessionDto } from "@/src/actions/ReadingOldSession/Response"
+import { WritingBookDto } from "@/src/actions/WritingBook/Response"
+import { WritingOldSessionDto } from "@/src/actions/WritingOldSession/Response"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
-import { FlashcardCategoryWithDeckWords, ListeningCategoryWithDeckVideos } from "@/src/types/globalStore"
+import { FlashcardCategoryWithDeckWords, ListeningCategoryWithDeckVideos } from "@/src/infrastructure/store/globalStoreTypes"
 import { FlashcardOldSession, ReadingOldSession, WritingOldSession, ListeningOldSession, ReadingBook, WritingBook } from "@prisma/client"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
@@ -18,7 +24,7 @@ export type HandleChooseProps = {
 
 export type HandleSvgClickProps = {
     
-    item: FlashcardCategoryWithDeckWords | ReadingBook | WritingBook | ListeningCategoryWithDeckVideos
+    item: FlashcardCategoryWithDeckWords | ReadingBookDto | WritingBookDto | ListeningCategoryWithDeckVideos
     setSelectedItemId: (newSelectedItemId: number) => void
 }
 
@@ -30,9 +36,9 @@ export type UseCreatePageCustomEffectProps = {
     practice: string | null
     router: AppRouterInstance
     hasHydrated: boolean
-    oldSessions: (FlashcardOldSession | ReadingOldSession | WritingOldSession | ListeningOldSession)[] | null
-    createItems: (FlashcardCategoryWithDeckWords | ReadingBook | WritingBook | ListeningCategoryWithDeckVideos)[] | null
-    setCreateItems: (newItems: (FlashcardCategoryWithDeckWords | ReadingBook | WritingBook | ListeningCategoryWithDeckVideos)[]) => void
+    oldSessions: (FlashcardOldSessionDto | ReadingOldSessionDto | WritingOldSessionDto | ListeningOldSessionDto)[] | null
+    createItems: (FlashcardCategoryWithDeckWords | ReadingBookDto | WritingBookDto | ListeningCategoryWithDeckVideos)[] | null
+    setCreateItems: (newItems: (FlashcardCategoryWithDeckWords | ReadingBookDto | WritingBookDto | ListeningCategoryWithDeckVideos)[]) => void
     setLoading: (props: setLoadingProps) => void
     showAlert: (props: ShowAlertProps) => void
     resetExcept: (keysToKeep?: string | string[] | undefined) => void

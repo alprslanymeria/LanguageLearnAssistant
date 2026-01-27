@@ -20,7 +20,7 @@ export function useReadingAddCustomEffect(params : useReadingAddCustomEffectProp
 
         if (state!.isSuccess) {
 
-            if (state!.errorMessage) showAlert({ type: "success", title: "success", message: state!.errorMessage[0] })
+            showAlert({ type: "success", title: "success", message: "Reading book added successfully!" })
 
             router.push(`/list/?table=rbooks`)
 

@@ -1,10 +1,11 @@
 // TYPES
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
-import { FlashcardCategoryWithDeckWords, FlashcardSession, SessionData } from "@/src/types/globalStore"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { Action } from "@/src/components/FlashcardSessionComponent/prop"
 import { FlashcardRowItemRequest } from "@/src/actions/FlashcardSessionRow/Request"
+import { FlashcardCategoryWithDeckWords } from "@/src/actions/FlashcardCategory/Response"
+import { FlashcardSession, SessionData } from "@/src/infrastructure/store/globalStoreType"
 
 // COMPONENT PROPS
 export type FlashcardFormComponentProps = {

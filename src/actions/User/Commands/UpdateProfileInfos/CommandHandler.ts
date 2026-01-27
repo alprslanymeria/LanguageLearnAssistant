@@ -37,7 +37,7 @@ export class UpdateProfileInfosHandler implements ICommandHandler<UpdateProfileI
         const userId = request.formData.get("userId")?.toString()!
         const name = request.formData.get("name")?.toString()!
         const nativeLanguageId = Number(request.formData.get("nativeLanguageId"))
-        const imageFile = request.formData.get("imageFile") as File
+        const imageFile = request.formData.get("profileImage") as File
 
         // LOG MESSAGE
         this.logger.info(`UpdateProfileInfosHandler: Updating profile infos for User ID ${userId}`)

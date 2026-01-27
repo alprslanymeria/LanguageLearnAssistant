@@ -14,11 +14,10 @@ export const CompareLanguageIdQueryValidator = z.object({
                 message: "USER ID IS REQUIRED"
             }),
 
-        languageId: z
-            .number()
-            .int()
-            .gt(0, {
-                message: "LANGUAGE ID MUST BE A POSITIVE INTEGER"
+        languageName: z
+            .string()
+            .min(1, {
+                message: "LANGUAGE NAME IS REQUIRED"
             })
     })
 })

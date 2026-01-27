@@ -2,8 +2,9 @@
 import { useEffect } from "react"
 // TYPES
 import { UseSignupPageCustomEffectProps } from "@/src/page/SignupPage/prop"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 // ACTIONS
-import { GetLanguages } from "@/src/actions/language"
+import { GetLanguages } from "@/src/actions/Language/Controller"
 
 
 export function useSignupPageCustomEffect(params: UseSignupPageCustomEffectProps) {
@@ -20,16 +21,16 @@ export function useSignupPageCustomEffect(params: UseSignupPageCustomEffectProps
 
                 const response = await GetLanguages()
 
-                if(response && response.status == 500)
+                if(response && response.status != HttpStatusCode.OK)
                 {
-                    showAlert({type: "error" , title: "error" , message: response.message})
+                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
 
                     return
                 }
 
                 if(response.data != null)
                 
-                dispatch({type: "SET_LANGUAGES", payload: {languages: response.data.data}})
+                dispatch({type: "SET_LANGUAGES", payload: {languages: response.data}})
                 
             } catch (error) {
 

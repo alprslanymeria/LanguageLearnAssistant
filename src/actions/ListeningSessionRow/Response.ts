@@ -1,8 +1,9 @@
 // IMPORTS
-import { ListeningCategory } from "@/src/generated/prisma/client"
+import { ListeningCategoryDto, ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
 
 export type ListeningSessionRowDto = {
 
+    id: number
     listeningOldSessionId: string
     listenedSentence: string
     answer: string
@@ -11,7 +12,7 @@ export type ListeningSessionRowDto = {
 
 export type ListeningRowsResponse = {
 
-    item: ListeningCategory
+    item: ListeningCategoryWithDeckVideos
     contents: ListeningSessionRowDto[]
     total: number
 }

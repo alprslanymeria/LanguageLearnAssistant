@@ -18,7 +18,7 @@ import { FlashcardResultNotSuccess } from "@/src/exceptions/NotSuccess"
 import { QueryBus } from "@/src/infrastructure/mediatR/QueryBus"
 import { PagedRequest } from "@/src/infrastructure/common/pagedRequest"
 import { PagedResult } from "@/src/infrastructure/common/pagedResult"
-import { FlashcardCategoryDto, FlashcardCategoryWithLanguageId, FlashcardCategoryWithTotalCount } from "@/src/actions/FlashcardCategory/Response"
+import { FlashcardCategoryDto, FlashcardCategoryWithDeckWords, FlashcardCategoryWithLanguageId, FlashcardCategoryWithTotalCount } from "@/src/actions/FlashcardCategory/Response"
 import { getAllFCategoriesWithPagingQuery } from "@/src/actions/FlashcardCategory/Queries/GetAllFCategoriesWithPaging/QueryFactory"
 import { GetAllFCategoriesWithPagingQueryValidator } from "@/src/actions/FlashcardCategory/Queries/GetAllFCategoriesWithPaging/QueryValidator"
 import { getFCategoryCreateItemsQuery } from "@/src/actions/FlashcardCategory/Queries/GetFCategoryCreateItems/QueryFactory"
@@ -259,7 +259,7 @@ export async function GetAllFCategories(userId: string) : Promise<ServiceResult<
     }
 }
 
-export async function GetFCategoryCreateItems(userId: string, language: string, practice: string) : Promise<ServiceResult<FlashcardCategoryDto[]>> {
+export async function GetFCategoryCreateItems(userId: string, language: string, practice: string) : Promise<ServiceResult<FlashcardCategoryWithDeckWords[]>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -279,7 +279,7 @@ export async function GetFCategoryCreateItems(userId: string, language: string, 
         // SEND QUERY TO BUS
         const flashcardCategories = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<FlashcardCategoryDto[]>(flashcardCategories as FlashcardCategoryDto[])
+        return ServiceResult.success<FlashcardCategoryWithDeckWords[]>(flashcardCategories as FlashcardCategoryWithDeckWords[])
         
     } catch (error) {
         
@@ -288,25 +288,25 @@ export async function GetFCategoryCreateItems(userId: string, language: string, 
             const firstError = error.issues?.[0]?.message
             logger.error("GetFCategoryCreateItems: INVALID FORM DATA!", {firstError})
             // SHOW TO USER
-            return ServiceResult.failOne<FlashcardCategoryDto[]>(firstError, HttpStatusCode.BadRequest)
+            return ServiceResult.failOne<FlashcardCategoryWithDeckWords[]>(firstError, HttpStatusCode.BadRequest)
         }
 
         if(error instanceof NoLanguageFound) {
 
             logger.error("GetFCategoryCreateItems: NO LANGUAGE FOUND!", {error})
             // SHOW TO USER
-            return ServiceResult.failOne<FlashcardCategoryDto[]>(error.message, HttpStatusCode.NotFound)
+            return ServiceResult.failOne<FlashcardCategoryWithDeckWords[]>(error.message, HttpStatusCode.NotFound)
         }
 
         if(error instanceof NoPracticeFound) {
 
             logger.error("GetFCategoryCreateItems: NO PRACTICE FOUND!", {error})
             // SHOW TO USER
-            return ServiceResult.failOne<FlashcardCategoryDto[]>(error.message, HttpStatusCode.NotFound)
+            return ServiceResult.failOne<FlashcardCategoryWithDeckWords[]>(error.message, HttpStatusCode.NotFound)
         }
 
         logger.error("GetFCategoryCreateItems: FAIL", {error})
-        return ServiceResult.failOne<FlashcardCategoryDto[]>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return ServiceResult.failOne<FlashcardCategoryWithDeckWords[]>("SERVER ERROR!", HttpStatusCode.InternalServerError)
     }
 }
 

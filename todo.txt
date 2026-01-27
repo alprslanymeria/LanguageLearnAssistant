@@ -6,6 +6,10 @@
 
 4- dockerfile içerisindeki prisma işlemleri olası bir problem olabilir.
 
+CacheService --> memory
+Logging --> only console
+Storage Service --> gcloud
+
 
 REFACTOR (İNCELENEN) EDILEN DOSYALAR:
 -------------------------

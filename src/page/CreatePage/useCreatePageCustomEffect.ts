@@ -2,12 +2,16 @@
 import { useEffect } from "react"
 // TYPES
 import { UseCreatePageCustomEffectProps } from "@/src/page/CreatePage/prop"
+import { GetRBookCreateItems } from "@/src/actions/ReadingBook/Controller"
+import { GetWBookCreateItems } from "@/src/actions/WritingBook/Controller"
+import { GetFCategoryCreateItems } from "@/src/actions/FlashcardCategory/Controller"
+import { GetLCategoryCreateItems } from "@/src/actions/ListeningCategory/Controller"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 // ACTIONS
-import GetCreateItems from "@/src/actions/utils"
 
 
 //BASE
-const BASE = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+const BASE = process.env.NEXT_PUBLIC_BASE_URL
 
 
 export function useCreatePageCustomEffect(params: UseCreatePageCustomEffectProps) {
@@ -42,17 +46,33 @@ export function useCreatePageCustomEffect(params: UseCreatePageCustomEffectProps
 
                 setLoading({value: true , source: "page"})
 
-                const response = await GetCreateItems({userId, language, practice})
+                let response;
 
-                if(response && response.status == 500) {
-
-                    showAlert({type: "error", title: "error" , message: response.message})
-                    return
+                switch (practice) {
+                    case "reading":
+                        response = await GetRBookCreateItems(userId!, language!, practice)
+                        break;
+                    case "writing":
+                        response = await GetWBookCreateItems(userId!, language!, practice)
+                        break;
+                    case "listening":
+                        response = await GetLCategoryCreateItems(userId!, language!, practice)
+                        break;
+                    case "flashcard":
+                        response = await GetFCategoryCreateItems(userId!, language!, practice)
+                        break;
+                
+                    default:
+                        break;
                 }
 
-                if(response.data !== null)
+                if(response && response.status != HttpStatusCode.OK) {
+
+                    showAlert({type: "error", title: "error" , message: response.errorMessage![0]})
+                    return
+                }
                     
-                setCreateItems(response?.data.data)
+                setCreateItems(response!.data!)
                 
             } catch (error) {
                 

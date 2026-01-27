@@ -2,9 +2,11 @@
 import { useEffect } from "react"
 // TYPES
 import { UseProfilePageCustomEffectProps } from "@/src/page/ProfilePage/prop"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
+import { UserDto } from "@/src/actions/User/Response"
 // ACTIONS
-import { GetProfileInfos } from "@/src/actions/profile"
-import { GetLanguages } from "@/src/actions/language"
+import { GetLanguages } from "@/src/actions/Language/Controller"
+import { GetProfileInfos } from "@/src/actions/User/Controller"
 
 
 export function useProfilePageCustomEffect(params : UseProfilePageCustomEffectProps) {
@@ -18,19 +20,19 @@ export function useProfilePageCustomEffect(params : UseProfilePageCustomEffectPr
 
         if(kese.some(k => !k)) return
 
-        if (state!.success) {
+        if (state!.isSuccess) {
 
-            if (state!.message) showAlert({ type: "success", title: "success", message: state!.message })
+            showAlert({ type: "success", title: "success", message: "Profile updated successfully!" })
 
             return
         }
 
-        if (state!.message) showAlert({ type: "error", title: "error", message: state!.message })
+        if (state!.errorMessage) showAlert({ type: "error", title: "error", message: state!.errorMessage[0] })
 
     }, [state])
 
     
-    // GET LANGUAGES
+    // GET PROFILE INFOS & LANGUAGES
     useEffect(() => {
 
         const kese = [userId]
@@ -44,30 +46,32 @@ export function useProfilePageCustomEffect(params : UseProfilePageCustomEffectPr
                     setLoading({value: true , source: "page"})
         
                     // GET USER INFOS
-                    const responseOne = await GetProfileInfos({userId})
-        
-                    if(responseOne && responseOne.status == 500){
+                    const responseOne = await GetProfileInfos(userId!)
     
-                        showAlert({type: "error" , title: "error" , message: responseOne.message})
+                    if(responseOne && responseOne.status != HttpStatusCode.OK){
+    
+                        showAlert({type: "error" , title: "error" , message: responseOne.errorMessage![0]})
         
                         return
                     }
+
+                    const data : UserDto = responseOne.data as UserDto
     
-                    dispatch({type: "SET_USER" , payload: {user: responseOne.data?.data!}})
-                    dispatch({type: "SET_NAME", payload: {name: responseOne.data?.data?.name!}})
-                    dispatch({type: "SET_PROFILE_IMAGE", payload: {profileImage: responseOne.data?.data?.image!}})
+                    dispatch({type: "SET_USER" , payload: {user: data}})
+                    dispatch({type: "SET_NAME", payload: {name: data.name}})
+                    dispatch({type: "SET_PROFILE_IMAGE", payload: {profileImage: data.image!}})
 
                     // GET LANGUAGES
                     const responseTwo = await GetLanguages()
 
-                    if(responseOne && responseOne.status == 500){
+                    if(responseTwo && responseTwo.status != HttpStatusCode.OK){
     
-                        showAlert({type: "error" , title: "error" , message: responseOne.message})
+                        showAlert({type: "error" , title: "error" , message: responseTwo.errorMessage![0]})
         
                         return
                     }
                     
-                    dispatch({type: "SET_LANGUAGES", payload: {languages: responseTwo!.data?.data!}})
+                    dispatch({type: "SET_LANGUAGES", payload: {languages: responseTwo!.data!}})
                     
                 } catch (error) {
     

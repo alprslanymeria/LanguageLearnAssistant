@@ -1,7 +1,17 @@
 // TYPES
-import { FlashcardCategoryWithDeckWords, ListeningCategoryWithDeckVideos } from "@/src/types/globalStore"
-import { FlashcardOldSession, ListeningOldSession, ReadingOldSession, WritingOldSession, ReadingBook,  WritingBook,  } from "@prisma/client"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
+// FLASHCARD
+import { FlashcardCategoryWithDeckWords } from "@/src/actions/FlashcardCategory/Response"
+import { FlashcardOldSessionDto } from "@/src/actions/FlashcardOldSession/Response"
+// LISTENING
+import { ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
+import { ListeningOldSessionDto } from "@/src/actions/ListeningOldSession/Response"
+// READING
+import { ReadingBookDto } from "@/src/actions/ReadingBook/Response"
+import { ReadingOldSessionDto } from "@/src/actions/ReadingOldSession/Response"
+// WRITING
+import { WritingBookDto } from "@/src/actions/WritingBook/Response"
+import { WritingOldSessionDto } from "@/src/actions/WritingOldSession/Response"
 
 // BASE STATE FOR SESSION COMPONENTS
 export type BaseState<T> = {
@@ -34,14 +44,14 @@ export type useSessionPageCustomEffectProps = {
 
   language: string | null
   practice: string | null
-  createItems: (FlashcardCategoryWithDeckWords | ReadingBook | WritingBook | ListeningCategoryWithDeckVideos)[] | null
+  createItems: (FlashcardCategoryWithDeckWords | ReadingBookDto | WritingBookDto | ListeningCategoryWithDeckVideos)[] | null
   selectedItemId: number | null
   oldSessionId: string | null
-  oldSessions: (FlashcardOldSession | ReadingOldSession | WritingOldSession | ListeningOldSession)[] | null
+  oldSessions: (FlashcardOldSessionDto | ReadingOldSessionDto | WritingOldSessionDto | ListeningOldSessionDto)[] | null
   hasHydrated: boolean
   router: AppRouterInstance
   resetExcept: (keysToKeep?: string | string[] | undefined) => void
-  setSelectedItem: (newSelectedItem: FlashcardCategoryWithDeckWords | ReadingBook | WritingBook | ListeningCategoryWithDeckVideos) => void
+  setSelectedItem: (newSelectedItem: FlashcardCategoryWithDeckWords | ReadingBookDto | WritingBookDto | ListeningCategoryWithDeckVideos) => void
   dispatch: (action: Action) => void
 
 }

@@ -1,9 +1,17 @@
 // REACT & NEXT
 import { useEffect } from "react"
 // ACTIONS
-import { GetRowsById } from "@/src/actions/rows"
+import { GetRRowsByIdWithPaging } from "@/src/actions/ReadingSessionRow/Controller"
+import { GetWRowsByIdWithPaging } from "@/src/actions/WritingSessionRow/Controller"
+import { GetFRowsByIdWithPaging } from "@/src/actions/FlashcardSessionRow/Controller"
+import { GetLRowsByIdWithPaging } from "@/src/actions/ListeningSessionRow/Controller"
 // TYPES
 import { UseDetailPageCustomEffectProps } from "@/src/page/DetailPage/prop"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
+import { ReadingRowsResponse } from "@/src/actions/ReadingSessionRow/Response"
+import { WritingRowsResponse } from "@/src/actions/WritingSessionRow/Response"
+import { FlashcardRowsResponse } from "@/src/actions/FlashcardSessionRow/Response"
+import { ListeningRowsResponse } from "@/src/actions/ListeningSessionRow/Response"
 
 
 
@@ -38,40 +46,62 @@ export function useDetailPageCustomEffect(params : UseDetailPageCustomEffectProp
 
                 setLoading({value: true , source: "page"})
 
-                const response = await GetRowsById({userId, language, practice, oldSessionId, page: state.page, limit: state.limit})
+                let response;
+                let total;
 
-                if(response && response.status == 500) {
-
-                    showAlert({type: "error", title: "error" , message: response?.message ?? null})
-
-                    return
-                }
-
-                switch (response.data?.data.type) {
+                switch (practice) {
                     case "reading":
+                        response = await GetRRowsByIdWithPaging(oldSessionId!, {page: state.page, pageSize: state.limit})
+                        if(response && response.status != HttpStatusCode.OK) showAlert({type: "error", title: "error" , message: response?.errorMessage![0]})
                         
-                        dispatch({type: "SET_READING" , payload: {reading: {item: response.data.data.reading!.item , contents: response.data.data.reading?.contents!}}})
-                        dispatch({type: "SET_TOTAL", payload: {total: response.data.data.reading?.total!}})
-                        break;
+                        const readingRowsResponse : ReadingRowsResponse = response.data as ReadingRowsResponse
+                        const readingRowDtos = readingRowsResponse.contents
+                        const readingBook = readingRowsResponse.item
+                        total = readingRowsResponse.total
 
+                        dispatch({type: "SET_READING" , payload: {reading: {item: readingBook , contents: readingRowDtos}}})
+                        dispatch({type: "SET_TOTAL", payload: {total: total}})
+
+                        break;
                     case "writing":
-                        
-                        dispatch({type: "SET_WRITING" , payload: {writing: {item: response.data.data.writing!.item , contents: response.data.data.writing?.contents!}}})
-                        dispatch({type: "SET_TOTAL", payload: {total: response.data.data.writing?.total!}})
-                        break;
+                        response = await GetWRowsByIdWithPaging(oldSessionId!, {page: state.page, pageSize: state.limit})
+                        if(response && response.status != HttpStatusCode.OK) showAlert({type: "error", title: "error" , message: response?.errorMessage![0]})
 
+                        const writingRowsResponse : WritingRowsResponse = response.data as WritingRowsResponse
+                        const writingRowDtos = writingRowsResponse.contents
+                        const writingBook = writingRowsResponse.item
+                        total = writingRowsResponse.total
+
+                        dispatch({type: "SET_WRITING" , payload: {writing: {item: writingBook , contents: writingRowDtos}}})
+                        dispatch({type: "SET_TOTAL", payload: {total: total}})
+
+                        break;
                     case "flashcard":
-                        
-                        dispatch({type: "SET_FLASHCARD" , payload: {flashcard: {item: response.data.data.flashcard!.item , contents: response.data.data.flashcard?.contents!}}})
-                        dispatch({type: "SET_TOTAL", payload: {total: response.data.data.flashcard?.total!}})
-                        break;
+                        response = await GetFRowsByIdWithPaging(oldSessionId!, {page: state.page, pageSize: state.limit})
+                        if(response && response.status != HttpStatusCode.OK) showAlert({type: "error", title: "error" , message: response?.errorMessage![0]})
 
-                    case "listening":
-                        
-                        dispatch({type: "SET_LISTENING" , payload: {listening: {item: response.data.data.listening!.item , contents: response.data.data.listening?.contents!}}})
-                        dispatch({type: "SET_TOTAL", payload: {total: response.data.data.listening?.total!}})
+                        const flashcardRowsResponse : FlashcardRowsResponse = response.data as FlashcardRowsResponse
+                        const flashcardRowDtos = flashcardRowsResponse.contents
+                        const flashcardCategory = flashcardRowsResponse.item
+                        total = flashcardRowsResponse.total
+
+                        dispatch({type: "SET_FLASHCARD" , payload: {flashcard: {item: flashcardCategory , contents: flashcardRowDtos}}})
+                        dispatch({type: "SET_TOTAL", payload: {total: total}})
+
                         break;
-                
+                    case "listening":
+                        response = await GetLRowsByIdWithPaging(oldSessionId!, {page: state.page, pageSize: state.limit})
+                        if(response && response.status != HttpStatusCode.OK) showAlert({type: "error", title: "error" , message: response?.errorMessage![0]})
+
+                        const listeningRowsResponse : ListeningRowsResponse = response.data as ListeningRowsResponse
+                        const listeningRowDtos = listeningRowsResponse.contents
+                        const listeningCategory = listeningRowsResponse.item
+                        total = listeningRowsResponse.total
+
+                        dispatch({type: "SET_LISTENING" , payload: {listening: {item: listeningCategory , contents: listeningRowDtos}}})
+                        dispatch({type: "SET_TOTAL", payload: {total: total}})
+
+                        break;
                     default:
                         break;
                 }

@@ -1,10 +1,10 @@
 // TYPES
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
-import { ListeningCategoryWithDeckVideos, ListeningSession, SessionData } from "@/src/types/globalStore"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { Action } from "@/src/components/ListeningSessionComponent/prop"
 import { ListeningRowItemRequest } from "@/src/actions/ListeningSessionRow/Request"
+import { ListeningSession, SessionData } from "@/src/infrastructure/store/globalStoreType"
 
 
 // COMPONENT PROPS

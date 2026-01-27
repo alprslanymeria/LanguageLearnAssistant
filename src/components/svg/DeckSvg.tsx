@@ -1,12 +1,12 @@
 "use client"
 
-import React from 'react'
-import { markazi } from '@/public/fonts'
-import { FlashcardCategory, FlashcardSessionRow } from '@prisma/client'
+import Fonts from '@/public/fonts/fonts'
+import { FlashcardCategoryWithDeckWords } from '@/src/actions/FlashcardCategory/Response'
+import { FlashcardSessionRowDto } from '@/src/actions/FlashcardSessionRow/Response'
 
 type DeckSvgProps = {
 
-    flashcard?: { item: FlashcardCategory , contents: FlashcardSessionRow[] | undefined } | null
+    flashcard?: { item: FlashcardCategoryWithDeckWords , contents: FlashcardSessionRowDto[] | undefined } | null
     language: string | null | undefined
 }
 
@@ -83,7 +83,7 @@ const DeckSvg = ({flashcard, language} : DeckSvgProps) => {
     {language === 'german' && <image x= "206" y= "340" width= "100" height= "100" href= "/images/flags/de.png" preserveAspectRatio="xMidYMid meet"/> }
     {language === 'russian' && <image x= "206" y= "340" width= "100" height= "100" href= "/images/flags/rs.png" preserveAspectRatio="xMidYMid meet"/> }
     
-    <text className={`${markazi.className}`} x="250" y="550" fill="black" fontSize="60" fontFamily="Arial" transform="rotate(-6, 225, 550)" textAnchor="middle" dominantBaseline="middle">{flashcard?.item.name}</text>
+    <text className={`${Fonts.markazi.className}`} x="250" y="550" fill="black" fontSize="60" fontFamily="Arial" transform="rotate(-6, 225, 550)" textAnchor="middle" dominantBaseline="middle">{flashcard?.item.name}</text>
     </svg>
 
   )

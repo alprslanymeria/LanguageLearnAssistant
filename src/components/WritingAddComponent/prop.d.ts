@@ -18,7 +18,7 @@ export type State = {
 
 export type Action =
   | { type: "SET_LANGUAGE_ID"; payload: {languageId: number}}
-  | { type: "SET_LANGUAGES"; payload: {languages: Language[]}}
+  | { type: "SET_LANGUAGES"; payload: {languages: LanguageDto[]}}
   | { type: "SET_NAME"; payload: {name: string}}
   | { type: "SET_FILE_ONE"; payload: {fileOne: File}}
   | { type: "SET_FILE_TWO"; payload: {fileTwo: File}}

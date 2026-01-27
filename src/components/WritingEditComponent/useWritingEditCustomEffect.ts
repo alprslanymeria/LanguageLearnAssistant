@@ -23,7 +23,7 @@ export function useWritingEditCustomEffect(params : useWritingEditCustomEffectPr
 
         if (state!.isSuccess) {
 
-            if (state!.errorMessage) showAlert({ type: "success", title: "success", message: state!.errorMessage[0] })
+            showAlert({ type: "success", title: "success", message: "Writing book updated successfully!" })
 
             router.push(`/list/?table=wbooks`)
 

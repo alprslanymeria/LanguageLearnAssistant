@@ -10,5 +10,5 @@ export interface GetAllDWordsWithPagingQuery extends IQuery<PagedResult<DeckWord
 
     readonly type: typeof GET_ALL_DWORDS_WITH_PAGING_QUERY
     request: PagedRequest
-    categoryId: number
+    userId: string
 }

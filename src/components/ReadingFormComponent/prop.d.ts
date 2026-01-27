@@ -4,8 +4,9 @@ import { Action } from "@/src/components/ReadingSessionComponent/prop"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
-import { ReadingSession, SessionData } from "@/src/types/globalStore"
 import { ReadingRowItemRequest } from "@/src/actions/ReadingSessionRow/Request"
+import { ReadingSession, SessionData } from "@/src/infrastructure/store/globalStoreType"
+import { ReadingBookDto } from "@/src/actions/ReadingBook/Response"
 
 // COMPONENT PROPS
 export type ReadingFormComponentProps = {
@@ -44,7 +45,7 @@ export type CloseAndSaveProps = {
     userId: string | undefined
     oldSessionId: string | null
     sessionData: SessionData
-    item: ReadingBook
+    item: ReadingBookDto
     router: AppRouterInstance
     dispatch: (action: Action) => void
     showAlert: (props: ShowAlertProps) => void

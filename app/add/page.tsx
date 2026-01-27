@@ -4,10 +4,10 @@
 import { JSX, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 // COMPONENTS
-import ReadingAddOrEditComponent from "@/src/components/ReadingEditComponent/ReadingEdit"
-import WritingAddOrEditComponent from "@/src/components/WritingEditComponent/WritingEdit"
-import FlashcardAddOrEditComponent from "@/src/components/FlashcardAddComponent/FlashcardAdd"
-import WordAddOrEditComponent from "@/src/components/WordEditComponent/WordEdit"
+import ReadingAddComponent from "@/src/components/ReadingAddComponent/ReadingAdd"
+import WritingAddComponent from "@/src/components/WritingAddComponent/WritingAdd"
+import FlashcardAddComponent from "@/src/components/FlashcardAddComponent/FlashcardAdd"
+import WordAddComponent from "@/src/components/WordAddComponent/WordAdd"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useAddPageReducer } from "@/src/page/AddPage/useAddPageReducer"
 import { useAddPageCustomEffect } from "@/src/page/AddPage/useAddPageCustomEffect"
@@ -26,10 +26,10 @@ function AddPage() {
     //COMPONENT MAP
     const componentMap: Record<string, JSX.Element> = {
 
-        reading: <ReadingAddOrEditComponent type="Create"/>,
-        writing: <WritingAddOrEditComponent type="Create"/>,
-        flashcard: <FlashcardAddOrEditComponent type="Create"/>,
-        word: <WordAddOrEditComponent type="Create"/>
+        reading: <ReadingAddComponent/>,
+        writing: <WritingAddComponent/>,
+        flashcard: <FlashcardAddComponent/>,
+        word: <WordAddComponent/>
     }
 
     // USE EFFECTS

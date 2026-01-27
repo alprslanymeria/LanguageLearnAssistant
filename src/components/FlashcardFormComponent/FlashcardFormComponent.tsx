@@ -8,7 +8,7 @@ import { authClient } from "@/src/infrastructure/auth/auth-client"
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // TYPES
 import { FlashcardFormComponentProps } from "@/src/components/FlashcardFormComponent/prop"
-import { FlashcardCategoryWithDeckWords } from "@/src/infrastructure/store/globalStoreType"
+import { FlashcardCategoryWithDeckWords } from "@/src/actions/FlashcardCategory/Response"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"

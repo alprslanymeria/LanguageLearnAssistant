@@ -153,7 +153,7 @@ export async function closeAndSave(params : CloseAndSaveProps) {
     const rowsToSave : SaveListeningRowsRequest = {
 
         listeningSessionId: oldSessionId!,
-        rows: sessionData!.rows
+        rows: sessionData!.rows as ListeningRowItemRequest[]
     }
 
     try {

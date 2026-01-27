@@ -3,9 +3,46 @@ import { injectable } from "inversify"
 import { ListeningCategory } from "@/src/generated/prisma/client"
 import { IListeningCategoryRepository, CreateListeningCategoryData, UpdateListeningCategoryData } from "@/src/infrastructure/persistence/contracts/IListeningCategoryRepository"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
+import { ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
 
 @injectable()
 export class ListeningCategoryRepository implements IListeningCategoryRepository {
+
+    async getLCategoryCreateItemsAsync(userId: string, languageId: number, practiceId: number): Promise<ListeningCategoryWithDeckVideos[]> {
+            
+        return await prisma.listeningCategory.findMany({
+            where: {
+                listening: {
+                    userId,
+                    languageId,
+                    practiceId
+                }
+            },
+            select: {
+                id: true,
+                name: true,
+                listeningId: true,
+                deckVideos: true,
+            }
+        })
+    }
+
+    async getByIdWithDeckVideosAsync(id: number): Promise<ListeningCategoryWithDeckVideos | null> {
+
+        const listeningCategory = await prisma.listeningCategory.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                id: true,
+                name: true,
+                listeningId: true,
+                deckVideos: true,
+            }
+        })
+
+        return listeningCategory
+    }
 
     async createAsync(data: CreateListeningCategoryData): Promise<number> {
     

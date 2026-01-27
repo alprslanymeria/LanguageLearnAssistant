@@ -79,6 +79,18 @@ export class CacheKeys {
         })
     }
 
+    // LISTENING CATEGORY CACHE KEYS
+    static listeningCategory = {
+
+        prefix: "listeningCategory:",
+
+        CreateItems: (userId: string , language: string , practice: string): ICacheKey => ({
+            key: `${CacheKeys.listeningCategory.prefix}:createItems:${userId}:${language}:${practice}`,
+            ttl: CacheKeys.DEFAULT_TTL
+        })
+    }
+
+
     // READING BOOK CACHE KEYS
     static readingBook = {
 

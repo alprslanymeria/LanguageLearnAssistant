@@ -23,7 +23,7 @@ export function useWordEditCustomEffect(params : UseWordEditCustomEffectProps) {
 
         if (state!.isSuccess) {
 
-            if (state!.errorMessage) showAlert({ type: "success", title: "success", message: state!.errorMessage[0] })
+            showAlert({ type: "success", title: "success", message: "Word updated successfully!" })
 
             router.push(`/list/?table=fwords`)
 

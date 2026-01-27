@@ -4,10 +4,10 @@
 import { useSearchParams } from "next/navigation"
 import { JSX, Suspense } from "react"
 //COMPONENTS
-import ReadingAddOrEditComponent from "@/src/components/ReadingEditComponent/ReadingEdit"
-import WritingAddOrEditComponent from "@/src/components/WritingEditComponent/WritingEdit"
-import FlashcardAddOrEditComponent from "@/src/components/FlashcardAddComponent/FlashcardAdd"
-import WordAddOrEditComponent from "@/src/components/WordEditComponent/WordEdit"
+import ReadingEditComponent from "@/src/components/ReadingEditComponent/ReadingEdit"
+import WritingEditComponent from "@/src/components/WritingEditComponent/WritingEdit"
+import FlashcardEditComponent from "@/src/components/FlashcardEditComponent/FlashcardEdit"
+import WordEditComponent from "@/src/components/WordEditComponent/WordEdit"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useEditPageReducer } from "@/src/page/EditPage/useEditPageReducer"
 import { useEditPageCustomEffect } from "@/src/page/EditPage/useEditPageCustomEffect"
@@ -27,10 +27,10 @@ function EditPage() {
     //COMPONENT MAP
     const componentMap: Record<string, JSX.Element> = {
 
-        reading: <ReadingAddOrEditComponent type="Edit" itemId={itemId}/>,
-        writing: <WritingAddOrEditComponent type="Edit" itemId={itemId}/>,
-        flashcard: <FlashcardAddOrEditComponent type="Edit" itemId={itemId}/>,
-        word: <WordAddOrEditComponent type="Edit" itemId={itemId}/>
+        reading: <ReadingEditComponent itemId={itemId!}/>,
+        writing: <WritingEditComponent itemId={itemId!}/>,
+        flashcard: <FlashcardEditComponent itemId={itemId!}/>,
+        word: <WordEditComponent itemId={itemId!}/>
     }
 
     //USE EFFECTS

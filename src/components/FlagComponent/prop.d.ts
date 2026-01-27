@@ -1,45 +1,39 @@
 // TYPES
-import { Language } from "@prisma/client"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
+import { LanguageDto } from "@/src/actions/Language/Response"
 
-// EXTRA
-type LanguageInfo = {
-
-  name: string
-  id: number
-}
 
 // COMPONENT PROPS
 export type FlagComponentProps = {
 
-  languages : Language[]
+  languages : LanguageDto[]
 }
 
 // REDUCER
 export type State = {
 
-  languageInfo: LanguageInfo
+  languageName: string
 }
 
 export type Action =
-  | { type: "SET_LANGUAGE_INFO"; payload: {languageInfo: LanguageInfo} }
+  | { type: "SET_LANGUAGE_NAME"; payload: {languageName: string} }
 
 
 // HANDLERS
 export type HandleFlagClickProps = {
 
-  language: Language
+  language: LanguageDto
   dispatch: (action: {
-                        type: "SET_LANGUAGE_INFO"; payload: { languageInfo: LanguageInfo }
+                        type: "SET_LANGUAGE_NAME"; payload: { languageName: string }
                     }) => void
 }
 
 export type HandleStartClickProps = {
 
   userId: string | undefined
-  languageInfo: LanguageInfo
+  languageName: string
   router: AppRouterInstance
   showAlert: (props: ShowAlertProps) => void
   setLoading: (props: setLoadingProps) => void

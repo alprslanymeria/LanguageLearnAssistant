@@ -58,7 +58,7 @@ export async function handleTranslate(params : HandleTranslateProps) {
             // UPDATE SESSION DATA
             updateWritingSession({
                 data: {
-                    WTranslatedText: translations.data!,
+                    WTranslatedText: translations.data!.translatedText,
                     WShowTranslation: true
                 }
             })
@@ -159,7 +159,7 @@ export async function closeAndSave(params : CloseAndSaveProps) {
     const rowsToSave: SaveWritingRowsRequest = {
 
         writingOldSessionId: oldSessionId!,
-        rows: sessionData!.rows
+        rows: sessionData!.rows as WritingRowItemRequest[]
     }
 
     try {

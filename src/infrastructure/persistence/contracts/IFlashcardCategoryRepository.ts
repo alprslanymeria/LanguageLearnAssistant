@@ -1,4 +1,5 @@
 // IMPORTS
+import { FlashcardCategoryWithDeckWords } from "@/src/actions/FlashcardCategory/Response"
 import { FlashcardCategory, Language } from "@/src/generated/prisma/client"
 
 export type FlashcardCategoryWithLanguage = {
@@ -29,7 +30,8 @@ export interface IFlashcardCategoryRepository {
     getFlashcardCategoryItemByIdAsync(id: number): Promise<FlashcardCategoryWithLanguage | null>
     getAllFCategoriesWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: FlashcardCategory[], totalCount: number}>
     getAllFCategoriesAsync(userId: string): Promise<{ items: FlashcardCategory[], totalCount: number}>
-    getFCategoryCreateItemsAsync(userId: string, languageId: number, practiceId: number): Promise<FlashcardCategory[]>
+    getFCategoryCreateItemsAsync(userId: string, languageId: number, practiceId: number): Promise<FlashcardCategoryWithDeckWords[]>
+    getByIdWithDeckWordsAsync(id: number): Promise<FlashcardCategoryWithDeckWords | null>
 
     // CRUD
     createAsync(data: CreateFlashcardCategoryData): Promise<number>

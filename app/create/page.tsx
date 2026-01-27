@@ -18,8 +18,10 @@ import DeckSvg from "@/src/components/svg/DeckSvg"
 import Loader from "@/src/components/loader"
 import HeadphonesSvg from "@/src/components/svg/HeadphonesSvg"
 // TYPES
-import { ReadingBook, WritingBook } from "@prisma/client"
-import { FlashcardCategoryWithDeckWords, ListeningCategoryWithDeckVideos } from "@/src/types/globalStore"
+import { ReadingBookDto } from "@/src/actions/ReadingBook/Response"
+import { WritingBookDto } from "@/src/actions/WritingBook/Response"
+import { FlashcardCategoryWithDeckWords } from "@/src/actions/FlashcardCategory/Response"
+import { ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
 
 
 
@@ -80,10 +82,10 @@ export default function Page(){
                         onClick={() => handleSvgClick({item, setSelectedItemId})}
                         >
                             {practice === 'reading' && (
-                                <BookSvg reading={{item: (item as ReadingBook) , contents: []}}/>
+                                <BookSvg reading={{item: (item as ReadingBookDto) , contents: []}}/>
                             )}
                             {practice === 'writing' && (
-                                <BookSvg writing={{item: (item as WritingBook) , contents: []}}/>
+                                <BookSvg writing={{item: (item as WritingBookDto) , contents: []}}/>
                             )}
                             {practice === 'flashcard' && (
                                 <DeckSvg flashcard={{item: (item as FlashcardCategoryWithDeckWords) , contents: []}} language={language}/>

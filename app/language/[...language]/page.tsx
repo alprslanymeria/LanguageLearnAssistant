@@ -3,7 +3,7 @@
 // REACT & NEXT
 import { useParams, useRouter } from "next/navigation"
 // ASSETS
-import { mitr } from "@/public/fonts"
+import Fonts from "@/public/fonts/fonts"
 // COMPONENTS
 import InfoMessageComponent from "@/src/components/InfoMessageComponent/infoMessage"
 import Loader from "@/src/components/loader"
@@ -61,7 +61,7 @@ export default function Page() {
                             
                             <button
                                 onClick={() => handlePracticeClick({language, practice, router})}
-                                className={` ${mitr.className} w-64 text-xl mt-5 bg-[#B95DE5] text-white font-medium py-2 rounded-lg shadow-md shadow-[#ad49db] hover:bg-[#ad49db] transition-colors duration-300`}
+                                className={` ${Fonts.mitr.className} w-64 text-xl mt-5 bg-[#B95DE5] text-white font-medium py-2 rounded-lg shadow-md shadow-[#ad49db] hover:bg-[#ad49db] transition-colors duration-300`}
                             >
                                 {practice.name}
                             </button>

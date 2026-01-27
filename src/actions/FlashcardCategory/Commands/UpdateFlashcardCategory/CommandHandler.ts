@@ -43,23 +43,23 @@ export class UpdateFlashcardCategoryCommandHandler implements ICommandHandler<Up
     async Handle(request: UpdateFlashcardCategoryCommand): Promise<number> {
 
         // FORM DATA'S
-        const id = Number(request.formData.get("id"))
+        const itemId = Number(request.formData.get("itemId"))
         const name = request.formData.get("name")?.toString()!
         const userId = request.formData.get("userId")?.toString()!
         const languageId = Number(request.formData.get("languageId"))
         
         // LOG MESSAGE
-        this.logger.info(`UpdateFlashcardCategoryCommandHandler: Updating flashcard category with Id ${id}`)
+        this.logger.info(`UpdateFlashcardCategoryCommandHandler: Updating flashcard category with Id ${itemId}`)
 
         const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
                 
         if (!practice) throw new NoPracticeFound()
                     
-        const existingFlashcardCategory = await this.flashcardCategoryRepository.getByIdAsync(id)
+        const existingFlashcardCategory = await this.flashcardCategoryRepository.getByIdAsync(itemId)
 
         if(!existingFlashcardCategory) {
 
-            this.logger.error(`UpdateFlashcardCategoryCommandHandler: Flashcard category with Id ${id} not found!`)
+            this.logger.error(`UpdateFlashcardCategoryCommandHandler: Flashcard category with Id ${itemId} not found!`)
             throw new FlashcardCategoryNotFound()
         }
 
@@ -80,12 +80,12 @@ export class UpdateFlashcardCategoryCommandHandler implements ICommandHandler<Up
             flashcardId: flashcardResult.data!.id            
         }
 
-        const updatedId = await this.flashcardCategoryRepository.update(id, data)
+        const updatedId = await this.flashcardCategoryRepository.update(itemId, data)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.flashcardCategory.prefix)
 
-        this.logger.info(`UpdateFlashcardCategoryCommandHandler: Successfully updated flashcard category with Id ${id}`)
+        this.logger.info(`UpdateFlashcardCategoryCommandHandler: Successfully updated flashcard category with Id ${itemId}`)
 
         return updatedId
     }

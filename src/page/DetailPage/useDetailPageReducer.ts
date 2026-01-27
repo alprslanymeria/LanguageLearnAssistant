@@ -2,15 +2,18 @@
 import { useReducer } from "react"
 // TYPES
 import { Action, State } from "@/src/page/DetailPage/prop"
-import { FlashcardCategory, ListeningCategory, ReadingBook, WritingBook } from "@prisma/client"
+import { ReadingBookDto } from "@/src/actions/ReadingBook/Response"
+import { WritingBookDto } from "@/src/actions/WritingBook/Response"
+import { ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
+import { FlashcardCategoryWithDeckWords } from "@/src/actions/FlashcardCategory/Response"
 
 
 const initialState: State = {
   
-  reading:   { item: {} as ReadingBook, contents: [] },
-  writing:   { item: {} as WritingBook, contents: [] },
-  listening: { item: {} as ListeningCategory, contents: [] },
-  flashcard: { item: {} as FlashcardCategory, contents: [] },
+  reading:   { item: {} as ReadingBookDto, contents: [] },
+  writing:   { item: {} as WritingBookDto, contents: [] },
+  listening: { item: {} as ListeningCategoryWithDeckVideos, contents: [] },
+  flashcard: { item: {} as FlashcardCategoryWithDeckWords, contents: [] },
   total: 0,
   page: 1,
   limit: 10

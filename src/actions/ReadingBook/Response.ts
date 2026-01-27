@@ -1,5 +1,6 @@
 export type ReadingBookDto = {
 
+    id: number
     readingId: number
     name: string
     imageUrl: string

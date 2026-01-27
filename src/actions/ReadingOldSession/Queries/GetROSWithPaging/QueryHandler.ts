@@ -39,6 +39,7 @@ export class GetROSWithPagingQueryHandler implements IQueryHandler<GetROSWithPag
         // MAP ITEMS TO READING OLDSESSION DTO
         const readingOldSessionDtos : ReadingOldSessionDto[] = items.map(ros => ({
 
+            id: ros.oldSessionId,
             readingId: ros.readingId,
             readingBookId: ros.bookId,
             rate: ros.rate.toNumber(),

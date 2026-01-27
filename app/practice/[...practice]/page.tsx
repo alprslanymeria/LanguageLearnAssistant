@@ -4,7 +4,7 @@
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 // ASSETS
-import { markazi } from "@/public/fonts"
+import Fonts from "@/public/fonts/fonts"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
@@ -77,7 +77,7 @@ function PracticePage() {
 
             <>
                 <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                    <p className={`${markazi.className} mb-10 text-xl font-normal text-center`}>{!OldSessions ? "You Dont Have Any! Create One" : OldSessions!.length === 0 ? "You Dont Have Any! Create One" : "You Have Session! Create Another One"}</p>
+                    <p className={`${Fonts.markazi.className} mb-10 text-xl font-normal text-center`}>{!OldSessions ? "You Dont Have Any! Create One" : OldSessions!.length === 0 ? "You Dont Have Any! Create One" : "You Have Session! Create Another One"}</p>
                         <button
                             onClick={() => handleCreateClick({router})}
                             style={{

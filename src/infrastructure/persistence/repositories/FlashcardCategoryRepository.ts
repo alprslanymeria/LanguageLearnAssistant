@@ -3,6 +3,7 @@ import { injectable } from "inversify"
 import { FlashcardCategory } from "@/src/generated/prisma/client"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
 import { CreateFlashcardCategoryData, FlashcardCategoryWithLanguage, IFlashcardCategoryRepository, UpdateFlashcardCategoryData } from "@/src/infrastructure/persistence/contracts/IFlashcardCategoryRepository"
+import { FlashcardCategoryWithDeckWords } from "@/src/actions/FlashcardCategory/Response"
 
 @injectable()
 export class FlashcardCategoryRepository implements IFlashcardCategoryRepository {
@@ -68,17 +69,41 @@ export class FlashcardCategoryRepository implements IFlashcardCategoryRepository
         return { items, totalCount }
     }
 
-    async getFCategoryCreateItemsAsync(userId: string, languageId: number, practiceId: number): Promise<FlashcardCategory[]> {
+    async getFCategoryCreateItemsAsync(userId: string, languageId: number, practiceId: number): Promise<FlashcardCategoryWithDeckWords[]> {
         
         return await prisma.flashcardCategory.findMany({
+            
             where: {
                 flashcard: {
                     userId,
                     languageId,
                     practiceId
                 }
+            },
+            select: {
+                id: true,
+                name: true,
+                flashcardId: true,
+                deckWords: true
             }
         })
+    }
+
+    async getByIdWithDeckWordsAsync(id: number): Promise<FlashcardCategoryWithDeckWords | null> {
+
+        const flashcardCategory = await prisma.flashcardCategory.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                id: true,
+                name: true,
+                flashcardId: true,
+                deckWords: true
+            }
+        })
+
+        return flashcardCategory
     }
 
      async createAsync(data: CreateFlashcardCategoryData): Promise<number> {

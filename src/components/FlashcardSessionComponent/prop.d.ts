@@ -1,8 +1,9 @@
 // TYPES
+import { BaseAction, BaseState } from "@/src/page/SessionPage/prop"
 import { FlashcardRowItemRequest } from "@/src/actions/FlashcardSessionRow/Request"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
-import { FlashcardCategoryWithDeckWords, SessionData } from "@/src/types/globalStore"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
+import { SessionData } from "@/src/infrastructure/store/globalStoreType"
 
 // REDUCER
 export type State = BaseState<FlashcardRowItemRequest>

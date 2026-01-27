@@ -14,15 +14,15 @@ export async function handleFlagClick(params : HandleFlagClickProps) {
 
     if(kese.some(k => !k)) return
 
-    dispatch({type : "SET_LANGUAGE_INFO" , payload: {languageInfo: {name: language.name , id: language.id}}})
+    dispatch({type : "SET_LANGUAGE_NAME" , payload: {languageName: language.name}})
 }
 
 
 export async function handleStartClick(params : HandleStartClickProps) {
 
-    const {userId, languageInfo, router, showAlert, setLoading} = params
+    const {userId, languageName, router, showAlert, setLoading} = params
 
-    const kese = [languageInfo, router]
+    const kese = [languageName, router]
 
     if(kese.some(k => !k)) return
 
@@ -39,7 +39,7 @@ export async function handleStartClick(params : HandleStartClickProps) {
         }
 
         //CHECK IS SELECTED
-        if (!languageInfo.name) {
+        if (!languageName) {
 
             showAlert({type: "warning" , title: "warning" , message: "Please choose a target language!"})
 
@@ -47,7 +47,7 @@ export async function handleStartClick(params : HandleStartClickProps) {
         }
 
         //CHECK NATIVE LANGUAGE ID
-        const response = await CompareLanguageId({userId, languageId: languageInfo.id})
+        const response = await CompareLanguageId({userId, languageName})
 
         if(response && response.status != HttpStatusCode.OK) {
 
@@ -63,7 +63,7 @@ export async function handleStartClick(params : HandleStartClickProps) {
             return
         }
         
-        router.push(`/language/${languageInfo.name}`)
+        router.push(`/language/${languageName}`)
         
     } catch (error) {
 

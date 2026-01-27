@@ -1,4 +1,5 @@
 // IMPORTS
+import { ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
 import { ListeningCategory } from "@/src/generated/prisma/client"
 
 export interface CreateListeningCategoryData {
@@ -14,6 +15,10 @@ export interface UpdateListeningCategoryData {
 }
 
 export interface IListeningCategoryRepository {
+
+    // HELPER
+    getLCategoryCreateItemsAsync(userId: string, languageId: number, practiceId: number): Promise<ListeningCategoryWithDeckVideos[]>
+    getByIdWithDeckVideosAsync(id: number): Promise<ListeningCategoryWithDeckVideos | null>
 
     // CRUD
     createAsync(data: CreateListeningCategoryData): Promise<number>

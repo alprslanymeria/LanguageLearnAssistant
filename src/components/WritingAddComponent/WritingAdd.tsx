@@ -8,7 +8,7 @@ import { authClient } from "@/src/infrastructure/auth/auth-client"
 // ICONS
 import FileIcon from "@/src/components/svg/FileUpload"
 // ACTIONS
-import { UpdateWritingBook } from "@/src/actions/WritingBook/Controller"
+import { CreateWritingBook } from "@/src/actions/WritingBook/Controller"
 // REDUCER & HANDLERS & CUSTOM EFFECTS
 import { handleFileChangeOne, handleFileChangeTwo } from "@/src/components/WritingEditComponent/handlers"
 import { useWritingAddReducer } from "./useWritingAddReducer"
@@ -24,7 +24,7 @@ import Loader from "@/src/components/loader"
 export default function WritingAddComponent() {
 
     // ACTION
-    const [state, formAction, isPending] = useActionState(UpdateWritingBook, undefined)
+    const [state, formAction, isPending] = useActionState(CreateWritingBook, undefined)
 
     // HOOKS
     const {states , dispatch} = useWritingAddReducer()
@@ -103,10 +103,10 @@ export default function WritingAddComponent() {
                         />
                     </div>
         
-                    {/* FILE 1*/}
+                    {/* IMAGE FILE */}
                     <div>
                         <label 
-                            htmlFor="fileOne" 
+                            htmlFor="imageFile" 
                             className="block text-sm font-medium text-gray-700 mb-1"
                             >
                                 Book Image
@@ -116,13 +116,13 @@ export default function WritingAddComponent() {
                             <FileIcon/>
                             <div className="flex text-sm text-gray-600">
                                 <label
-                                htmlFor="fileOne"
+                                htmlFor="imageFile"
                                 className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
                                 >
                                 <span>Choose File</span>
                                 <input
-                                    id="fileOne"
-                                    name="fileOne"
+                                    id="imageFile"
+                                    name="imageFile"
                                     type="file"
                                     className="sr-only"
                                     accept=".png,.jpg,.jpeg"
@@ -147,10 +147,10 @@ export default function WritingAddComponent() {
                         </div>
                     </div>
         
-                    {/* FILE 2*/}
+                    {/* SOURCE FILE */}
                     <div>
                         <label 
-                        htmlFor="fileTwo" 
+                        htmlFor="sourceFile" 
                         className="block text-sm font-medium text-gray-700 mb-1"
                         >
                             Book Pdf
@@ -160,13 +160,13 @@ export default function WritingAddComponent() {
                             <FileIcon></FileIcon>
                             <div className="flex text-sm text-gray-600">
                                 <label
-                                htmlFor="fileTwo"
+                                htmlFor="sourceFile"
                                 className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
                                 >
                                 <span>Choose File</span>
                                 <input
-                                    id="fileTwo"
-                                    name="fileTwo"
+                                    id="sourceFile"
+                                    name="sourceFile"
                                     type="file"
                                     className="sr-only"
                                     accept=".pdf,.mp4,.mov,.avi,.webm"

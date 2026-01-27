@@ -1,11 +1,11 @@
 // TYPES
-import { WritingBook } from "@prisma/client"
 import { Action } from "@/src/components/WritingSessionComponent/prop"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
-import { SessionData, WritingSession } from "@/src/types/globalStore"
 import { WritingRowItemRequest } from "@/src/actions/WritingSessionRow/Request"
+import { SessionData, WritingSession } from "@/src/infrastructure/store/globalStoreType"
+import { WritingBookDto } from "@/src/actions/WritingBook/Response"
 
 // COMPONENT PROPS
 export type WritingFormComponentProps = {
@@ -44,7 +44,7 @@ export type CloseAndSaveProps = {
     userId: string | undefined
     oldSessionId: string | null
     sessionData: SessionData
-    item: WritingBook
+    item: WritingBookDto
     router: AppRouterInstance
     dispatch: (action: Action) => void
     showAlert: (props: ShowAlertProps) => void

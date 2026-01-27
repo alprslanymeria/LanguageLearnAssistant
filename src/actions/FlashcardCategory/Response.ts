@@ -1,7 +1,19 @@
+// IMPORTS
+import { DeckWordDto } from "@/src/actions/DeckWord/Response"
+
 export type FlashcardCategoryDto = {
 
+    id: number,
     flashcardId: number,
     name: string
+}
+
+export type FlashcardCategoryWithDeckWords = {
+
+    id: number
+    name: string
+    flashcardId: number
+    deckWords: DeckWordDto[]
 }
 
 export type FlashcardCategoryWithLanguageId = {

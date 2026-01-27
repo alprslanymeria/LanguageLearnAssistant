@@ -84,7 +84,7 @@ export default function WordAddComponent () {
                     {/* DECK CATEGORY FOR WORD */}
                     <div>
                         <label 
-                            htmlFor="wordCategoryId" 
+                            htmlFor="categoryId" 
                             className="block text-sm font-medium text-gray-700 mb-1"
                         >
                             Deck

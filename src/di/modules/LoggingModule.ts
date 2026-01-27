@@ -5,7 +5,7 @@ import { IContainerModule } from "@/src/di/IContainerModule"
 import { TYPES } from "@/src/di/type"
 import { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { ILogStream } from "@/src/infrastructure/logging/ILogStream"
-import { ElasticsearchLogStream } from "@/src/infrastructure/logging/ElasticsearchLogStream"
+// import { ElasticsearchLogStream } from "@/src/infrastructure/logging/ElasticsearchLogStream"
 import { ConsoleLogStream } from "@/src/infrastructure/logging/ConsoleLogStream"
 import { LoggerConfig } from "@/src/infrastructure/logging/LoggerConfig"
 import { LoggerService } from "@/src/infrastructure/logging/Logger"
@@ -19,7 +19,7 @@ export class LoggingModule implements IContainerModule {
         container.bind<LoggerOptions>(TYPES.LoggerConfig).toConstantValue(LoggerConfig.load())
         container.bind<ElasticLogOptions>(TYPES.ElasticLogConfig).toConstantValue(ElasticLogConfig.load())
         container.bind<ILogStream>(TYPES.LogStreams).to(ConsoleLogStream)
-        container.bind<ILogStream>(TYPES.LogStreams).to(ElasticsearchLogStream)
+        // container.bind<ILogStream>(TYPES.LogStreams).to(ElasticsearchLogStream)
         container.bind<ILogger>(TYPES.Logger).to(LoggerService).inSingletonScope()
     }
 }

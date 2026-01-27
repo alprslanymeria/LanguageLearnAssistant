@@ -12,8 +12,8 @@ import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { calculateRate, closeAndSave, handleNextClick } from "@/src/components/ListeningFormComponent/handlers"
 // TYPES
-import { ListeningCategoryWithDeckVideos } from "@/src/infrastructure/store/globalStoreType"
 import { ListeningFormComponentProps } from "@/src/components/ListeningFormComponent/prop"
+import { ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
 
 
 export default function ListeningFormComponent({dispatch} : ListeningFormComponentProps) {

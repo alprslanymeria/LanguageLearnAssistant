@@ -37,19 +37,19 @@ export class CreateDeckWordCommandHandler implements ICommandHandler<CreateDeckW
     async Handle(request: CreateDeckWordCommand): Promise<number> {
 
         // FORM DATA'S
-        const flashcardCategoryId = Number(request.formData.get("flashcardCategoryId"))
-        const question = request.formData.get("question")?.toString()!
+        const categoryId = Number(request.formData.get("categoryId"))
+        const word = request.formData.get("word")?.toString()!
         const answer = request.formData.get("answer")?.toString()!
         
         // LOG MESSAGE
-        this.logger.info(`CreateDeckWordCommandHandler: Creating deck word for CategoryId ${flashcardCategoryId}`)
+        this.logger.info(`CreateDeckWordCommandHandler: Creating deck word for CategoryId ${categoryId}`)
     
-        const category = await this.flashcardCategoryRepository.getByIdAsync(flashcardCategoryId)
+        const category = await this.flashcardCategoryRepository.getByIdAsync(categoryId)
 
         const data : CreateDeckWordData = {
 
-            categoryId: flashcardCategoryId,
-            question: question,
+            categoryId: categoryId,
+            question: word,
             answer: answer
         }
 
@@ -58,7 +58,7 @@ export class CreateDeckWordCommandHandler implements ICommandHandler<CreateDeckW
         // INVALIDATE CACHE
         await this.cacheService.invalidateByPrefix(CacheKeys.deckWord.prefix)
 
-        this.logger.info(`CreateDeckWordCommandHandler: Successfully created deck word for CategoryId ${flashcardCategoryId}`)
+        this.logger.info(`CreateDeckWordCommandHandler: Successfully created deck word for CategoryId ${categoryId}`)
 
         return deckWordId
     }

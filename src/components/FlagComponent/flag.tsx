@@ -44,7 +44,7 @@ export default function FlagComponent({languages} : FlagComponentProps) {
                                         alt={language.name}
                                         width={100} 
                                         height={100} 
-                                        className={`object-contain ${state.languageInfo.name === language.name ? "border-4 border-blue-500 rounded-full": ""}`}
+                                        className={`object-contain ${state.languageName === language.name ? "border-4 border-blue-500 rounded-full": ""}`}
                                         onClick={() => handleFlagClick({dispatch, language})}
                                     />
                                 </div>
@@ -55,7 +55,7 @@ export default function FlagComponent({languages} : FlagComponentProps) {
             <div className="flex justify-center mt-4">
                 <button
                     disabled= {(isLoading && loadingSource === "HandleStartClick") || isPending}
-                    onClick={() => handleStartClick({languageInfo: state.languageInfo , userId , router, showAlert , setLoading})}
+                    onClick={() => handleStartClick({languageName: state.languageName , userId , router, showAlert , setLoading})}
                     className={` ${Fonts.mitr.className} mt-20 bg-[#58CC02] text-white font-medium py-3 px-20 rounded-lg shadow-md shadow-[#58A700] hover:bg-[#58A700] transition-colors duration-300`}
                 >
                     {isLoading && loadingSource === "HandleStartClick" ? (

@@ -32,9 +32,15 @@ export class DeckWordRepository implements IDeckWordRepository {
         return deckWord
     }
 
-    async getAllDWordsWithPagingAsync(categoryId: number, page: number, pageSize: number): Promise<{ items: DeckWord[]; totalCount: number }> {
+    async getAllDWordsWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: DeckWord[]; totalCount: number }> {
 
-        const whereClause = { categoryId: categoryId };
+        const whereClause = {
+                category: {
+                    flashcard: {
+                        userId: userId
+                    }
+                }
+            };
 
         const totalCount = await prisma.deckWord.count({
 

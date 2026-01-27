@@ -78,7 +78,7 @@ export default function FlashcardAddComponent () {
                         </select>
                     </div>
         
-                    {/* INPUT 1 */}
+                    {/* NAME */}
                     <div>
                         <label 
                             htmlFor="name" 

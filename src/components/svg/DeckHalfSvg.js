@@ -1,6 +1,5 @@
 "use client"
 
-import React from 'react'
 import { markazi } from '@/public/fonts'
 
 

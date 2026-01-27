@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/src/lib/auth"
+import { auth } from "@/src/infrastructure/auth/auth"
 import { headers } from "next/headers"
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL

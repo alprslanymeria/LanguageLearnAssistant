@@ -11,7 +11,7 @@ import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 import { useFlashcardSessionReducer } from "@/src/components/FlashcardSessionComponent/useFlashcardSessionReducer"
 import { useFlashcardSessionCustomEffect } from "@/src/components/FlashcardSessionComponent/useFlashcardSessionCustomEffect"
 // TYPES
-import { FlashcardCategoryWithDeckWords } from "@/src/infrastructure/store/globalStoreType"
+import { FlashcardCategoryWithDeckWords } from "@/src/actions/FlashcardCategory/Response"
 
 
 

@@ -1,5 +1,4 @@
 // TYPES
-import { Language } from "@prisma/client"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 import { LanguageDto } from "@/src/actions/Language/Response"

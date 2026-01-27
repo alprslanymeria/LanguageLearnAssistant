@@ -39,6 +39,7 @@ export class GetLOSWithPagingQueryHandler implements IQueryHandler<GetLOSWithPag
         // MAP ITEMS TO LISTENING OLDSESSION DTO
         const listeningOldSessionDtos : ListeningOldSessionDto[] = items.map(los => ({
 
+            id: los.oldSessionId,
             listeningId: los.listeningId,
             listeningCategoryId: los.categoryId,
             rate: los.rate.toNumber(),

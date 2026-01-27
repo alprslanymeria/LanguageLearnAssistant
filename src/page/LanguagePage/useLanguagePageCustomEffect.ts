@@ -2,9 +2,9 @@
 import { useEffect } from "react"
 // TYPES
 import { UseLanguagePageCustomEffectProps } from "@/src/page/LanguagePage/prop"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 // ACTIONS
-import GetPractices from "@/src/actions/practice"
-
+import { GetPracticesByLanguage } from "@/src/actions/Practice/Controller"
 
 export function useLanguagePageCustomEffect(params : UseLanguagePageCustomEffectProps) {
 
@@ -36,18 +36,18 @@ export function useLanguagePageCustomEffect(params : UseLanguagePageCustomEffect
 
                 setLoading({value: true , source: "page"})
 
-                const response = await GetPractices({language})
+                const response = await GetPracticesByLanguage(language!)
 
-                if(response && response.status == 500){
+                if(response && response.status != HttpStatusCode.OK){
                 
-                    showAlert({type: "error" , title: "error" , message: response.message})
+                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
 
                     return
                 }
 
                 if(response.data != null)
 
-                dispatch({type: "SET_PRACTICES", payload: {practices: response.data.data}})
+                dispatch({type: "SET_PRACTICES", payload: {practices: response.data}})
                 
             } catch (error) {
                 

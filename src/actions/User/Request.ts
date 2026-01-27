@@ -1,5 +1,5 @@
 export type CompareLanguageIdRequest = {
 
     userId: string
-    languageId: number
+    languageName: string
 }

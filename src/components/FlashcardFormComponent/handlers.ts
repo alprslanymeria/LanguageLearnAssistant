@@ -131,7 +131,7 @@ export async function handleCloseClick(params : HandleCloseClickProps) {
     const rowsToSave : SaveFlashcardRowsRequest = {
 
         flashcardOldSessionId: oldSessionId!,
-        rows: sessionData!.rows
+        rows: sessionData!.rows as FlashcardRowItemRequest[]
     }
 
     try {

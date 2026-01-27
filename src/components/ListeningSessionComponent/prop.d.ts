@@ -1,10 +1,10 @@
 // TYPES
 import { BaseAction, BaseState } from "@/src/page/SessionPage/prop"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
-import { ListeningCategoryWithDeckVideos, ListeningSession, SessionData } from "@/src/types/globalStore"
-import { DeckVideo } from "@prisma/client"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { ListeningRowItemRequest } from "@/src/actions/ListeningSessionRow/Request"
+import { ListeningSession, SessionData } from "@/src/infrastructure/store/globalStoreType"
+import { DeckVideoDto } from "@/src/actions/DeckVideo/Response"
 
 // REDUCER
 export type State = BaseState<ListeningRowItemRequest>
@@ -17,7 +17,7 @@ export type UseListeningSessionCustomEffectProps = {
 
     state: State
     sessionData: SessionData
-    deckVideos: DeckVideo[]
+    deckVideos: DeckVideoDto[]
     hasHydrated: boolean
     updateListeningSession: (update: {data?: Partial<ListeningSession["data"]>, rows?: ListeningRowItemRequest[]}) => void
     dispatch: (action: Action) => void

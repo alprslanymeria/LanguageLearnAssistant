@@ -9,7 +9,6 @@ import { GetLanguages } from "@/src/actions/Language/Controller"
 import { GetFlashcardCategoryById } from "@/src/actions/FlashcardCategory/Controller"
 
 
-
 export function useFlashcardEditCustomEffect(params : useFlashcardEditCustomEffectProps) {
 
     const {itemId, state, router, setLoading, showAlert, dispatch} = params
@@ -23,7 +22,7 @@ export function useFlashcardEditCustomEffect(params : useFlashcardEditCustomEffe
 
         if (state!.isSuccess) {
 
-            if (state!.errorMessage) showAlert({ type: "success", title: "success", message: state!.errorMessage[0] })
+            showAlert({ type: "success", title: "success", message: "Flashcard category updated successfully!" })
 
             router.push(`/list/?table=fcategories`)
 

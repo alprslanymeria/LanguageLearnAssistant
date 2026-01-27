@@ -1,12 +1,15 @@
 "use client"
 
-import { ReadingBook, ReadingSessionRow, WritingBook, WritingSessionRow} from "@prisma/client"
+import { ReadingBookDto } from "@/src/actions/ReadingBook/Response"
+import { ReadingSessionRowDto } from "@/src/actions/ReadingSessionRow/Response"
+import { WritingBookDto } from "@/src/actions/WritingBook/Response"
+import { WritingSessionRowDto } from "@/src/actions/WritingSessionRow/Response"
 
 
 type BookSvgProps = {
 
-    reading?: { item: ReadingBook , contents: ReadingSessionRow[] | undefined} | null
-    writing?: { item: WritingBook , contents: WritingSessionRow[] | undefined } | null
+    reading?: { item: ReadingBookDto , contents: ReadingSessionRowDto[] | undefined} | null
+    writing?: { item: WritingBookDto , contents: WritingSessionRowDto[] | undefined } | null
 }
 
 // BURADA VIEWBOX DEĞERLERİNDEKİ SON İKİ DEĞER SIRASIYLA WIDTH VE HEIGHT DEĞERLERİDİR.

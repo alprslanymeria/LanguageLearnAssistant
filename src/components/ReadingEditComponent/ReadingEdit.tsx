@@ -10,7 +10,7 @@ import FileIcon from "@/src/components/svg/FileUpload"
 // TYPES
 import { ReadingEditComponentProps } from "@/src/components/ReadingEditComponent/prop"
 // ACTIONS
-import { CreateReadingBook } from "@/src/actions/ReadingBook/Controller"
+import { UpdateReadingBook } from "@/src/actions/ReadingBook/Controller"
 // REDUCER & HANDLERS & CUSTOM EFFECTS
 import { useReadingEditReducer } from "@/src/components/ReadingEditComponent/useReadingEditReducer"
 import { handleFileChangeOne, handleFileChangeTwo } from "@/src/components/ReadingEditComponent/handlers"
@@ -25,7 +25,7 @@ import Loader from "@/src/components/loader"
 export default function ReadingEditComponent ({itemId} : ReadingEditComponentProps) {
 
     // ACTION
-    const [state, formAction, isPending] = useActionState(CreateReadingBook, undefined)
+    const [state, formAction, isPending] = useActionState(UpdateReadingBook, undefined)
 
     // HOOKS
     const {states , dispatch} = useReadingEditReducer()
@@ -107,10 +107,10 @@ export default function ReadingEditComponent ({itemId} : ReadingEditComponentPro
                         />
                     </div>
         
-                    {/* FILE 1*/}
+                    {/* IMAGE FILE*/}
                     <div>
                         <label 
-                            htmlFor="fileOne" 
+                            htmlFor="imageFile" 
                             className="block text-sm font-medium text-gray-700 mb-1"
                             >
                                 Book Image
@@ -120,13 +120,13 @@ export default function ReadingEditComponent ({itemId} : ReadingEditComponentPro
                             <FileIcon/>
                             <div className="flex text-sm text-gray-600">
                                 <label
-                                htmlFor="fileOne"
+                                htmlFor="imageFile"
                                 className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
                                 >
                                 <span>Choose File</span>
                                 <input
-                                    id="fileOne"
-                                    name="fileOne"
+                                    id="imageFile"
+                                    name="imageFile"
                                     type="file"
                                     className="sr-only"
                                     accept=".png,.jpg,.jpeg"
@@ -151,10 +151,10 @@ export default function ReadingEditComponent ({itemId} : ReadingEditComponentPro
                         </div>
                     </div>
         
-                    {/* FILE 2*/}
+                    {/* SOURCE FILE*/}
                     <div>
                         <label 
-                        htmlFor="fileTwo" 
+                        htmlFor="sourceFile" 
                         className="block text-sm font-medium text-gray-700 mb-1"
                         >
                             Book Pdf
@@ -164,13 +164,13 @@ export default function ReadingEditComponent ({itemId} : ReadingEditComponentPro
                             <FileIcon></FileIcon>
                             <div className="flex text-sm text-gray-600">
                                 <label
-                                htmlFor="fileTwo"
+                                htmlFor="sourceFile"
                                 className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
                                 >
                                 <span>Choose File</span>
                                 <input
-                                    id="fileTwo"
-                                    name="fileTwo"
+                                    id="sourceFile"
+                                    name="sourceFile"
                                     type="file"
                                     className="sr-only"
                                     accept=".pdf,.mp4,.mov,.avi,.webm"

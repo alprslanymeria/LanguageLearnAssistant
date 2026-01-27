@@ -1,8 +1,11 @@
 // TYPES
-import { FlashcardOldSession, ListeningOldSession, Practice, ReadingOldSession, WritingOldSession } from "@prisma/client"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
+import { FlashcardOldSessionDto } from "@/src/actions/FlashcardOldSession/Response"
+import { ReadingOldSessionDto } from "@/src/actions/ReadingOldSession/Response"
+import { WritingOldSessionDto } from "@/src/actions/WritingOldSession/Response"
+import { ListeningOldSessionDto } from "@/src/actions/ListeningOldSession/Response"
 
 
 // REDUCER
@@ -30,7 +33,7 @@ export type UsePracticePageCustomEffect = {
     state: State
     router: AppRouterInstance
     setPractice: (newPractice: string) => void
-    setOldSessions: (newOldSessions: (FlashcardOldSession | ReadingOldSession | WritingOldSession | ListeningOldSession)[]) => void
+    setOldSessions: (newOldSessions: (FlashcardOldSessionDto | ReadingOldSessionDto | WritingOldSessionDto | ListeningOldSessionDto)[]) => void
     setLoading: (props: setLoadingProps) => void
     showAlert: (props: ShowAlertProps) => void
     resetExcept: (keysToKeep?: string | string[] | undefined) => void

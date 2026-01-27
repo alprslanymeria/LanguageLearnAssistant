@@ -59,7 +59,7 @@ export async function CreateFRows(request: SaveFlashcardRowsRequest) : Promise<S
     }
 }
 
-export async function GetFWordsByIdWithPaging(oldSessionId: string, request: PagedRequest) : Promise<ServiceResult<FlashcardRowsResponse>> {
+export async function GetFRowsByIdWithPaging(oldSessionId: string, request: PagedRequest) : Promise<ServiceResult<FlashcardRowsResponse>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)

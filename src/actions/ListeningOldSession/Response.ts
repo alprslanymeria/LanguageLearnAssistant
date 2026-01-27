@@ -1,5 +1,6 @@
 export type ListeningOldSessionDto = {
 
+    oldSessionId: string
     listeningId: number
     listeningCategoryId: number
     rate: number

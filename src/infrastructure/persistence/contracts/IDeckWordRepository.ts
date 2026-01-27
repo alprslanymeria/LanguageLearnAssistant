@@ -32,7 +32,7 @@ export interface IDeckWordRepository {
 
     // HELPER
     getDeckWordItemByIdAsync(id: number): Promise<DeckWordWithLanguage | null>
-    getAllDWordsWithPagingAsync(categoryId: number, page: number, pageSize: number ): Promise<{items: DeckWord[], totalCount: number}>
+    getAllDWordsWithPagingAsync(userId: string, page: number, pageSize: number ): Promise<{items: DeckWord[], totalCount: number}>
 
     // CRUD
     createAsync(data: CreateDeckWordData): Promise<number>

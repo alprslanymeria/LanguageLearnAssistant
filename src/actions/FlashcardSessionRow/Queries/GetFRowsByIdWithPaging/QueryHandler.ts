@@ -56,12 +56,13 @@ export class GetFWordsByIdWithPagingQueryHandler implements IQueryHandler<GetFWo
         )
 
         // GET FLASHCARD CATEGORY ITEM
-        const flashcardCategoryItem = await this.flashcardCategoryRepository.getByIdAsync(oldSession.categoryId)
+        const flashcardCategoryItem = await this.flashcardCategoryRepository.getByIdWithDeckWordsAsync(oldSession.categoryId)
 
         this.logger.info(`GetFWordsByIdWithPagingQueryHandler: Successfully fetched flashcard session rows for flashcard old session with Id ${request.oldSessionId}`)
 
         const result : FlashcardSessionRowDto[] = rows.items.map(row => ({
 
+            id: row.id,
             flashcardOldSessionId: row.oldSessionId,
             question: row.question,
             answer: row.answer,

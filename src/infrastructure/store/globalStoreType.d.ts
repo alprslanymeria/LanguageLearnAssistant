@@ -1,32 +1,33 @@
 // TYPES
-import { FlashcardRowItemRequest } from "@/src/actions/FlashcardSessionRow/Request"
-import { ListeningRowItemRequest } from "@/src/actions/ListeningSessionRow/Request"
+
+// READING
+import { ReadingBookDto } from "@/src/actions/ReadingBook/Response"
+import { ReadingOldSessionDto } from "@/src/actions/ReadingOldSession/Response"
 import { ReadingRowItemRequest } from "@/src/actions/ReadingSessionRow/Request"
+// WRITING
+import { WritingBookDto } from "@/src/actions/WritingBook/Response"
+import { WritingOldSessionDto } from "@/src/actions/WritingOldSession/Response"
 import { WritingRowItemRequest } from "@/src/actions/WritingSessionRow/Request"
-import { DeckVideo, DeckWord, FlashcardOldSession, ListeningOldSession, ReadingBook, ReadingOldSession, WritingBook, WritingOldSession } from "@prisma/client"
+// FLASHCARD
+import { DeckWordDto } from "@/src/actions/DeckWord/Response"
+import { FlashcardCategoryWithDeckWords } from "@/src/actions/FlashcardCategory/Response"
+import { FlashcardOldSessionDto } from "@/src/actions/FlashcardOldSession/Response"
+import { FlashcardRowItemRequest } from "@/src/actions/FlashcardSessionRow/Request"
+// LISTENING
+import { DeckVideoDto } from "@/src/actions/DeckVideo/Response"
+import { ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
+import { ListeningOldSessionDto } from "@/src/actions/ListeningOldSession/Response"
+import { ListeningRowItemRequest } from "@/src/actions/ListeningSessionRow/Request"
 
 
-export type FlashcardCategoryWithDeckWords = {
 
-  id: number
-  name: string
-  flashcardId: number
-  deckWords: DeckWord[]
-}
 
-export type ListeningCategoryWithDeckVideos = {
-
-  id: number
-  name: string
-  listeningId: number
-  deckVideos: DeckVideo[]
-}
 
 type FlashcardSession = {
 
   type: "flashcard"
   data: {
-    FShuffledWords: DeckWord[]
+    FShuffledWords: DeckWordDto[]
     FShowYesAndNoButtons: boolean
     FShowNextAndCloseButton: boolean
     FIsFullDeckSvgShow: boolean
@@ -65,7 +66,7 @@ type ListeningSession = {
 
   type: "listening"
   data: {
-    LShuffledVideos: DeckVideo[],
+    LShuffledVideos: DeckVideoDto[],
     LShowNextButton: boolean,
     LShowCalculateButton: boolean,
     LShowRightAnswer: boolean,
@@ -88,23 +89,23 @@ export interface GlobalStoreState {
 
   Language: string | null
   Practice: string | null
-  OldSessions: (FlashcardOldSession | ReadingOldSession | WritingOldSession | ListeningOldSession)[] | null
+  OldSessions: (FlashcardOldSessionDto | ReadingOldSessionDto | WritingOldSessionDto | ListeningOldSessionDto)[] | null
   OldSessionId: string | null
-  CreateItems: (FlashcardCategoryWithDeckWords | ReadingBook | WritingBook | ListeningCategoryWithDeckVideos)[] | null
+  CreateItems: (FlashcardCategoryWithDeckWords | ReadingBookDto | WritingBookDto | ListeningCategoryWithDeckVideos)[] | null
   SelectedItemId: number | null
-  SelectedItem: FlashcardCategoryWithDeckWords | ReadingBook | WritingBook | ListeningCategoryWithDeckVideos | null
+  SelectedItem: FlashcardCategoryWithDeckWords | ReadingBookDto | WritingBookDto | ListeningCategoryWithDeckVideos | null
   HasHydrated: boolean
   SessionData: SessionData
   setLanguage: (newLanguage: string) => void
   setPractice: (newPractice: string) => void
-  setOldSessions: (newOldSessions: (FlashcardOldSession | ReadingOldSession | WritingOldSession | ListeningOldSession)[]) => void
+  setOldSessions: (newOldSessions: (FlashcardOldSessionDto | ReadingOldSessionDto | WritingOldSessionDto | ListeningOldSessionDto)[]) => void
   setOldSessionId: (newOldSessionId: string) => void
-  setCreateItems: (newItems: (FlashcardCategoryWithDeckWords | ReadingBook | WritingBook | ListeningCategoryWithDeckVideos)[]) => void
+  setCreateItems: (newItems: (FlashcardCategoryWithDeckWords | ReadingBookDto | WritingBookDto | ListeningCategoryWithDeckVideos)[]) => void
   setSelectedItemId: (newSelectedItemId: number) => void
-  setSelectedItem: (newSelectedItem: FlashcardCategoryWithDeckWords | ReadingBook | WritingBook | ListeningCategoryWithDeckVideos) => void
+  setSelectedItem: (newSelectedItem: FlashcardCategoryWithDeckWords | ReadingBookDto | WritingBookDto | ListeningCategoryWithDeckVideos) => void
   setHasHydrated: (state: boolean) => void
   setSessionData: (newSessionData: SessionData) => void
-  updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardSessionRowInput[] }) => void
+  updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardRowItemRequest[] }) => void
   updateReadingSession: (update: {data?: Partial<ReadingSession["data"]>, rows?: ReadingRowItemRequest[] }) => void
   updateWritingSession: (update: { data?: Partial<WritingSession["data"]>, rows?: WritingRowItemRequest[]}) => void
   updateListeningSession: (update: {data?: Partial<ListeningSession["data"]>, rows?: ListeningRowItemRequest[]}) => void

@@ -55,12 +55,13 @@ export class GetLRowsByIdWithPagingQueryHandler implements IQueryHandler<GetLRow
         )
 
         // GET LISTENING BOOK ITEM
-        const listeningCategoryItem = await this.listeningCategoryRepository.getByIdAsync(oldSession.categoryId)
+        const listeningCategoryItem = await this.listeningCategoryRepository.getByIdWithDeckVideosAsync(oldSession.categoryId)
 
         this.logger.info(`GetLRowsByIdWithPagingQueryHandler: Successfully retrieved listening session rows for listening old session with Id ${request.oldSessionId}`)
 
         const result : ListeningSessionRowDto[] = rows.items.map(row => ({
 
+            id: row.id,
             listeningOldSessionId: row.oldSessionId,
             listenedSentence: row.listenedSentence,
             answer: row.answer,

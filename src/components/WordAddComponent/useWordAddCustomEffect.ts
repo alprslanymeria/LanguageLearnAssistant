@@ -6,8 +6,6 @@ import { UseWordAddCustomEffectProps } from "./prop"
 // ACTIONS
 import { GetLanguages } from "@/src/actions/Language/Controller"
 import { GetAllFCategories } from "@/src/actions/FlashcardCategory/Controller"
-import { GetDeckWordById } from "@/src/actions/DeckWord/Controller"
-import { DeckWordWithLanguageId } from "@/src/actions/DeckWord/Response"
 
 
 export function useWordAddCustomEffect(params : UseWordAddCustomEffectProps) {
@@ -23,7 +21,7 @@ export function useWordAddCustomEffect(params : UseWordAddCustomEffectProps) {
 
         if (state!.isSuccess) {
 
-            if (state!.errorMessage) showAlert({ type: "success", title: "success", message: state!.errorMessage[0] })
+            showAlert({ type: "success", title: "success", message: "Word added successfully!" })
 
             router.push(`/list/?table=fwords`)
 

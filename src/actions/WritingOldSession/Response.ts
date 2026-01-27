@@ -1,5 +1,6 @@
 export type WritingOldSessionDto = {
 
+    oldSessionId: string
     writingId: number
     writingBookId: number
     rate: number

@@ -23,7 +23,7 @@ export default function TableComponent({contents, columns, type, page, limit, to
                 </thead>
                 <tbody>
                     {type === "readingBook" && contents.map((row) => (
-                        <tr key={row.id} className="hover:bg-gray-50">
+                        <tr className="hover:bg-gray-50">
                             <td className="border border-gray-300 px-4 py-2">{row.selectedSentence}</td>
                             <td className="border border-gray-300 px-4 py-2">{row.answer}</td>
                             <td className="border border-gray-300 px-4 py-2">{row.answerTranslate}</td>
@@ -32,7 +32,7 @@ export default function TableComponent({contents, columns, type, page, limit, to
                     ))}
 
                     {type === "writingBook" && contents.map((row) => (
-                        <tr key={row.id} className="hover:bg-gray-50">
+                        <tr className="hover:bg-gray-50">
                             <td className="border border-gray-300 px-4 py-2">{row.selectedSentence}</td>
                             <td className="border border-gray-300 px-4 py-2">{row.answer}</td>
                             <td className="border border-gray-300 px-4 py-2">{row.answerTranslate}</td>
@@ -41,7 +41,7 @@ export default function TableComponent({contents, columns, type, page, limit, to
                     ))}
 
                     {type === "listening" && contents.map((row) => (
-                        <tr key={row.id} className="hover:bg-gray-50">
+                        <tr className="hover:bg-gray-50">
                             <td className="border border-gray-300 px-4 py-2">{row.listenedSentence}</td>
                             <td className="border border-gray-300 px-4 py-2">{row.answer}</td>
                             <td className="border border-gray-300 px-4 py-2 text-center">{(row.similarity! * 100).toFixed(2)}%</td>
@@ -49,7 +49,7 @@ export default function TableComponent({contents, columns, type, page, limit, to
                     ))}
 
                     {type === "flashcard" && contents.map((row) => (
-                        <tr key={row.id} className="hover:bg-gray-50">
+                        <tr className="hover:bg-gray-50">
                             <td className="border border-gray-300 px-4 py-2 text-center">{row.question}</td>
                             <td className="border border-gray-300 px-4 py-2 text-center">{row.answer}</td>
                             <td className="border border-gray-300 px-4 py-2 text-center">{row.status ? <CheckIcon/> : <FailIcon/>}</td>

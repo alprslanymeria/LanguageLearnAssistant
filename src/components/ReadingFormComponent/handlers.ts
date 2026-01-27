@@ -58,7 +58,7 @@ export async function handleTranslate(params : HandleTranslateProps) {
             // UPDATE SESSION DATA
             updateReadingSession({
                 data: {
-                    RTranslatedText: translations.data!,
+                    RTranslatedText: translations.data!.translatedText,
                     RShowTranslation: true
                 }
             })
@@ -160,7 +160,7 @@ export async function closeAndSave(params : CloseAndSaveProps) {
     const rowsToSave : SaveReadingRowsRequest = {
 
         readingOldSessionId: oldSessionId!,
-        rows: sessionData!.rows
+        rows: sessionData!.rows as ReadingRowItemRequest[]
     }
 
     try {

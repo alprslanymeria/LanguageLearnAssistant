@@ -2,7 +2,6 @@
 import { BaseAction, BaseState } from "@/src/page/SessionPage/prop"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
-import { SessionData } from "@/src/types/globalStore"
 import { ReadingBook } from "@prisma/client"
 import { ReadingRowItemRequest } from "@/src/actions/ReadingSessionRow/Request"
 

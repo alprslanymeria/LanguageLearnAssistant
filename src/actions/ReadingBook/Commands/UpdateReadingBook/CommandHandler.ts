@@ -52,7 +52,7 @@ export class UpdateReadingBookCommandHandler implements ICommandHandler<UpdateRe
     async Handle(request: UpdateReadingBookCommand): Promise<number> {
 
         // FORM DATA'S
-        const id = Number(request.formData.get("id"))
+        const itemId = Number(request.formData.get("itemId"))
         const name = request.formData.get("name")?.toString()!
         const userId = request.formData.get("userId")?.toString()!
         const languageId = Number(request.formData.get("languageId"))
@@ -60,17 +60,17 @@ export class UpdateReadingBookCommandHandler implements ICommandHandler<UpdateRe
         const sourceFile = request.formData.get("sourceFile") as File
         
         // LOG MESSAGE
-        this.logger.info(`UpdateReadingBookCommandHandler: Updating reading book with Id ${id}`)
+        this.logger.info(`UpdateReadingBookCommandHandler: Updating reading book with Id ${itemId}`)
 
         const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
         
         if (!practice) throw new NoPracticeFound()
 
-        const existingReadingBook = await this.readingBookRepository.getByIdAsync(id)
+        const existingReadingBook = await this.readingBookRepository.getByIdAsync(itemId)
 
         if(!existingReadingBook) {
 
-            this.logger.error(`UpdateReadingBookCommandHandler: Reading book with Id ${id} not found!`)
+            this.logger.error(`UpdateReadingBookCommandHandler: Reading book with Id ${itemId} not found!`)
             throw new ReadingBookNotFound()
         }
 
@@ -95,7 +95,7 @@ export class UpdateReadingBookCommandHandler implements ICommandHandler<UpdateRe
         // UPDATE IMAGE IF NEW FILE PROVIDED
         if(imageFile) {
 
-            this.logger.info(`UpdateReadingBookCommandHandler: Processing new image file for reading book with Id ${id}`)
+            this.logger.info(`UpdateReadingBookCommandHandler: Processing new image file for reading book with Id ${itemId}`)
 
             newImageUrl = await this.fileStorageHelper.uploadFileToStorageAsync(
 
@@ -110,7 +110,7 @@ export class UpdateReadingBookCommandHandler implements ICommandHandler<UpdateRe
         // UPDATE SOURCE IF NEW FILE PROVIDED
         if(sourceFile) {
 
-            this.logger.info(`UpdateReadingBookCommandHandler: Processing new source file for reading book with Id ${id}`)
+            this.logger.info(`UpdateReadingBookCommandHandler: Processing new source file for reading book with Id ${itemId}`)
             newSourceUrl = await this.fileStorageHelper.uploadFileToStorageAsync(
 
                 sourceFile,
@@ -128,7 +128,7 @@ export class UpdateReadingBookCommandHandler implements ICommandHandler<UpdateRe
             leftColor: newLeftColor
         }
 
-        const updatedId = await this.readingBookRepository.update(id, data)
+        const updatedId = await this.readingBookRepository.update(itemId, data)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.readingBook.prefix)
@@ -144,7 +144,7 @@ export class UpdateReadingBookCommandHandler implements ICommandHandler<UpdateRe
             await this.fileStorageHelper.deleteFileFromStorageAsync(oldSourceUrl)
         }
 
-        this.logger.info(`UpdateReadingBookCommandHandler: Successfully updated reading book with Id ${id}`)
+        this.logger.info(`UpdateReadingBookCommandHandler: Successfully updated reading book with Id ${itemId}`)
 
         return updatedId
 

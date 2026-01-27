@@ -1,19 +1,19 @@
 // TYPES
+import { LanguageDto } from "@/src/actions/Language/Response"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
-import { Language } from "@prisma/client"
 import { ReadonlyURLSearchParams } from "next/navigation"
 import { FormEvent } from "react"
 
 // REDUCER
 export type State = {
 
-  languages: Language[]
+  languages: LanguageDto[]
   authError: string | null
 }
 
 export type Action =
-  | { type: "SET_LANGUAGES"; payload: {languages: Language[]} }
+  | { type: "SET_LANGUAGES"; payload: {languages: LanguageDto[]} }
   | { type: "SET_AUTH_ERROR"; payload: {authError: string}}
 
 

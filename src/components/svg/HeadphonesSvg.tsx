@@ -31,12 +31,12 @@
 
 "use client"
 
-import { ListeningCategoryWithDeckVideos } from "@/src/types/globalStore";
-import { ListeningCategory, ListeningSessionRow } from "@prisma/client";
+import {  ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
+import { ListeningSessionRowDto } from "@/src/actions/ListeningSessionRow/Response"
 
 type HeadphonesSvgProps = {
 
-    listening?: { item: ListeningCategory , contents: ListeningSessionRow[] | undefined } | null
+    listening?: { item: ListeningCategoryWithDeckVideos , contents: ListeningSessionRowDto[] | undefined } | null
 }
 
 // BURADA VIEWBOX DEĞERLERİNDEKİ SON İKİ DEĞER SIRASIYLA WIDTH VE HEIGHT DEĞERLERİDİR.

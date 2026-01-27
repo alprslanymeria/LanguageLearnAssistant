@@ -30,15 +30,15 @@ export class GetAllDWordsWithPagingQueryHandler implements IQueryHandler<GetAllD
 
     async Handle(request: GetAllDWordsWithPagingQuery): Promise<PagedResult<DeckWordWithTotalCount>> {
 
-        const categoryId = request.categoryId
+        const userId = request.userId
         const page = request.request.page
         const pageSize = request.request.pageSize
 
-        this.logger.info(`GetAllDWordsWithPagingQueryHandler: Fetching deck words for CategoryId ${categoryId}, Page ${page}, PageSize ${pageSize}`)
+        this.logger.info(`GetAllDWordsWithPagingQueryHandler: Fetching deck words for UserId ${userId}, Page ${page}, PageSize ${pageSize}`)
+        
+        const { items, totalCount } = await this.deckWordRepository.getAllDWordsWithPagingAsync(userId, page, pageSize)
 
-        const { items, totalCount } = await this.deckWordRepository.getAllDWordsWithPagingAsync(categoryId, page, pageSize)
-
-        this.logger.info(`GetAllDWordsWithPagingQueryHandler: Successfully fetched ${items.length} deck words for CategoryId ${categoryId}`)
+        this.logger.info(`GetAllDWordsWithPagingQueryHandler: Successfully fetched ${items.length} deck words for UserId ${userId}`)
     
         // MAP ITMES TO DECK WORD DTO
         const deckWordDtos : DeckWordDto[] = items.map(dw => ({
