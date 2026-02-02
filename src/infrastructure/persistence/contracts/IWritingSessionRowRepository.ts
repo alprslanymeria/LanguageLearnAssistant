@@ -29,5 +29,5 @@ export interface IWritingSessionRowRepository {
     createAsync(data: CreateWritingSessionRowData): Promise<number>
     getByIdAsync(id: number): Promise<WritingSessionRow | null>
     update(id: number, data: UpdateWritingSessionRowData): Promise<number>
-    delete(id: number): void
+    deleteAsync(id: number): Promise<void>
 }

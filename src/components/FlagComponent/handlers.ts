@@ -22,7 +22,7 @@ export async function handleStartClick(params : HandleStartClickProps) {
 
     const {userId, languageName, router, showAlert, setLoading} = params
 
-    const kese = [languageName, router]
+    const kese = [router]
 
     if(kese.some(k => !k)) return
 
@@ -51,8 +51,11 @@ export async function handleStartClick(params : HandleStartClickProps) {
 
         if(response && response.status != HttpStatusCode.OK) {
 
-            showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+            if(response.shouldDisplayError) {
 
+                showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+            }
+            
             return
         }
 
@@ -67,7 +70,7 @@ export async function handleStartClick(params : HandleStartClickProps) {
         
     } catch (error) {
 
-        showAlert({type: "error" , title: "error" , message: "Unexpected error during start!"})
+        showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
         
     } finally {
 

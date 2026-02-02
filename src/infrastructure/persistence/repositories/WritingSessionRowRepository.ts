@@ -65,9 +65,9 @@ export class WritingSessionRowRepository implements IWritingSessionRowRepository
         return updatedWritingSessionRow.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.writingSessionRow.delete({
+        await prisma.writingSessionRow.delete({
             where: {
                 id: id
             }

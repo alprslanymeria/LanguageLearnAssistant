@@ -53,7 +53,7 @@ export class DeleteWBookItemByIdCommandHandler implements ICommandHandler<Delete
         const imageUrl = writingBook.imageUrl
         const sourceUrl = writingBook.sourceUrl
 
-        this.writingBookRepository.delete(request.id)
+        await this.writingBookRepository.deleteAsync(request.id)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.writingBook.prefix)

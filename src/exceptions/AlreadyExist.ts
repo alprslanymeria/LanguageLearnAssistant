@@ -1,8 +1,8 @@
 export class UserAlreadyExist extends Error {
 
-    constructor() {
+    constructor(message?: string) {
         
-        super("User already exists!")
+        super(message ?? "User already exists!")
         this.name = "UserAlreadyExist"
     }
 }

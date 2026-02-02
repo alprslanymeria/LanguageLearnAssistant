@@ -1,17 +1,17 @@
 export class InvalidPracticeType extends Error {
 
-    constructor() {
-
-        super("Invalid practice type!")
+    constructor(message?: string) {
+        
+        super(message ?? "Invalid practice type!")
         this.name = "InvalidPracticeType"
     }
 }
 
 export class UncertainTargetLanguage extends Error {
 
-    constructor() {
-        
-        super("Unable to determine target language!")
+    constructor(message?: string) {
+
+        super(message ?? "Unable to determine target language!")
         this.name = "UncertainTargetLanguage"
     }
 }

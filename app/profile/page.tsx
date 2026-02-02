@@ -8,18 +8,15 @@ import { authClient } from "@/src/infrastructure/auth/auth-client"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useProfilePageReducer } from "@/src/page/ProfilePage/useProfileReducer"
 import { useProfilePageCustomEffect } from "@/src/page/ProfilePage/useProfilePageCustomEffect"
+import { handleSubmit } from "@/src/page/ProfilePage/handlers"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 //COMPONENTS
 import Loader from "@/src/components/loader"
-// ACTIONS
-import { UpdateProfileInfos } from "@/src/actions/User/Controller"
 
 
 export default function Page() {
-
-    const [state, formAction, isPending] = useActionState(UpdateProfileInfos, undefined)
 
     //HOOKS
     const {states, dispatch} = useProfilePageReducer()
@@ -31,7 +28,7 @@ export default function Page() {
     const userId = session?.user.id
 
     //USE EFFECTS
-    useProfilePageCustomEffect({userId, state, setLoading, showAlert, dispatch})
+    useProfilePageCustomEffect({userId, state: states.state, setLoading, showAlert, dispatch})
 
     if(isLoading && loadingSource === "page" ) return <Loader/>
 
@@ -40,7 +37,7 @@ export default function Page() {
         <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
             <h1 className="text-2xl font-bold mb-6 text-center">Profile</h1>
             
-            <form action={formAction}>
+            <form method="POST" onSubmit={(e) => handleSubmit({ e, dispatch, setLoading })}>
 
                 {/* HIDDEN DATA'S*/}
                 <input type="hidden" name="userId" value={userId} />
@@ -139,10 +136,10 @@ export default function Page() {
                 
 
                 <button
-                    disabled= {isPending || isPendingBetterAuth}
+                    disabled= {(isLoading && loadingSource === "ProfileHandleSubmit") || isPendingBetterAuth}
                     className={`w-full py-2 px-4 rounded-md font-medium transition-colors bg-blue-600 hover:bg-blue-700 text-white cursor-pointer`}
                 >
-                    {isPending ? (
+                    {isLoading && loadingSource === "ProfileHandleSubmit" ? (
                         <div className="flex items-center justify-center">
                             <div className="w-6 h-6 border-4 border-white-500 border-t-transparent rounded-full animate-spin"/>
                         </div>

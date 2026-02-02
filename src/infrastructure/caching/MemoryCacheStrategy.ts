@@ -10,14 +10,12 @@ export class MemoryCacheStrategy implements ICacheStrategy {
     type: CacheType = 'memory'
     private readonly cache: Map<string, CacheEntry<unknown>> = new Map()
     private cleanupInterval: NodeJS.Timeout | null = null
+    private readonly cleanupIntervalMs: number = 60000
 
     // CTOR
-    constructor(
+    constructor() {
         
-        cleanupIntervalMs: number = 60000
-    
-    ) {
-        this.startCleanup(cleanupIntervalMs)
+        this.startCleanup(this.cleanupIntervalMs)
     }
 
     // UTILS

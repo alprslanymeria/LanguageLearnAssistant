@@ -3,6 +3,7 @@
 // REACT & NEXT
 import { Suspense } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 // COMPONENTS
 import { GoogleLogo } from "@/src/components/svg/googleSvg"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
@@ -23,6 +24,7 @@ function LoginPage() {
     // HOOKS
     const {state , dispatch} = useLoginReducer()
     const {isLoading, loadingSource, setLoading} = useLoading()
+    const router = useRouter()
 
     // STORE
     const hasHydrated = GlobalStore((state) => state.HasHydrated)
@@ -41,7 +43,7 @@ function LoginPage() {
             <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
                 <h2 className="text-2xl font-bold text-center">Login</h2>
 
-                <form className="space-y-4" method="POST" onSubmit={(e) => handleSubmit({e, dispatch, setLoading})}>
+                <form className="space-y-4" method="POST" onSubmit={(e) => handleSubmit({e, router, dispatch, setLoading})}>
                     <div>
                         {state.authError && <p className="text-sm text-red-500 text-center">{state.authError}</p>}
                     </div>

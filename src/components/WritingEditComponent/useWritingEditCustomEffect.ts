@@ -12,7 +12,7 @@ import { GetWritingBookById } from "@/src/actions/WritingBook/Controller"
 
 export function useWritingEditCustomEffect(params : useWritingEditCustomEffectProps) {
 
-    const {state, itemId, router, setLoading, showAlert, dispatch} = params
+    const {state, itemId, setLoading, showAlert, dispatch} = params
 
     // ALERT GÖSTERME
     useEffect(() => {
@@ -24,8 +24,6 @@ export function useWritingEditCustomEffect(params : useWritingEditCustomEffectPr
         if (state!.isSuccess) {
 
             showAlert({ type: "success", title: "success", message: "Writing book updated successfully!" })
-
-            router.push(`/list/?table=wbooks`)
 
             return
         }
@@ -46,10 +44,13 @@ export function useWritingEditCustomEffect(params : useWritingEditCustomEffectPr
 
                 const response = await GetLanguages()
 
-                if(response && response.status != HttpStatusCode.OK){
+                if(response && response.status != HttpStatusCode.OK) {
 
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    if(response.shouldDisplayError) {
 
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -59,7 +60,7 @@ export function useWritingEditCustomEffect(params : useWritingEditCustomEffectPr
                 
             } catch (error) {
 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Languages!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
                 
             } finally {
 
@@ -89,8 +90,11 @@ export function useWritingEditCustomEffect(params : useWritingEditCustomEffectPr
 
                 if(response && response.status != HttpStatusCode.OK) {
 
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    if(response.shouldDisplayError) {
 
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -102,7 +106,7 @@ export function useWritingEditCustomEffect(params : useWritingEditCustomEffectPr
                 
             } catch (error) {
 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Writing Book Item!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
                 
             } finally {
 

@@ -6,10 +6,10 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
 const sqlConfig = {
 
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  server: process.env.HOST,
+  user: "sa",
+  password: "3156236845",
+  database: "languageAssistant",
+  server: "localhost",
   pool: {
     max: 10,
     min: 0,

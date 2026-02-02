@@ -48,10 +48,13 @@ export function useProfilePageCustomEffect(params : UseProfilePageCustomEffectPr
                     // GET USER INFOS
                     const responseOne = await GetProfileInfos(userId!)
     
-                    if(responseOne && responseOne.status != HttpStatusCode.OK){
-    
-                        showAlert({type: "error" , title: "error" , message: responseOne.errorMessage![0]})
-        
+                    if(responseOne && responseOne.status != HttpStatusCode.OK) {
+                            
+                        if(responseOne.shouldDisplayError) {
+            
+                            showAlert({type: "error" , title: "error" , message: responseOne.errorMessage![0]})
+                        }
+                        
                         return
                     }
 
@@ -64,10 +67,13 @@ export function useProfilePageCustomEffect(params : UseProfilePageCustomEffectPr
                     // GET LANGUAGES
                     const responseTwo = await GetLanguages()
 
-                    if(responseTwo && responseTwo.status != HttpStatusCode.OK){
-    
-                        showAlert({type: "error" , title: "error" , message: responseTwo.errorMessage![0]})
-        
+                    if(responseTwo && responseTwo.status != HttpStatusCode.OK) {
+                            
+                        if(responseTwo.shouldDisplayError) {
+            
+                            showAlert({type: "error" , title: "error" , message: responseTwo.errorMessage![0]})
+                        }
+                        
                         return
                     }
                     
@@ -75,7 +81,7 @@ export function useProfilePageCustomEffect(params : UseProfilePageCustomEffectPr
                     
                 } catch (error) {
     
-                    showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Languages and Profile Infos!"})
+                    showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
     
                 } finally {
     

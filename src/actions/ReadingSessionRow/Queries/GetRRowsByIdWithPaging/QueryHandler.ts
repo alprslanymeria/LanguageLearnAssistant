@@ -62,6 +62,7 @@ export class GetRRowsByIdWithPagingQueryHandler implements IQueryHandler<GetRRow
 
         const result : ReadingSessionRowDto[] = rows.items.map(row => ({
 
+            id: row.id,
             readingOldSessionId: row.oldSessionId,
             selectedSentence: row.selectedSentence,
             answer: row.answer,

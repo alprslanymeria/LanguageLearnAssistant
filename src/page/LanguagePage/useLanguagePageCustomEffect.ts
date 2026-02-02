@@ -38,10 +38,13 @@ export function useLanguagePageCustomEffect(params : UseLanguagePageCustomEffect
 
                 const response = await GetPracticesByLanguage(language!)
 
-                if(response && response.status != HttpStatusCode.OK){
-                
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
-
+                if(response && response.status != HttpStatusCode.OK) {
+                                                
+                    if(response.shouldDisplayError) {
+        
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -51,7 +54,7 @@ export function useLanguagePageCustomEffect(params : UseLanguagePageCustomEffect
                 
             } catch (error) {
                 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Practices!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
 
             } finally {
 

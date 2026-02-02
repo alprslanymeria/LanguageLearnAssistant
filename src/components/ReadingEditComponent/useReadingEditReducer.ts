@@ -6,12 +6,13 @@ import { Action, State } from "@/src/components/ReadingEditComponent/prop"
 
 const initialState: State = {
 
-    languageId: 0,
+    languageId: 1,
     name: "",
     fileOne: null,
     fileTwo: null,
     fileError: "",
-    languages: []
+    languages: [],
+    state: undefined
 }
 
 function reducer(state: State, action: Action): State {
@@ -29,6 +30,8 @@ function reducer(state: State, action: Action): State {
         return {...state, fileTwo: action.payload.fileTwo}
     case "SET_FILE_ERROR":
         return {...state, fileError: action.payload.fileError}
+    case "SET_STATE":
+        return {...state, state: action.payload.state}
     default:
       return state
   }

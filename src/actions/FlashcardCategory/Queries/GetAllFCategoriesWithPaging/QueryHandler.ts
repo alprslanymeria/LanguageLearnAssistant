@@ -7,6 +7,7 @@ import type { IFlashcardCategoryRepository } from "@/src/infrastructure/persiste
 import { FlashcardCategoryDto, FlashcardCategoryWithTotalCount } from "@/src/actions/FlashcardCategory/Response"
 import { GetAllFCategoriesWithPagingQuery } from "./Query"
 import { createPagedResult, PagedResult } from "@/src/infrastructure/common/pagedResult"
+import { FlashcardCategoryNotFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
@@ -45,6 +46,7 @@ export class GetAllFCategoriesWithPagingQueryHandler implements IQueryHandler<Ge
         // MAP ITEMS TO FLASHCARD CATEGORY DTO
         const flashcardCategoryDtos : FlashcardCategoryDto[] = items.map(fc => ({
 
+            id: fc.id,
             flashcardId: fc.flashcardId,
             name: fc.name
         }))

@@ -7,6 +7,17 @@ import { IPracticeRepository, CreatePracticeData, UpdatePracticeData } from "@/s
 @injectable()
 export class PracticeRepository implements IPracticeRepository {
 
+
+    async getPracticeByLanguageIdAndNameAsync(languageId: number, name: string): Promise<Practice | null> {
+        
+        return await prisma.practice.findFirst({
+            where: {
+                languageId,
+                name
+            }
+        })
+    }
+
     async getPracticesByLanguageAsync(language: string): Promise<Practice[]> {
         
         return await prisma.practice.findMany({
@@ -68,9 +79,9 @@ export class PracticeRepository implements IPracticeRepository {
         return updatedPractice.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.practice.delete({
+        await prisma.practice.delete({
             where: {
                 id: id
             }

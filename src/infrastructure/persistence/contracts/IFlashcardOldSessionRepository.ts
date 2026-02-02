@@ -19,11 +19,11 @@ export interface UpdateFlashcardOldSessionData {
 export interface IFlashcardOldSessionRepository {
 
     // HELPER
-    getFlashcardOldSessionsWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: FlashcardOldSession[]; totalCount: number }>
+    getFlashcardOldSessionsWithPagingAsync(userId: string, language: string, page: number, pageSize: number): Promise<{ items: FlashcardOldSession[]; totalCount: number }>
 
     // CRUD
     createAsync(data: CreateFlashcardOldSessionData): Promise<string>
     getByIdAsync(id: string): Promise<FlashcardOldSession | null>
     update(id: string, data: UpdateFlashcardOldSessionData): Promise<string>
-    delete(id: string): void
+    deleteAsync(id: string): Promise<void>
 }

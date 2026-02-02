@@ -9,7 +9,7 @@ import { GetLanguages } from "@/src/actions/Language/Controller"
 
 export function useFlashcardAddCustomEffect(params : useFlashcardAddCustomEffectProps) {
 
-    const {state, router, setLoading, showAlert, dispatch} = params
+    const {state, setLoading, showAlert, dispatch} = params
 
     // ALERT GÖSTERME
     useEffect(() => {
@@ -22,7 +22,9 @@ export function useFlashcardAddCustomEffect(params : useFlashcardAddCustomEffect
 
             showAlert({ type: "success", title: "success", message: "Flashcard category added successfully!" })
 
-            router.push(`/list/?table=fcategories`)
+            // RESET FORM
+            dispatch({ type: "SET_NAME", payload: { name: "" } })
+            dispatch({ type: "SET_LANGUAGE_ID", payload: { languageId: 0 } })
 
             return
         }
@@ -44,9 +46,12 @@ export function useFlashcardAddCustomEffect(params : useFlashcardAddCustomEffect
                 const response = await GetLanguages()
 
                 if(response && response.status != HttpStatusCode.OK) {
-
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
-
+                            
+                    if(response.shouldDisplayError) {
+        
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -56,7 +61,7 @@ export function useFlashcardAddCustomEffect(params : useFlashcardAddCustomEffect
                 
             } catch (error) {
 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Languages!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
                 
             } finally {
 

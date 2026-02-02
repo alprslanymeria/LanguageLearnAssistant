@@ -1,3 +1,5 @@
+import 'server-only'
+
 // IMPORTS
 import { Container } from "inversify"
 import { Translate } from "@google-cloud/translate/build/src/v2"

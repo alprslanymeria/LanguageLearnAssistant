@@ -15,7 +15,10 @@ export function useListeningSessionCustomEffect(params : UseListeningSessionCust
 
         const kese = [deckVideos]
 
-        if(kese.some(k => !k)) return
+        if(kese.some(k => !k) || deckVideos.length === 0) return
+
+        // IF DECK ALREADY SHUFFLED, DO NOT SHUFFLE AGAIN
+        if(sessionData && sessionData.type === "listening" && sessionData.data.LShuffledVideos.length > 0) return
 
         const shuffled = [...deckVideos].sort(() => Math.random() - 0.5)
 

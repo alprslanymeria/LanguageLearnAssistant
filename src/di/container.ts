@@ -1,3 +1,5 @@
+import 'server-only'
+
 // IMPORTS
 import "reflect-metadata"
 import { Container } from "inversify"

@@ -1,27 +1,31 @@
 // IMPORTS
 import { z } from "zod"
-import { UPDATE_FLASHCARD_CATEGORY_COMMAND } from "./Command"
 
 export const UpdateFlashcardCategoryCommandValidator = z.object({
 
-  type: z.literal(UPDATE_FLASHCARD_CATEGORY_COMMAND),
-
-  id: z
+  itemId: z
+    .coerce
     .number()
     .int()
     .gt(0, {
       message: "ID MUST BE GREATER THAN 0"
     }),
 
-  name: z
+  categoryName: z
     .string()
     .min(1, {
-      message: "NAME IS REQUIRED"
+      message: "CATEGORY NAME IS REQUIRED"
     })
     .max(200, {
-      message: "NAME MUST NOT EXCEED 200 CHARACTERS"
+      message: "CATEGORY NAME MUST NOT EXCEED 200 CHARACTERS"
     }),
 
+  practice: z
+    .string()
+    .min(1, {
+      message: "PRACTICE IS REQUIRED"
+    }),
+    
   userId: z
     .string()
     .min(1, {
@@ -29,6 +33,7 @@ export const UpdateFlashcardCategoryCommandValidator = z.object({
     }),
 
   languageId: z
+    .coerce
     .number()
     .int()
     .gt(0, {

@@ -10,5 +10,6 @@ export interface GetWOSWithPagingQuery extends IQuery<PagedResult<WritingOldSess
 
     readonly type: typeof GET_WOS_WITH_PAGING_QUERY
     request: PagedRequest
+    language: string
     userId: string
 }

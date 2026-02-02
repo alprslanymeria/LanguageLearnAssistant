@@ -1,14 +1,14 @@
 // BETTER AUTH
 import { HandleSubmitProps } from "@/src/page/LoginPage/prop"
 // TYPES
-import { SignIn } from "@/src/actions/Auth/Controller"
+import { authClient } from "@/src/infrastructure/auth/auth-client"
 
 
 export async function handleSubmit( params : HandleSubmitProps) {
 
-    const {e, dispatch, setLoading} = params
+    const {e, router, dispatch, setLoading} = params
 
-    const kese = [e]
+    const kese = [e, router]
 
     if(kese.some(k => !k)) return
 
@@ -20,12 +20,26 @@ export async function handleSubmit( params : HandleSubmitProps) {
     const email = form.email.value as string
     const password = form.password.value as string
 
-    const response = await SignIn({email, password})
+    // CLIENT SIDE AUTH
+    await authClient.signIn.email({
 
-    if(response.isFail) {
+            email,
+            password,
+            callbackURL: "/",
+        },
 
-        dispatch({type: "SET_AUTH_ERROR", payload: {authError: response.errorMessage![0]}})
-    }
+        {
+            onSuccess: () => {
+
+                // REDIRECT TO HOME PAGE
+                router.push("/")
+            },
+
+            onError: (ctx) => {
+
+                dispatch({type: "SET_AUTH_ERROR", payload: {authError: ctx.error.message}})
+            }
+        })
 
     setLoading({value: false})
 }

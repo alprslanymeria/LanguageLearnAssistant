@@ -1,5 +1,5 @@
 // IMPORTS
-import { ListeningCategoryDto, ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
+import { ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
 
 export type ListeningSessionRowDto = {
 

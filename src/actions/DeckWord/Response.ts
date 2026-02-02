@@ -8,7 +8,8 @@ export type DeckWordDto = {
 
 export type DeckWordWithLanguageId = {
 
-    flashcardCategoryId: number,
+    id: number
+    categoryId: number,
     question: string,
     answer: string,
     languageId: number

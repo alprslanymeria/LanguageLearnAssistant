@@ -43,5 +43,5 @@ export interface IWritingBookRepository {
     createAsync(data: CreateWritingBookData): Promise<number>
     getByIdAsync(id: number): Promise<WritingBook | null>
     update(id: number, data: UpdateWritingBookData): Promise<number>
-    delete(id: number): void
+    deleteAsync(id: number): Promise<void>
 }

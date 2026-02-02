@@ -1,6 +1,5 @@
 // IMPORTS
 import { z } from "zod"
-import { UPDATE_READING_BOOK_COMMAND } from "./Command"
 
 // CONSTANTS
 const ALLOWED_IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
@@ -20,14 +19,12 @@ const hasAllowedExtension = (file: File, allowed: string[]) => {
 
 export const UpdateReadingBookCommandValidator = z.object({
 
-  type: z.literal(UPDATE_READING_BOOK_COMMAND),
-
-  id: z
+  itemId: z
     .coerce
     .number()
-    .int()
+    .int()  
     .gt(0, {
-      message: "ID MUST BE GREATER THAN 0"
+      message: "ITEM ID MUST BE GREATER THAN 0"
     }),
 
   languageId: z
@@ -38,7 +35,7 @@ export const UpdateReadingBookCommandValidator = z.object({
       message: "LANGUAGE ID MUST BE GREATER THAN 0"
     }),
 
-  name: z
+  bookName: z
     .string()
     .min(1, {
       message: "NAME IS REQUIRED"
@@ -46,6 +43,12 @@ export const UpdateReadingBookCommandValidator = z.object({
     .max(200, {
       message: "NAME MUST NOT EXCEED 200 CHARACTERS"
     }),
+
+  practice: z
+      .string()
+      .min(1, {
+        message: "PRACTICE IS REQUIRED"
+      }),
 
   userId: z
     .string()
@@ -57,13 +60,13 @@ export const UpdateReadingBookCommandValidator = z.object({
     .instanceof(File)
     .optional()
     .refine(
-      file => !file || file.size <= MAX_IMAGE_FILE_SIZE,
+      file => !file || file.size === 0 || file.name === 'blob' || file.size <= MAX_IMAGE_FILE_SIZE,
       {
         message: "IMAGE FILE SIZE MUST NOT EXCEED 5MB"
       }
     )
     .refine(
-      file => !file || hasAllowedExtension(file, ALLOWED_IMAGE_EXTENSIONS),
+      file => !file || file.size === 0 || file.name === 'blob' || hasAllowedExtension(file, ALLOWED_IMAGE_EXTENSIONS),
       {
         message: `IMAGE FILE MUST BE ONE OF THE FOLLOWING TYPES: ${ALLOWED_IMAGE_EXTENSIONS.join(", ")}`
       }
@@ -73,13 +76,13 @@ export const UpdateReadingBookCommandValidator = z.object({
     .instanceof(File)
     .optional()
     .refine(
-      file => !file || file.size <= MAX_SOURCE_FILE_SIZE,
+      file => !file || file.size === 0 || file.name === 'blob' || file.size <= MAX_SOURCE_FILE_SIZE,
       {
         message: "SOURCE FILE SIZE MUST NOT EXCEED 50MB"
       }
     )
     .refine(
-      file => !file || hasAllowedExtension(file, ALLOWED_SOURCE_EXTENSIONS),
+      file => !file || file.size === 0 || file.name === 'blob' || hasAllowedExtension(file, ALLOWED_SOURCE_EXTENSIONS),
       {
         message: `SOURCE FILE MUST BE ONE OF THE FOLLOWING TYPES: ${ALLOWED_SOURCE_EXTENSIONS.join(", ")}`
       }

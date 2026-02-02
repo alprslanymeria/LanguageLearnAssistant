@@ -53,18 +53,19 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
 
         // FORM DATA'S
         const itemId = Number(request.formData.get("itemId"))
-        const name = request.formData.get("name")?.toString()!
+        const bookName = request.formData.get("bookName")?.toString()!
         const userId = request.formData.get("userId")?.toString()!
         const languageId = Number(request.formData.get("languageId"))
         const imageFile = request.formData.get("imageFile") as File
         const sourceFile = request.formData.get("sourceFile") as File
+        const practice = request.formData.get("practice")?.toString()!
         
         // LOG MESSAGE
         this.logger.info(`UpdateWritingBookCommandHandler: Updating writing book with Id ${itemId}`)
 
-        const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
+        const isPracticeExists = await this.practiceRepository.getPracticeByLanguageIdAndNameAsync(languageId, practice)
         
-        if (!practice) throw new NoPracticeFound()
+        if (!isPracticeExists) throw new NoPracticeFound()
 
         const existingWritingBook = await this.writingBookRepository.getByIdAsync(itemId)
 
@@ -77,7 +78,7 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
         // VERIFY OR CREATE WRITING
         const writingResult = await this.entityVerificationService.verifyOrCreateWritingAsync(
             
-            practice.id,
+            isPracticeExists.id,
             userId,
             languageId
         )
@@ -93,7 +94,7 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
         var newLeftColor
 
         // UPDATE IMAGE IF NEW FILE PROVIDED
-        if(imageFile) {
+        if(imageFile && imageFile.size > 0) {
 
             this.logger.info(`UpdateWritingBookCommandHandler: Processing new image file for writing book with Id ${itemId}`)
 
@@ -108,7 +109,7 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
         }
 
         // UPDATE SOURCE IF NEW FILE PROVIDED
-        if(sourceFile) {
+        if(sourceFile && sourceFile.size > 0) {
 
             this.logger.info(`UpdateWritingBookCommandHandler: Processing new source file for writing book with Id ${itemId}`)
 
@@ -122,7 +123,7 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
 
         const data : UpdateWritingBookData = {
 
-            name: name,
+            name: bookName,
             writingId: writingResult.data!.id,
             imageUrl: newImageUrl,
             sourceUrl: newSourceUrl,

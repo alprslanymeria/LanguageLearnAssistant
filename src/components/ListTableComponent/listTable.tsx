@@ -1,6 +1,7 @@
 "use client"
 
 // REACT & NEXT
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 // COMPONENTS
 import EditIcon from "@/src/components/svg/Edit"
@@ -11,7 +12,6 @@ import { ListTableComponentProps } from "@/src/components/ListTableComponent/pro
 import { Item } from "@/src/page/ListPage/prop"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
-import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { handleCreate, handleDelete, handleEdit } from "@/src/components/ListTableComponent/handlers"
 
@@ -21,7 +21,7 @@ export default function ListTableComponent({width, columnNames, contents, items,
     //HOOKS
     const router = useRouter()
     const {showAlert} = useAlert()
-    const {isLoading, loadingSource, setLoading} = useLoading()
+    const [deletingId, setDeletingId] = useState<number | null>(null)
 
     return (
 
@@ -64,11 +64,11 @@ export default function ListTableComponent({width, columnNames, contents, items,
                                         </td>
                                         <td className="px-4 py-2 border-b text-center">
                                             <button 
-                                                disabled= {isLoading && loadingSource === "HandleDelete"}
+                                                disabled={deletingId === item.id}
                                                 className="w-[30px]" 
-                                                onClick={() => handleDelete({itemId: item.id , table, showAlert, setLoading, dispatch})}
+                                                onClick={() => handleDelete({itemId: item.id , table, showAlert, setDeletingId, dispatch})}
                                             >
-                                                {isLoading && loadingSource === "HandleDelete" ? (
+                                                {deletingId === item.id ? (
                                                     <div className="flex items-center justify-center">
                                                         <div className="w-6 h-6 border-4 border-white-500 border-t-transparent rounded-full animate-spin"></div>
                                                     </div>

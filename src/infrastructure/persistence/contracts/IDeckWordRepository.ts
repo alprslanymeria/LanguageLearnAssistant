@@ -38,5 +38,5 @@ export interface IDeckWordRepository {
     createAsync(data: CreateDeckWordData): Promise<number>
     getByIdAsync(id: number): Promise<DeckWord | null>
     update(id: number,data: UpdateDeckWordData): Promise<number>
-    delete(id: number): void
+    deleteAsync(id: number): Promise<void>
 }

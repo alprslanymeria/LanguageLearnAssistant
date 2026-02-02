@@ -54,9 +54,9 @@ export class WritingRepository implements IWritingRepository {
         return updatedWriting.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.writing.delete({
+        await prisma.writing.delete({
             where: {
                 id: id
             }

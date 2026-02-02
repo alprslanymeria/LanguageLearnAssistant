@@ -1,7 +1,7 @@
 // REACT & NEXT
 import Link from 'next/link'
 // ASSETS
-import Fonts from '@/public/fonts/fonts'
+import {Fonts} from '@/public/fonts/fonts'
 // COMPONENTS
 import { EmailComponent } from '@/src/components/EmailComponent/email'
 import { MenuComponent } from '@/src/components/MenuComponent/menu'

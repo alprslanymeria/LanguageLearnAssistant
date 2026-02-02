@@ -65,9 +65,9 @@ export class FlashcardSessionRowRepository implements IFlashcardSessionRowReposi
         return updatedFlashcardSessionRow.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.flashcardSessionRow.delete({
+        await prisma.flashcardSessionRow.delete({
             where: {
                 id: id
             }

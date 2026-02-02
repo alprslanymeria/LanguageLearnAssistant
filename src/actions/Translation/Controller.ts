@@ -1,7 +1,6 @@
 "use server"
 
-import { ZodError } from "zod"
-import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
+import { SerializedServiceResult, ServiceResult } from "@/src/infrastructure/common/ServiceResult"
 import { TranslateTextRequest } from "@/src/actions/Translation/Request"
 import { TranslateTextResponse } from "@/src/actions/Translation/Response"
 import container from "@/src/di/container"
@@ -10,10 +9,10 @@ import { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { QueryBus } from "@/src/infrastructure/mediatR/QueryBus"
 import { translateTextQuery } from "@/src/actions/Translation/Queries/TranslateText/QueryFactory"
 import { TranslateTextQueryValidator } from "@/src/actions/Translation/Queries/TranslateText/QueryValidator"
-import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 import { InvalidPracticeType, UncertainTargetLanguage } from "@/src/exceptions/invalid"
+import { handleErrorSerialized } from "@/src/infrastructure/common/ErrorHandler"
 
-export async function TranslateText(userId: string, request: TranslateTextRequest) : Promise<ServiceResult<TranslateTextResponse>> {
+export async function TranslateText(userId: string, request: TranslateTextRequest) : Promise<SerializedServiceResult<TranslateTextResponse>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -33,32 +32,17 @@ export async function TranslateText(userId: string, request: TranslateTextReques
         // SEND QUERY TO BUS
         const translationResponse = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<TranslateTextResponse>(translationResponse as TranslateTextResponse)
+        return ServiceResult.success<TranslateTextResponse>(translationResponse as TranslateTextResponse).toPlain()
 
     } catch (error) {
         
-        if(error instanceof ZodError) {
+        return handleErrorSerialized<TranslateTextResponse>({
 
-            const firstError = error.issues?.[0]?.message
-            logger.error("TranslateText: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<TranslateTextResponse>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof InvalidPracticeType) {
-
-            logger.error("TranslateText: INVALID PRACTICE TYPE!", {error})
-            return ServiceResult.failOne<TranslateTextResponse>(error.message, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof UncertainTargetLanguage) {
-
-            logger.error("TranslateText: UNCERTAIN TARGET LANGUAGE!", {error})
-            return ServiceResult.failOne<TranslateTextResponse>(error.message, HttpStatusCode.BadRequest)
-        }
-
-        logger.error("TranslateText: FAIL", {error})
-        return ServiceResult.failOne<TranslateTextResponse>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+            actionName: "TranslateText",
+            logger,
+            error,
+            expectedErrors: [InvalidPracticeType, UncertainTargetLanguage]
+        })
     }
 
 }

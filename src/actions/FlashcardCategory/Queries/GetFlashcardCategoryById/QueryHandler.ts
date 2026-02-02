@@ -47,6 +47,7 @@ export class GetFlashcardCategoryByIdQueryHandler implements IQueryHandler<GetFl
     
         const response: FlashcardCategoryWithLanguageId = {
 
+            id: flashcardCategory.id,
             flashcardId: flashcardCategory.flashcardId,
             name: flashcardCategory.name,
             languageId: flashcardCategory.flashcard.language.id

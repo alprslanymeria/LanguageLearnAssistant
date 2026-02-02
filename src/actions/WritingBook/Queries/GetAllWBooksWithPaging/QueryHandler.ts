@@ -7,6 +7,7 @@ import { GetAllWBooksWithPagingQuery } from "./Query"
 import type { IWritingBookRepository } from "@/src/infrastructure/persistence/contracts/IWritingBookRepository"
 import { WritingBookDto, WritingBookWithTotalCount } from "@/src/actions/WritingBook/Response"
 import { createPagedResult, PagedResult } from "@/src/infrastructure/common/pagedResult"
+import { WritingBookNotFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
@@ -44,6 +45,7 @@ export class GetAllWBooksWithPagingQueryHandler implements IQueryHandler<GetAllW
         // MAP ITEMS TO WRITING BOOK DTO
         const writingBookDtos : WritingBookDto[] = items.map(wb => ({
 
+            id: wb.id,
             writingId: wb.writingId,
             name: wb.name,
             imageUrl: wb.imageUrl,

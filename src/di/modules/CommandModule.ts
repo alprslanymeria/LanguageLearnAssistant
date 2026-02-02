@@ -1,3 +1,5 @@
+import 'server-only'
+
 // IMPORTS
 import { Container } from "inversify"
 import { IContainerModule } from "@/src/di/IContainerModule"
@@ -75,6 +77,7 @@ import { CreateWRowsCommandHandler } from "@/src/actions/WritingSessionRow/Comma
 import { CREATE_WROWS_COMMAND } from "@/src/actions/WritingSessionRow/Commands/CreateWRows/Command"
 import { UpdateProfileInfosHandler } from "@/src/actions/User/Commands/UpdateProfileInfos/CommandHandler"
 import { UPDATE_PROFILE_INFOS_COMMAND } from "@/src/actions/User/Commands/UpdateProfileInfos/Command"
+import { TYPES } from '../type'
 
 export class CommandModule implements IContainerModule {
 
@@ -107,7 +110,7 @@ export class CommandModule implements IContainerModule {
 
         // BIND REGISTRY AND BUS
         container.bind(CommandHandlerRegistry).toSelf().inSingletonScope()
-        container.bind(CommandBus).toDynamicValue((context) => {
+        container.bind(TYPES.CommandBus).toDynamicValue((context) => {
 
             const registry = context.get(CommandHandlerRegistry)
 

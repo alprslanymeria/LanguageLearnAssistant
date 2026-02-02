@@ -17,9 +17,12 @@ export interface UpdateListeningData {
 
 export interface IListeningRepository {
 
+    // HELPER
+    getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Listening | null>
+
     // CRUD
     createAsync(data: CreateListeningData): Promise<number>
     getByIdAsync(id: number): Promise<Listening | null>
     update(id: number, data: UpdateListeningData): Promise<number>
-    delete(id: number): void
+    deleteAsync(id: number): Promise<void>
 }

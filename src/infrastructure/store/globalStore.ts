@@ -26,6 +26,7 @@ const defaultFlashcardSession: FlashcardSession = {
 const defaultReadingSession: ReadingSession = {
   type: "reading",
   data: {
+    RShowSelectTextButton: true,
     RShowTranslation: false,
     RSelectedText: "",
     RInputText: "",
@@ -37,6 +38,7 @@ const defaultReadingSession: ReadingSession = {
 const defaultWritingSession: WritingSession = {
   type: "writing",
   data: {
+    WShowSelectTextButton: true,
     WShowTranslation: false,
     WSelectedText: "",
     WInputText: "",

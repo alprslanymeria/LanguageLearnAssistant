@@ -1,6 +1,5 @@
 // IMPORTS
 import { z } from "zod"
-import { CREATE_READING_BOOK_COMMAND } from "./Command"
 
 // CONSTANTS
 const ALLOWED_IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
@@ -19,8 +18,6 @@ const hasAllowedExtension = (file: File, allowed: string[]) => {
 
 export const CreateReadingBookCommandValidator = z.object({
 
-  type: z.literal(CREATE_READING_BOOK_COMMAND),
-
   languageId: z
     .coerce
     .number()
@@ -29,14 +26,20 @@ export const CreateReadingBookCommandValidator = z.object({
       message: "LANGUAGE ID MUST BE GREATER THAN 0"
     }),
 
-  name: z
+  bookName: z
     .string()
     .min(1, {
-      message: "NAME IS REQUIRED"
+      message: "BOOK NAME IS REQUIRED"
     })
     .max(200, {
-      message: "NAME MUST NOT EXCEED 200 CHARACTERS"
+      message: "BOOK NAME MUST NOT EXCEED 200 CHARACTERS"
     }),
+
+  practice: z
+      .string()
+      .min(1, {
+        message: "PRACTICE IS REQUIRED"
+      }),
 
   userId: z
     .string()

@@ -1,14 +1,12 @@
 "use server"
 
-import { ZodError } from "zod"
-import { ServiceResult, ServiceResultBase } from "@/src/infrastructure/common/ServiceResult"
+import { SerializedServiceResult, SerializedServiceResultBase, ServiceResult, ServiceResultBase } from "@/src/infrastructure/common/ServiceResult"
 import container from "@/src/di/container"
 import { TYPES } from "@/src/di/type"
 import { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { CommandBus } from "@/src/infrastructure/mediatR/CommandBus"
 import { createWritingBookCommandFactory } from "@/src/actions/WritingBook/Commands/CreateWritingBook/CommandFactory"
 import { CreateWritingBookCommandValidator } from "@/src/actions/WritingBook/Commands/CreateWritingBook/CommandValidator"
-import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 import { deleteWBookItemByIdCommandFactory } from "@/src/actions/WritingBook/Commands/DeleteWBookItemById/CommandFactory"
 import { DeleteWBookItemByIdCommandValidator } from "@/src/actions/WritingBook/Commands/DeleteWBookItemById/CommandValidator"
 import { NoLanguageFound, NoPracticeFound, WritingBookNotFound } from "@/src/exceptions/NotFound"
@@ -25,8 +23,10 @@ import { GetWBookCreateItemsQueryValidator } from "@/src/actions/WritingBook/Que
 import { getWBookCreateItemsQuery } from "@/src/actions/WritingBook/Queries/GetWBookCreateItems/QueryFactory"
 import { getWritingBookByIdQuery } from "@/src/actions/WritingBook/Queries/GetWritingBookById/QueryFactory"
 import { GetWritingBookByIdQueryValidator } from "@/src/actions/WritingBook/Queries/GetWritingBookById/QueryValidator"
+import { handleErrorBaseSerialized, handleErrorSerialized } from "@/src/infrastructure/common/ErrorHandler"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 
-export async function CreateWritingBook(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
+export async function CreateWritingBook(formData: FormData) : Promise<SerializedServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -44,41 +44,26 @@ export async function CreateWritingBook(prevState: ServiceResult<number> | undef
         await CreateWritingBookCommandValidator.parseAsync(plainObject)
 
         // COMMAND
-        const command = createWritingBookCommandFactory(prevState, formData)
+        const command = createWritingBookCommandFactory(formData)
 
         // SEND COMMAND TO BUS
         const writingBookId = await commandBus.send(command)
 
-        return ServiceResult.successAsCreated<number>(writingBookId as number, "")
+        return ServiceResult.successAsCreated<number>(writingBookId as number, "").toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("CreateWritingBook: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof NoPracticeFound) {
-
-            logger.error("CreateWritingBook: PRACTICE NOT FOUND!", {error})
-            return ServiceResult.failOne<number>(error.message, HttpStatusCode.NotFound)
-        }
-
-        if(error instanceof WritingResultNotSuccess) {
-
-            logger.error("CreateWritingBook: WRITING RESULT NOT SUCCESS!", {error})
-            return ServiceResult.failOne<number>("WRITING RESULT NOT SUCCESS!", HttpStatusCode.InternalServerError)
-        }
-
-        logger.error("CreateWritingBook: FAIL", {error})
-        return ServiceResult.failOne<number>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorSerialized<number>({
+            actionName: "CreateWritingBook",
+            logger,
+            error,
+            expectedErrors: [NoPracticeFound, WritingResultNotSuccess],
+            silentErrors: [NoPracticeFound, WritingResultNotSuccess]
+        })
     }
 }
 
-export async function DeleteWBookItemById(id: number) : Promise<ServiceResultBase> {
+export async function DeleteWBookItemById(id: number) : Promise<SerializedServiceResultBase> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -98,30 +83,20 @@ export async function DeleteWBookItemById(id: number) : Promise<ServiceResultBas
         // SEND COMMAND TO BUS
         await commandBus.send(validatedCommand)
 
-        return ServiceResultBase.success(HttpStatusCode.NoContent)
+        return ServiceResultBase.success(HttpStatusCode.NoContent).toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("DeleteWBookItemById: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResultBase.failOne(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof WritingBookNotFound) {
-
-            logger.error("DeleteWBookItemById: Writing book item not found!", {error})
-            return ServiceResultBase.failOne("WRITING BOOK ITEM NOT FOUND!", HttpStatusCode.NotFound)
-        }
-
-        logger.error("DeleteWBookItemById: FAIL", {error})
-        return ServiceResultBase.failOne("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorBaseSerialized({
+            actionName: "DeleteWBookItemById",
+            logger,
+            error,
+            expectedErrors: [WritingBookNotFound]
+        })
     }
 }
 
-export async function UpdateWritingBook(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
+export async function UpdateWritingBook(formData: FormData) : Promise<SerializedServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -139,47 +114,26 @@ export async function UpdateWritingBook(prevState: ServiceResult<number> | undef
         await UpdateWritingBookCommandValidator.parseAsync(plainObject)
 
         // COMMAND
-        const command = updateWritingBookCommandFactory(prevState, formData)
+        const command = updateWritingBookCommandFactory(formData)
 
         // SEND COMMAND TO BUS
         const writingBookId = await commandBus.send(command)
 
-        return ServiceResult.success<number>(writingBookId as number)
+        return ServiceResult.success<number>(writingBookId as number).toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("UpdateWritingBook: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof NoPracticeFound) {
-
-            logger.error("UpdateWritingBook: PRACTICE NOT FOUND!", {error})
-            return ServiceResult.failOne<number>(error.message, HttpStatusCode.NotFound)
-        }
-
-        if(error instanceof WritingBookNotFound) {
-
-            logger.error("UpdateWritingBook: WRITING BOOK NOT FOUND!", {error})
-            return ServiceResult.failOne<number>(error.message, HttpStatusCode.NotFound)
-        }
-
-        if(error instanceof WritingResultNotSuccess) {
-
-            logger.error("UpdateWritingBook: WRITING RESULT NOT SUCCESS!", {error})
-            return ServiceResult.failOne<number>("WRITING RESULT NOT SUCCESS!", HttpStatusCode.InternalServerError)
-        }
-
-        logger.error("UpdateWritingBook: FAIL", {error})
-        return ServiceResult.failOne<number>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorSerialized<number>({
+            actionName: "UpdateWritingBook",
+            logger,
+            error,
+            expectedErrors: [NoPracticeFound, WritingBookNotFound, WritingResultNotSuccess],
+            silentErrors: [NoPracticeFound, WritingResultNotSuccess]
+        })
     }
 }
 
-export async function GetAllWBooksWithPaging(userId: string, request: PagedRequest) : Promise<ServiceResult<PagedResult<WritingBookWithTotalCount>>> {
+export async function GetAllWBooksWithPaging(userId: string, request: PagedRequest) : Promise<SerializedServiceResult<PagedResult<WritingBookWithTotalCount>>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -199,25 +153,19 @@ export async function GetAllWBooksWithPaging(userId: string, request: PagedReque
         // SEND QUERY TO BUS
         const pagedResult = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<PagedResult<WritingBookWithTotalCount>>(pagedResult as PagedResult<WritingBookWithTotalCount>)
+        return ServiceResult.success<PagedResult<WritingBookWithTotalCount>>(pagedResult as PagedResult<WritingBookWithTotalCount>).toPlain()
         
     } catch (error) {
 
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("GetAllWBooksWithPaging: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<PagedResult<WritingBookWithTotalCount>>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        logger.error("GetAllWBooksWithPaging: FAIL", {error})
-        return ServiceResult.failOne<PagedResult<WritingBookWithTotalCount>>("SERVER ERROR!", HttpStatusCode.InternalServerError)
-        
+        return handleErrorSerialized<PagedResult<WritingBookWithTotalCount>>({
+            actionName: "GetAllWBooksWithPaging",
+            logger,
+            error
+        })
     }
 }
 
-export async function GetWBookCreateItems(userId: string, language: string, practice: string) : Promise<ServiceResult<WritingBookDto[]>> {
+export async function GetWBookCreateItems(userId: string, language: string, practice: string) : Promise<SerializedServiceResult<WritingBookDto[]>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -237,36 +185,21 @@ export async function GetWBookCreateItems(userId: string, language: string, prac
         // SEND QUERY TO BUS
         const writingBooks = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<WritingBookDto[]>(writingBooks as WritingBookDto[])
+        return ServiceResult.success<WritingBookDto[]>(writingBooks as WritingBookDto[]).toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("GetWBookCreateItems: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<WritingBookDto[]>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof NoLanguageFound) {
-
-            logger.error("GetWBookCreateItems: NO LANGUAGE FOUND!", {error})
-            return ServiceResult.failOne<WritingBookDto[]>(error.message, HttpStatusCode.NotFound)
-        }
-
-        if(error instanceof NoPracticeFound) {
-
-            logger.error("GetWBookCreateItems: NO PRACTICE FOUND!", {error})
-            return ServiceResult.failOne<WritingBookDto[]>(error.message, HttpStatusCode.NotFound)
-        }
-
-        logger.error("GetWBookCreateItems: FAIL", {error})
-        return ServiceResult.failOne<WritingBookDto[]>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorSerialized<WritingBookDto[]>({
+            actionName: "GetWBookCreateItems",
+            logger,
+            error,
+            expectedErrors: [NoLanguageFound, NoPracticeFound],
+            silentErrors: [NoLanguageFound, NoPracticeFound]
+        })
     }
 }
 
-export async function GetWritingBookById(id: number) : Promise<ServiceResult<WritingBookWithLanguageId>> {
+export async function GetWritingBookById(id: number) : Promise<SerializedServiceResult<WritingBookWithLanguageId>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -286,26 +219,15 @@ export async function GetWritingBookById(id: number) : Promise<ServiceResult<Wri
         // SEND QUERY TO BUS
         const writingBook = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<WritingBookWithLanguageId>(writingBook as WritingBookWithLanguageId)
+        return ServiceResult.success<WritingBookWithLanguageId>(writingBook as WritingBookWithLanguageId).toPlain()
         
     } catch (error) {
 
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("GetWritingBookById: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<WritingBookWithLanguageId>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof WritingBookNotFound) {
-
-            logger.error("GetWritingBookById: WRITING BOOK NOT FOUND!", {error})
-            return ServiceResult.failOne<WritingBookWithLanguageId>(error.message, HttpStatusCode.NotFound)
-        }
-
-        logger.error("GetWritingBookById: FAIL", {error})
-        return ServiceResult.failOne<WritingBookWithLanguageId>("SERVER ERROR!", HttpStatusCode.InternalServerError)
-        
+        return handleErrorSerialized<WritingBookWithLanguageId>({
+            actionName: "GetWritingBookById",
+            logger,
+            error,
+            expectedErrors: [WritingBookNotFound]
+        })
     }
 }

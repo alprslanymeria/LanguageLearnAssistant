@@ -24,5 +24,5 @@ export interface IReadingRepository {
     createAsync(data: CreateReadingData): Promise<number>
     getByIdAsync(id: number): Promise<Reading | null>
     update(id: number, data: UpdateReadingData): Promise<number>
-    delete(id: number): void
+    deleteAsync(id: number): Promise<void>
 }

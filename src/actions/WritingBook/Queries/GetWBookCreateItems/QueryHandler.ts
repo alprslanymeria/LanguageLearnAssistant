@@ -65,6 +65,7 @@ export class GetWBookCreateItemsQueryHandler implements IQueryHandler<GetWBookCr
     
         const result : WritingBookDto[] = writingBooks.map(wb => ({
 
+            id: wb.id,
             writingId: wb.writingId,
             name: wb.name,
             imageUrl: wb.imageUrl,

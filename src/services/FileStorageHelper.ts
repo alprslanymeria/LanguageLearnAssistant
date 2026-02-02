@@ -33,26 +33,37 @@ export class FileStorageHelper implements IFileStorageHelper {
 
         this.logger.info(`FileStorageHelper: Uploaded file for user ${userId} to ${fileUrl}`)
 
-        return fileUrl
+        const editedFileUrl = `https://storage.googleapis.com/create-items/${fileUrl}`
+
+        return editedFileUrl
     }
 
     async deleteFileFromStorageAsync(fileUrl: string): Promise<void> {
         
         if(!fileUrl) return
 
+        // EXTRACT FILE PATH FROM URL
+        // Remove domain and bucket name to get relative path
+        // https://storage.googleapis.com/create-items/user/folder/file -> user/folder/file
+        const filePath = fileUrl.replace("https://storage.googleapis.com/create-items/", "")
+
         try {
 
-            const fileExists = await this.storageService.fileExists(fileUrl)
+            this.logger.info(`FileStorageHelper: Deleting file at ${filePath}`)
+
+            const fileExists = await this.storageService.fileExists(filePath)
+
+            this.logger.info(`FileStorageHelper: File exists at ${filePath}: ${fileExists}`)
 
             if(!fileExists) return
 
-            await this.storageService.deleteFile(fileUrl)
+            await this.storageService.deleteFile(filePath)
 
-            this.logger.info(`FileStorageHelper: Deleted file at ${fileUrl}`)
+            this.logger.info(`FileStorageHelper: Deleted file at ${filePath}`)
             
         } catch (error) {
 
-            this.logger.error(`FileStorageHelper: Error deleting file at ${fileUrl} - ${(error as Error).message}`)
+            this.logger.error(`FileStorageHelper: Error deleting file at ${filePath} - ${(error as Error).message}`)
             
         }
 

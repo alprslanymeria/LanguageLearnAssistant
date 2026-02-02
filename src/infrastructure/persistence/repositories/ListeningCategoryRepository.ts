@@ -16,7 +16,8 @@ export class ListeningCategoryRepository implements IListeningCategoryRepository
                     userId,
                     languageId,
                     practiceId
-                }
+                },
+                deckVideos: { some: {} }
             },
             select: {
                 id: true,
@@ -77,9 +78,9 @@ export class ListeningCategoryRepository implements IListeningCategoryRepository
         return updatedListeningCategory.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.listeningCategory.delete({
+        await prisma.listeningCategory.delete({
             where: {
                 id: id
             }

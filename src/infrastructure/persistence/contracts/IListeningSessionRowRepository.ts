@@ -27,5 +27,5 @@ export interface IListeningSessionRowRepository {
     createAsync(data: CreateListeningSessionRowData): Promise<number>
     getByIdAsync(id: number): Promise<ListeningSessionRow | null>
     update(id: number, data: UpdateListeningSessionRowData): Promise<number>
-    delete(id: number): void
+    deleteAsync(id: number): Promise<void>
 }

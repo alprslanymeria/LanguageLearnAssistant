@@ -8,11 +8,14 @@ import { CreateFlashcardOldSessionData, IFlashcardOldSessionRepository, UpdateFl
 export class FlashcardOldSessionRepository implements IFlashcardOldSessionRepository {
 
 
-    async getFlashcardOldSessionsWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: FlashcardOldSession[]; totalCount: number }> {
+    async getFlashcardOldSessionsWithPagingAsync(userId: string, language: string, page: number, pageSize: number): Promise<{ items: FlashcardOldSession[]; totalCount: number }> {
         
         const whereClause = {
             flashcard: {
-                userId: userId
+                userId: userId,
+                language: {
+                    name: language
+                }
             }
         }
 
@@ -62,9 +65,9 @@ export class FlashcardOldSessionRepository implements IFlashcardOldSessionReposi
         return updatedFlashcardOldSession.oldSessionId
     }
 
-    delete(id: string): void {
+    async deleteAsync(id: string): Promise<void> {
 
-        prisma.flashcardOldSession.delete({
+        await prisma.flashcardOldSession.delete({
             where: {
                 oldSessionId: id
             }

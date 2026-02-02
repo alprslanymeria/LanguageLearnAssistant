@@ -44,16 +44,17 @@ export class UpdateFlashcardCategoryCommandHandler implements ICommandHandler<Up
 
         // FORM DATA'S
         const itemId = Number(request.formData.get("itemId"))
-        const name = request.formData.get("name")?.toString()!
+        const categoryName = request.formData.get("categoryName")?.toString()!
         const userId = request.formData.get("userId")?.toString()!
         const languageId = Number(request.formData.get("languageId"))
+        const practice = request.formData.get("practice")?.toString()!
         
         // LOG MESSAGE
         this.logger.info(`UpdateFlashcardCategoryCommandHandler: Updating flashcard category with Id ${itemId}`)
 
-        const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
+        const isPracticeExists = await this.practiceRepository.getPracticeByLanguageIdAndNameAsync(languageId, practice)
                 
-        if (!practice) throw new NoPracticeFound()
+        if (!isPracticeExists) throw new NoPracticeFound()
                     
         const existingFlashcardCategory = await this.flashcardCategoryRepository.getByIdAsync(itemId)
 
@@ -66,7 +67,7 @@ export class UpdateFlashcardCategoryCommandHandler implements ICommandHandler<Up
         // VERIFY OR CREATE FLASHCARD
         const flashcardResult = await this.entityVerificationService.verifyOrCreateFlashcardAsync(
 
-            practice.id,
+            isPracticeExists.id,
             userId,
             languageId
         )
@@ -76,7 +77,7 @@ export class UpdateFlashcardCategoryCommandHandler implements ICommandHandler<Up
 
         const data : UpdateFlashcardCategoryData = {
 
-            name: name,
+            name: categoryName,
             flashcardId: flashcardResult.data!.id            
         }
 

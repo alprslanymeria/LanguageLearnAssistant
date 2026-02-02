@@ -7,11 +7,14 @@ import { prisma } from "@/src/infrastructure/persistence/prisma"
 @injectable()
 export class ReadingOldSessionRepository implements IReadingOldSessionRepository {
 
-    async getReadingOldSessionsWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: ReadingOldSession[]; totalCount: number }> {
+    async getReadingOldSessionsWithPagingAsync(userId: string, language: string, page: number, pageSize: number): Promise<{ items: ReadingOldSession[]; totalCount: number }> {
         
         const whereClause = {
             reading: {
-                userId: userId
+                userId: userId,
+                language: {
+                    name: language
+                }
             }
         }
 
@@ -62,9 +65,9 @@ export class ReadingOldSessionRepository implements IReadingOldSessionRepository
         return updatedReadingOldSession.oldSessionId
     }
 
-    delete(id: string): void {
+    async deleteAsync(id: string): Promise<void> {
 
-        prisma.readingOldSession.delete({
+        await prisma.readingOldSession.delete({
             where: {
                 oldSessionId: id
             }

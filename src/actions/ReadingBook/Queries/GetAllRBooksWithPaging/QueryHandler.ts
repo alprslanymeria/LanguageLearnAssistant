@@ -7,6 +7,7 @@ import type { IReadingBookRepository } from "@/src/infrastructure/persistence/co
 import { ReadingBookDto, ReadingBookWithTotalCount } from "@/src/actions/ReadingBook/Response"
 import { GetAllRBooksWithPagingQuery } from "./Query"
 import { createPagedResult, PagedResult } from "@/src/infrastructure/common/pagedResult"
+import { ReadingBookNotFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
@@ -44,6 +45,7 @@ export class GetAllRBooksWithPagingQueryHandler implements IQueryHandler<GetAllR
         // MAP ITEMS TO READING BOOK DTO
         const readingBookDtos: ReadingBookDto[] = items.map(rb => ({
 
+            id: rb.id,
             readingId: rb.readingId,
             name: rb.name,
             imageUrl: rb.imageUrl,

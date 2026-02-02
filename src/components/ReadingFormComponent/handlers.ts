@@ -48,25 +48,36 @@ export async function handleTranslate(params : HandleTranslateProps) {
             setLoading({value: true , source: "ReadingHandleTranslate"})
 
             // GET TRANSLATIONS
-            const translations = await TranslateText(userId!, {
+            const response = await TranslateText(userId!, {
 
                 selectedText: sessionData.data.RSelectedText!,
                 practice: practice!,
                 language: language!
             })
 
+            if(response && response.status != HttpStatusCode.OK) {
+                            
+                if(response.shouldDisplayError) {
+    
+                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                }
+                
+                return
+            }
+
             // UPDATE SESSION DATA
             updateReadingSession({
                 data: {
-                    RTranslatedText: translations.data!.translatedText,
-                    RShowTranslation: true
+                    RTranslatedText: response.data!.translatedText,
+                    RShowTranslation: true,
+                    RShowSelectTextButton: false
                 }
             })
         }
 
     } catch (error) {
 
-        showAlert({type: "error", title: "error", message: "ERR: handleTranslate!"})
+        showAlert({type: "error", title: "error", message: "Unexpected error!"})
         
     } finally {
 
@@ -102,7 +113,7 @@ export async function calculateRate(params : CalculateRateProps) {
 
             const similarity = calculateSimilarityRate({inputOne: sessionData.data.RInputText!, inputTwo: sessionData.data.RTranslatedText!})
 
-            showAlert({type: "info", title: "info", message: `Similarity rate: ${similarity}%`})
+            showAlert({type: "info", title: "info", message: `Similarity rate: ${(similarity * 100).toFixed(2)}%`})
 
             //SAVED TO LOCAL STATE
             const row: ReadingRowItemRequest = {
@@ -119,7 +130,7 @@ export async function calculateRate(params : CalculateRateProps) {
 
     } catch (error) {
 
-        showAlert({type: "error" , title: "error", message: "Unexpected error during CalculateRate!"})
+        showAlert({type: "error" , title: "error", message: "Unexpected error!"})
         
     } finally {
 
@@ -127,7 +138,8 @@ export async function calculateRate(params : CalculateRateProps) {
             RSelectedText: "",
             RInputText: "",
             RTranslatedText: "",
-            RShowTranslation: false
+            RShowTranslation: false,
+            RShowSelectTextButton: true
         }})
 
         setLoading({value: false})
@@ -166,12 +178,46 @@ export async function closeAndSave(params : CloseAndSaveProps) {
     try {
 
         setLoading({value: true , source: "ReadingCloseAndSave"})
+
+        if(rowsToSave.rows.length === 0) {
+
+            showAlert({type: "warning", title: "warning", message: "You need at least one row to save it!"})
+
+            return
+        }
         
         //SAVE OLD SESSION
-        await CreateROS(oldSessionRow)
-            
+        const rosResponse = await CreateROS(oldSessionRow)
+
+        if(rosResponse && rosResponse.status != HttpStatusCode.Created) {
+
+            if(rosResponse.shouldDisplayError) {
+
+                showAlert({type: "error", title: "error", message: rosResponse.errorMessage![0]})
+            }
+
+            return
+        }
+
         //SAVE SENTENCES
-        await CreateRRows(rowsToSave)
+        const rowsResponse = await CreateRRows(rowsToSave)
+
+        if(rowsResponse && rowsResponse.status != HttpStatusCode.Created) {
+
+            if(rowsResponse.shouldDisplayError) {
+
+                showAlert({type: "error", title: "error", message: rowsResponse.errorMessage![0]})
+            }
+
+            return
+        }
+
+        // CHECK SOCKET SERVER CONNECTION IS ACTIVE
+        if(!socket.connected) {
+            
+            showAlert({type: "error", title: "error", message: "Socket server connection failed!"})
+            return
+        }
     
         //DELETE LIVE SESSION
         socket.emit("delete-live-session", {userId}, (response : any) => {
@@ -187,7 +233,7 @@ export async function closeAndSave(params : CloseAndSaveProps) {
 
     } catch (error) {
         
-        showAlert({type: "error", title: "error", message: "ERR: closeAndSave!"})
+        showAlert({type: "error", title: "error", message: "Unexpected error!"})
 
     } finally {
 

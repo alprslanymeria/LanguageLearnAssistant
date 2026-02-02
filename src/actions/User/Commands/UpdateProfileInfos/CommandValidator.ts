@@ -1,6 +1,5 @@
 // IMPORTS
 import { z } from "zod"
-import { UPDATE_PROFILE_INFOS_COMMAND } from "./Command"
 
 // CONSTANTS
 const ALLOWED_IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
@@ -15,8 +14,6 @@ const hasAllowedExtension = (file: File, allowed: string[]) => {
 }
 
 export const UpdateProfileInfosCommandValidator = z.object({
-
-    type: z.literal(UPDATE_PROFILE_INFOS_COMMAND),
 
     userId: z
         .string()
@@ -41,19 +38,19 @@ export const UpdateProfileInfosCommandValidator = z.object({
             message: "NATIVE LANGUAGE ID MUST BE GREATER THAN 0"
         }),
 
-    imageFile: z
+    profileImage: z
         .instanceof(File)
         .optional()
         .refine(
-          file => !file || file.size <= MAX_IMAGE_FILE_SIZE,
+          file => !file || file.size === 0 || file.name === 'blob' || file.size <= MAX_IMAGE_FILE_SIZE,
           {
-            message: "IMAGE FILE SIZE MUST NOT EXCEED 5MB"
+            message: "PROFILE IMAGE FILE SIZE MUST NOT EXCEED 5MB"
           }
         )
         .refine(
-          file => !file || hasAllowedExtension(file, ALLOWED_IMAGE_EXTENSIONS),
+          file => !file || file.size === 0 || file.name === 'blob' || hasAllowedExtension(file, ALLOWED_IMAGE_EXTENSIONS),
           {
-            message: `IMAGE FILE MUST BE ONE OF THE FOLLOWING TYPES: ${ALLOWED_IMAGE_EXTENSIONS.join(", ")}`
+            message: `PROFILE IMAGE FILE MUST BE ONE OF THE FOLLOWING TYPES: ${ALLOWED_IMAGE_EXTENSIONS.join(", ")}`
           }
         )
 })

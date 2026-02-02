@@ -1,26 +1,26 @@
 export class FlashcardResultNotSuccess extends Error {
 
-    constructor() {
+    constructor(message?: string) {
 
-        super("Flashcard result indicates failure!")
+        super(message ?? "Flashcard result indicates failure!")
         this.name = "FlashcardResultNotSuccess"
     }
 }
 
 export class ReadingResultNotSuccess extends Error {
 
-    constructor() {
+    constructor(message?: string) {
 
-        super("Reading result indicates failure!")
+        super(message ?? "Reading result indicates failure!")
         this.name = "ReadingResultNotSuccess"
     }
 }
 
 export class WritingResultNotSuccess extends Error {
 
-    constructor() {
-
-        super("Writing result indicates failure!")
+    constructor(message?: string) {
+        
+        super(message ?? "Writing result indicates failure!")
         this.name = "WritingResultNotSuccess"
     }
 }

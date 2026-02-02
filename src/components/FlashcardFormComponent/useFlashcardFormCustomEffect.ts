@@ -5,7 +5,7 @@ import { UseFlashcardFormCustomEffectProps } from "@/src/components/FlashcardFor
 
 export function useFlashcardFormCustomEffect(params : UseFlashcardFormCustomEffectProps) {
 
-    const {item, hasHydrated, updateFlashcardSession} = params
+    const {item, sessionData, hasHydrated, updateFlashcardSession} = params
 
     // SHUFFLE THE DECK & START WITH THE FIRST WORD
     useEffect(() => {
@@ -15,6 +15,9 @@ export function useFlashcardFormCustomEffect(params : UseFlashcardFormCustomEffe
         const kese = [item]
 
         if(kese.some(k => !k)) return
+
+        // IF DECK ALREADY SHUFFLED, DO NOT SHUFFLE AGAIN
+        if(sessionData && sessionData.type === "flashcard" && sessionData.data.FShuffledWords.length > 0) return
     
         const shuffled = [...item.deckWords].sort(() => Math.random() - 0.5)
 

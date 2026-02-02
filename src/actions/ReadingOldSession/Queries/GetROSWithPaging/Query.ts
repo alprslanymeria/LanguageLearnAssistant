@@ -10,5 +10,6 @@ export interface GetROSWithPagingQuery extends IQuery<PagedResult<ReadingOldSess
 
     readonly type: typeof GET_ROS_WITH_PAGING_QUERY
     request: PagedRequest
+    language: string
     userId: string
 }

@@ -43,21 +43,22 @@ export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<Cr
     async Handle(request: CreateFlashcardCategoryCommand): Promise<number> {
 
         // FORM DATA'S
-        const name = request.formData.get("name")?.toString()!
+        const categoryName = request.formData.get("categoryName")?.toString()!
         const userId = request.formData.get("userId")?.toString()!
         const languageId = Number(request.formData.get("languageId"))
+        const practice = request.formData.get("practice")?.toString()!
 
         
         // LOG MESSAGE
-        this.logger.info(`CreateFlashcardCategoryCommandHandler: Creating flashcard category with name  ${name}`)
+        this.logger.info(`CreateFlashcardCategoryCommandHandler: Creating flashcard category with name  ${categoryName}`)
 
-        const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
+        const isPracticeExists = await this.practiceRepository.getPracticeByLanguageIdAndNameAsync(languageId, practice)
 
-        if (!practice) throw new NoPracticeFound()
+        if (!isPracticeExists) throw new NoPracticeFound()
     
         const flashcardResult = await this.entityVerificationService.verifyOrCreateFlashcardAsync(
 
-            practice.id,
+            isPracticeExists.id,
             userId,
             languageId
         )
@@ -67,7 +68,7 @@ export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<Cr
              
         const data : CreateFlashcardCategoryData = {
 
-            name: name,
+            name: categoryName,
             flashcardId: flashcardResult.data!.id,
         }
 
@@ -76,7 +77,7 @@ export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<Cr
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.flashcardCategory.prefix)
 
-        this.logger.info(`CreateFlashcardCategoryCommandHandler: Successfully created flashcard category with name  ${name}`)
+        this.logger.info(`CreateFlashcardCategoryCommandHandler: Successfully created flashcard category with name  ${categoryName}`)
     
         return flashcardCategoryId
     }

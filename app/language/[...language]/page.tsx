@@ -3,7 +3,7 @@
 // REACT & NEXT
 import { useParams, useRouter } from "next/navigation"
 // ASSETS
-import Fonts from "@/public/fonts/fonts"
+import {Fonts} from "@/public/fonts/fonts"
 // COMPONENTS
 import InfoMessageComponent from "@/src/components/InfoMessageComponent/infoMessage"
 import Loader from "@/src/components/loader"

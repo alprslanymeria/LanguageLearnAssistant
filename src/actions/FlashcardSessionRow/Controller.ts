@@ -1,7 +1,6 @@
 "use server"
 
-import { ZodError } from "zod"
-import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
+import { SerializedServiceResult, ServiceResult } from "@/src/infrastructure/common/ServiceResult"
 import { SaveFlashcardRowsRequest } from "@/src/actions/FlashcardSessionRow/Request"
 import container from "@/src/di/container"
 import { TYPES } from "@/src/di/type"
@@ -9,14 +8,15 @@ import { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { CommandBus } from "@/src/infrastructure/mediatR/CommandBus"
 import { createFRowsCommandFactory } from "@/src/actions/FlashcardSessionRow/Commands/CreateFRows/CommandFactory"
 import { CreateFRowsCommandValidator } from "@/src/actions/FlashcardSessionRow/Commands/CreateFRows/CommandValidator"
-import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 import { FlashcardOldSessionNotFound } from "@/src/exceptions/NotFound"
 import { PagedRequest } from "@/src/infrastructure/common/pagedRequest"
 import { FlashcardRowsResponse } from "@/src/actions/FlashcardSessionRow/Response"
 import { getFWordsByIdWithPagingQuery } from "@/src/actions/FlashcardSessionRow/Queries/GetFRowsByIdWithPaging/QueryFactory"
 import { GetFWordsByIdWithPagingQueryValidator } from "@/src/actions/FlashcardSessionRow/Queries/GetFRowsByIdWithPaging/QueryValidator"
+import { QueryBus } from "@/src/infrastructure/mediatR/QueryBus"
+import { handleErrorSerialized } from "@/src/infrastructure/common/ErrorHandler"
 
-export async function CreateFRows(request: SaveFlashcardRowsRequest) : Promise<ServiceResult<number>> {
+export async function CreateFRows(request: SaveFlashcardRowsRequest) : Promise<SerializedServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -36,34 +36,25 @@ export async function CreateFRows(request: SaveFlashcardRowsRequest) : Promise<S
         // SEND COMMAND TO BUS
         const createdRowsCount = await commandBus.send(validatedCommand)
 
-        return ServiceResult.successAsCreated<number>(createdRowsCount as number, "")
+        return ServiceResult.successAsCreated<number>(createdRowsCount as number, "").toPlain()
         
     } catch (error) {
 
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("CreateFRows: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof FlashcardOldSessionNotFound) {
-
-            logger.error("CreateFRows: Flashcard old session not found!", {error})
-            return ServiceResult.failOne<number>("Flashcard old session not found!", HttpStatusCode.NotFound)
-        }
-
-        logger.error("CreateFRows: FAIL", {error})
-        return ServiceResult.failOne<number>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorSerialized<number>({
+            actionName: "CreateFRows",
+            logger,
+            error,
+            expectedErrors: [FlashcardOldSessionNotFound],
+            silentErrors: [FlashcardOldSessionNotFound]
+        })
     }
 }
 
-export async function GetFRowsByIdWithPaging(oldSessionId: string, request: PagedRequest) : Promise<ServiceResult<FlashcardRowsResponse>> {
+export async function GetFRowsByIdWithPaging(oldSessionId: string, request: PagedRequest) : Promise<SerializedServiceResult<FlashcardRowsResponse>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
-    const queryBus = container.get<CommandBus>(TYPES.QueryBus)
+    const queryBus = container.get<QueryBus>(TYPES.QueryBus)
 
     try {
 
@@ -79,25 +70,16 @@ export async function GetFRowsByIdWithPaging(oldSessionId: string, request: Page
         // SEND QUERY TO BUS
         const flashcardRowsResponse = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<FlashcardRowsResponse>(flashcardRowsResponse as FlashcardRowsResponse)
+        return ServiceResult.success<FlashcardRowsResponse>(flashcardRowsResponse as FlashcardRowsResponse).toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("GetFWordsByIdWithPaging: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<FlashcardRowsResponse>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof FlashcardOldSessionNotFound) {
-
-            logger.error("GetFWordsByIdWithPaging: Flashcard old session not found!", {error})
-            return ServiceResult.failOne<FlashcardRowsResponse>("Flashcard old session not found!", HttpStatusCode.NotFound)
-        }
-
-        logger.error("GetFWordsByIdWithPaging: FAIL", {error})
-        return ServiceResult.failOne<FlashcardRowsResponse>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorSerialized<FlashcardRowsResponse>({
+            actionName: "GetFRowsByIdWithPaging",
+            logger,
+            error,
+            expectedErrors: [FlashcardOldSessionNotFound],
+            silentErrors: [FlashcardOldSessionNotFound]
+        })
     }
 }

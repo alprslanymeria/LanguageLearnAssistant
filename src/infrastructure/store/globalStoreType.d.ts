@@ -42,6 +42,7 @@ type ReadingSession = {
 
   type: "reading"
   data: {
+    RShowSelectTextButton: boolean
     RShowTranslation: boolean
     RSelectedText: string
     RInputText: string
@@ -54,6 +55,7 @@ type WritingSession = {
 
   type: "writing"
   data: {
+    WShowSelectTextButton: boolean
     WShowTranslation: boolean
     WSelectedText: string
     WInputText: string

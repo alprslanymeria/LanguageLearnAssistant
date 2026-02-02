@@ -24,6 +24,13 @@ export async function handleLogout(params : HandleLogoutProps) {
 
         setLoading({value: true , source: "EmailHandleLogout"})
 
+        // CHECK SOCKET SERVER CONNECTION IS ACTIVE
+        if(!socket.connected) {
+            
+            showAlert({type: "error", title: "error", message: "Socket server connection failed!"})
+            return
+        }
+
         // CHECK IF REQUEST COME FROM /SESSION
         if(pathName.startsWith('/session'))
         {
@@ -41,7 +48,7 @@ export async function handleLogout(params : HandleLogoutProps) {
         
     } catch (error) {
 
-        showAlert({type: "error" , title: "error" , message: "Unexpected error during logout!"})
+        showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
         
     } finally {
 

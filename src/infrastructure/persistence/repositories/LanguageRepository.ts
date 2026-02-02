@@ -68,9 +68,9 @@ export class LanguageRepository implements ILanguageRepository {
         return updatedLanguage.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.language.delete({
+        await prisma.language.delete({
             where: {
                 id: id
             }

@@ -47,6 +47,7 @@ export class GetReadingBookByIdQueryHandler implements IQueryHandler<GetReadingB
 
         const response: ReadingBookWithLanguageId = {
 
+            id: readingBook.id,
             readingId: readingBook.readingId,
             name: readingBook.name,
             imageUrl: readingBook.imageUrl,

@@ -3,7 +3,7 @@ import { injectable } from "inversify"
 import { FlashcardCategory } from "@/src/generated/prisma/client"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
 import { CreateFlashcardCategoryData, FlashcardCategoryWithLanguage, IFlashcardCategoryRepository, UpdateFlashcardCategoryData } from "@/src/infrastructure/persistence/contracts/IFlashcardCategoryRepository"
-import { FlashcardCategoryWithDeckWords } from "@/src/actions/FlashcardCategory/Response"
+import { FlashcardCategoryWithDeckWords, FlashcardCategoryWithLanguageId } from "@/src/actions/FlashcardCategory/Response"
 
 @injectable()
 export class FlashcardCategoryRepository implements IFlashcardCategoryRepository {
@@ -27,7 +27,7 @@ export class FlashcardCategoryRepository implements IFlashcardCategoryRepository
         })
     }
 
-    async getAllFCategoriesAsync(userId: string): Promise<{ items: FlashcardCategory[]; totalCount: number }> {
+    async getAllFCategoriesAsync(userId: string): Promise<{ items: FlashcardCategoryWithLanguageId[]; totalCount: number }> {
         
         const whereClause = {
             flashcard: {
@@ -39,10 +39,27 @@ export class FlashcardCategoryRepository implements IFlashcardCategoryRepository
             where: whereClause
         })
 
-        const items = await prisma.flashcardCategory.findMany({
+        const rawItems = await prisma.flashcardCategory.findMany({
             where: whereClause,
-            orderBy: { id: 'desc' }
+            orderBy: { id: 'desc' },
+            select: {
+                id: true,
+                name: true,
+                flashcardId: true,
+                flashcard: {
+                    select: {
+                        languageId: true
+                    }
+                }
+            }
         })
+
+        const items = rawItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            flashcardId: item.flashcardId,
+            languageId: item.flashcard.languageId
+        }))
 
         return { items, totalCount }
     }
@@ -78,7 +95,8 @@ export class FlashcardCategoryRepository implements IFlashcardCategoryRepository
                     userId,
                     languageId,
                     practiceId
-                }
+                },
+                deckWords: { some: {} }
             },
             select: {
                 id: true,
@@ -139,9 +157,9 @@ export class FlashcardCategoryRepository implements IFlashcardCategoryRepository
         return updatedFlashcardCategory.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.flashcardCategory.delete({
+        await prisma.flashcardCategory.delete({
             where: {
                 id: id
             }

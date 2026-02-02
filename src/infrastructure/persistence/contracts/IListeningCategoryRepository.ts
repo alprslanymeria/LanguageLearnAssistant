@@ -24,5 +24,5 @@ export interface IListeningCategoryRepository {
     createAsync(data: CreateListeningCategoryData): Promise<number>
     getByIdAsync(id: number): Promise<ListeningCategory | null>
     update(id: number, data: UpdateListeningCategoryData): Promise<number>
-    delete(id: number): void
+    deleteAsync(id: number): Promise<void>
 }

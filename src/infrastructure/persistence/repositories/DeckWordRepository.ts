@@ -91,9 +91,9 @@ export class DeckWordRepository implements IDeckWordRepository {
         return updatedDeckWord.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.deckWord.delete({
+        await prisma.deckWord.delete({
             where: {
                 id: id
             }

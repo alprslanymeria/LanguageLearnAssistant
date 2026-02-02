@@ -10,6 +10,7 @@ export type WritingBookDto = {
 
 export type WritingBookWithLanguageId = {
 
+    id: number
     writingId: number
     name: string
     imageUrl: string

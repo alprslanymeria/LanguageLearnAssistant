@@ -34,12 +34,12 @@ export class GetLOSWithPagingQueryHandler implements IQueryHandler<GetLOSWithPag
         // LOG MESSAGE
         this.logger.info(`GetLOSWithPagingQueryHandler: Fetching listening old sessions with paging for user!`)
 
-        const {items, totalCount} = await this.listeningOldSessionRepository.getListeningOldSessionsWithPagingAsync(request.userId, request.request.page, request.request.pageSize)
+        const {items, totalCount} = await this.listeningOldSessionRepository.getListeningOldSessionsWithPagingAsync(request.userId, request.language, request.request.page, request.request.pageSize)
     
         // MAP ITEMS TO LISTENING OLDSESSION DTO
         const listeningOldSessionDtos : ListeningOldSessionDto[] = items.map(los => ({
 
-            id: los.oldSessionId,
+            oldSessionId: los.oldSessionId,
             listeningId: los.listeningId,
             listeningCategoryId: los.categoryId,
             rate: los.rate.toNumber(),

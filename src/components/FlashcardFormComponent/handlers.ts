@@ -52,7 +52,7 @@ export function handleClick(params : HandleClickProps) {
         
     } catch (error) {
 
-        showAlert({type: "error", title: "error", message: "ERR: HandleClick!"})
+        showAlert({type: "error", title: "error", message: "Unexpected error!"})
     }
 
 }
@@ -100,7 +100,7 @@ export function handleNextClick(params : HandleNextClickProps) {
         
     } catch (error) {
         
-        showAlert({type: "error", title: "error", message: "ERR: HandleNextClick!"})
+        showAlert({type: "error", title: "error", message: "Unexpected error!"})
     }
 }
 
@@ -138,11 +138,45 @@ export async function handleCloseClick(params : HandleCloseClickProps) {
 
         setLoading({value: true , source: "HandleCloseClick"})
 
+        if(rowsToSave.rows.length === 0) {
+
+            showAlert({type: "warning", title: "warning", message: "You need at least one row to save it!"})
+
+            return
+        }
+
         //SAVE OLD SESSION
-        await CreateFOS(oldSessionRow)
+        const fosResponse = await CreateFOS(oldSessionRow)
+
+        if(fosResponse && fosResponse.status != HttpStatusCode.Created) {
+
+            if(fosResponse.shouldDisplayError) {
+
+                showAlert({type: "error", title: "error", message: fosResponse.errorMessage![0]})
+            }
+
+            return
+        }
 
         //SAVE WORDS
-        await CreateFRows(rowsToSave)
+        const rowsResponse = await CreateFRows(rowsToSave)
+
+        if(rowsResponse && rowsResponse.status != HttpStatusCode.Created) {
+
+            if(rowsResponse.shouldDisplayError) {
+
+                showAlert({type: "error", title: "error", message: rowsResponse.errorMessage![0]})
+            }
+
+            return
+        }
+
+        // CHECK SOCKET SERVER CONNECTION IS ACTIVE
+        if(!socket.connected) {
+            
+            showAlert({type: "error", title: "error", message: "Socket server connection failed!"})
+            return
+        }
 
         //DELETE LIVE SESSION
         socket.emit("delete-live-session", {userId}, (response : any) => {
@@ -158,7 +192,7 @@ export async function handleCloseClick(params : HandleCloseClickProps) {
         
     } catch (error) {
 
-        showAlert({type: "error", title: "error", message: "ERR: handleCloseClick!"})
+        showAlert({type: "error", title: "error", message: "Unexpected error!"})
         
     } finally {
 

@@ -16,7 +16,7 @@ export function calculateSimilarityRate(params : {inputOne: string, inputTwo: st
 
     const similarity = stringSimilarity.compareTwoStrings(params.inputOne, params.inputTwo)
 
-    return (similarity * 100).toFixed(2) as unknown as number
+    return similarity
 }
 
 // FOR READING & WRITING & LISTENING SUCCESS RATE

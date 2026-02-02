@@ -54,9 +54,9 @@ export class FlashcardRepository implements IFlashcardRepository {
         return updatedFlashcard.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.flashcard.delete({
+        await prisma.flashcard.delete({
             where: {
                 id: id
             }

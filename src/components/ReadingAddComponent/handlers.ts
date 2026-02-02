@@ -1,6 +1,28 @@
 // TYPES
-import { HandleFileChangeOneProps, HandleFileChangeTwoProps } from "@/src/components/ReadingAddComponent/prop"
+import { CreateReadingBook } from "@/src/actions/ReadingBook/Controller"
+import { HandleFileChangeOneProps, HandleFileChangeTwoProps, HandleSubmitProps } from "@/src/components/ReadingAddComponent/prop"
 
+export async function handleSubmit( params: HandleSubmitProps) {
+
+    const {e, dispatch, setLoading} = params
+
+    const kese = [e]
+
+    if(kese.some(k => !k)) return
+
+    e.preventDefault()
+
+    setLoading({value: true , source: "ReadingAddHandleSubmit"})
+
+    const formData = new FormData(e.currentTarget)
+
+    const response =  await CreateReadingBook( formData )
+
+    dispatch({type: "SET_STATE", payload: {state: response}})
+
+    setLoading({value: false})
+
+}
 
 export function handleFileChangeOne(params : HandleFileChangeOneProps) {
 
@@ -32,6 +54,7 @@ export function handleFileChangeOne(params : HandleFileChangeOneProps) {
         }
 
 
+        dispatch({ type: "SET_FILE_ERROR", payload: { fileError: "" } })
         dispatch({type: "SET_FILE_ONE", payload: {fileOne: file}})
     }
 
@@ -69,6 +92,7 @@ export function handleFileChangeTwo(params : HandleFileChangeTwoProps) {
             return
         }
 
+        dispatch({ type: "SET_FILE_ERROR", payload: { fileError: "" } })
         dispatch({type: "SET_FILE_TWO", payload: {fileTwo: file}})
     }
 }

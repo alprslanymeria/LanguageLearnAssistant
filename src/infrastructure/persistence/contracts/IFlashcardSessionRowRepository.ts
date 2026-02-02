@@ -27,5 +27,5 @@ export interface IFlashcardSessionRowRepository {
     createAsync(data: CreateFlashcardSessionRowData): Promise<number>
     getByIdAsync(id: number): Promise<FlashcardSessionRow | null>
     update(id: number, data: UpdateFlashcardSessionRowData): Promise<number>
-    delete(id: number): void
+    deleteAsync(id: number): Promise<void>
 }

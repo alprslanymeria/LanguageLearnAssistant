@@ -10,7 +10,8 @@ const initialState: State = {
   user: null,
   profileImage: null,
   name: "",
-  nativeLanguageId: 0
+  nativeLanguageId: 0,
+  state: undefined
 }
 
 function reducer(state: State, action: Action): State {
@@ -25,7 +26,9 @@ function reducer(state: State, action: Action): State {
     case "SET_NAME":
       return { ...state, name: action.payload.name }
     case "SET_NATIVE_LANGUAGE_ID":
-    return { ...state, nativeLanguageId: action.payload.nativeLanguageId }
+      return { ...state, nativeLanguageId: action.payload.nativeLanguageId }
+    case "SET_STATE":
+      return { ...state, state: action.payload.state }
     default:
       return state
   }

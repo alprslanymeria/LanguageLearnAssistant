@@ -7,11 +7,14 @@ import { ListeningOldSession } from "@/src/generated/prisma/client"
 @injectable()
 export class ListeningOldSessionRepository implements IListeningOldSessionRepository {
 
-    async getListeningOldSessionsWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: ListeningOldSession[]; totalCount: number }> {
+    async getListeningOldSessionsWithPagingAsync(userId: string, language: string, page: number, pageSize: number): Promise<{ items: ListeningOldSession[]; totalCount: number }> {
         
         const whereClause = {
             listening: {
-                userId: userId
+                userId: userId,
+                language: {
+                    name: language
+                }
             }
         }
 
@@ -62,9 +65,9 @@ export class ListeningOldSessionRepository implements IListeningOldSessionReposi
         return updatedListeningOldSession.oldSessionId
     }
 
-    delete(id: string): void {
+    async deleteAsync(id: string): Promise<void> {
 
-        prisma.listeningOldSession.delete({
+        await prisma.listeningOldSession.delete({
             where: {
                 oldSessionId: id
             }

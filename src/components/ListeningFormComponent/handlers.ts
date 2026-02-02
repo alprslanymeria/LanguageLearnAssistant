@@ -93,7 +93,7 @@ export async function calculateRate(params : CalculateRateProps) {
 
             const similarity = calculateSimilarityRate({inputOne: sessionData.data.LTextHeardByUser, inputTwo: correct})
 
-            showAlert({type: "info", title: "info", message: `Similarity rate: ${similarity}%`})
+            showAlert({type: "info", title: "info", message: `Similarity rate: ${(similarity * 100).toFixed(2)}%`})
 
             // SAVED TO LOCAL STATE
             const row : ListeningRowItemRequest = {
@@ -109,7 +109,7 @@ export async function calculateRate(params : CalculateRateProps) {
         
     } catch (error) {
         
-        showAlert({type: "error" , title: "error", message: "Unexpected error during CalculateRate!"})
+        showAlert({type: "error" , title: "error", message: "Unexpected error!"})
     
     } finally {
 
@@ -152,19 +152,53 @@ export async function closeAndSave(params : CloseAndSaveProps) {
 
     const rowsToSave : SaveListeningRowsRequest = {
 
-        listeningSessionId: oldSessionId!,
+        listeningOldSessionId: oldSessionId!,
         rows: sessionData!.rows as ListeningRowItemRequest[]
     }
 
     try {
 
         setLoading({value: true , source: "ListeningCloseAndSave"})
+
+        if(rowsToSave.rows.length === 0) {
+
+            showAlert({type: "warning", title: "warning", message: "You need at least one row to save it!"})
+
+            return
+        }
                 
         //SAVE OLD SESSION
-        await CreateLOS(oldSessionRow)
-            
+        const losResponse = await CreateLOS(oldSessionRow)
+
+        if(losResponse && losResponse.status != HttpStatusCode.Created) {
+
+            if(losResponse.shouldDisplayError) {
+
+                showAlert({type: "error", title: "error", message: losResponse.errorMessage![0]})
+            }
+
+            return
+        }
+
         //SAVE SENTENCES
-        await CreateLRows(rowsToSave)
+        const rowsResponse = await CreateLRows(rowsToSave)
+
+        if(rowsResponse && rowsResponse.status != HttpStatusCode.Created) {
+
+            if(rowsResponse.shouldDisplayError) {
+
+                showAlert({type: "error", title: "error", message: rowsResponse.errorMessage![0]})
+            }
+
+            return
+        }
+
+        // CHECK SOCKET SERVER CONNECTION IS ACTIVE
+        if(!socket.connected) {
+            
+            showAlert({type: "error", title: "error", message: "Socket server connection failed!"})
+            return
+        }
     
         //DELETE LIVE SESSION
         socket.emit("delete-live-session", {userId}, (response : any) => {
@@ -180,7 +214,7 @@ export async function closeAndSave(params : CloseAndSaveProps) {
         
     } catch (error) {
 
-        showAlert({type: "error", title: "error", message: "ERR: closeAndSave!"})
+        showAlert({type: "error", title: "error", message: "Unexpected error!"})
         
     } finally {
 

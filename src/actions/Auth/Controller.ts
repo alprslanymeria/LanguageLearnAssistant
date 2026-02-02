@@ -1,7 +1,6 @@
 "use server"
 
 // IMPORTS
-import { ZodError } from "zod"
 import { APIError } from "better-auth"
 import { TYPES } from "@/src/di/type"
 import container from "@/src/di/container"
@@ -15,6 +14,7 @@ import { signUpCommandFactory } from "@/src/actions/Auth/Commands/SignUp/Command
 import { UserAlreadyExist } from "@/src/exceptions/AlreadyExist"
 import { ServiceResultBase } from "@/src/infrastructure/common/ServiceResult"
 import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
+import { handleErrorBaseSerialized } from "@/src/infrastructure/common/ErrorHandler"
 
 
 export async function SignIn(request: SignInRequest) {
@@ -37,28 +37,16 @@ export async function SignIn(request: SignInRequest) {
         // SEND COMMAND TO BUS
         await commandBus.send(validatedCommand)
 
-        return ServiceResultBase.success()        
+        return ServiceResultBase.success().toPlain()        
         
     } catch (error) {
 
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("Signin: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResultBase.failOne(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof APIError) {
-
-            logger.error("Signin: API ERROR", {error})
-            // SHOW TO USER
-            return ServiceResultBase.failOne(error.message, HttpStatusCode.BadRequest)
-        }
-
-        logger.error("SignIn: FAIL", {error})
-        return ServiceResultBase.failOne("SERVER ERROR!", HttpStatusCode.InternalServerError)
-        
+        return handleErrorBaseSerialized({
+            actionName: "SignIn",
+            logger,
+            error,
+            expectedErrors: [APIError]
+        })
     }
 }
 
@@ -83,34 +71,16 @@ export async function SignUp(request: SignUpRequest) {
         // SEND COMMAND TO BUS
         await commandBus.send(validatedCommand)
 
-        return ServiceResultBase.success(HttpStatusCode.Created)
+        return ServiceResultBase.success(HttpStatusCode.Created).toPlain()
         
     } catch (error) {
         
-        if (error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("Signup: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResultBase.failOne(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof APIError) {
-
-            logger.error("Signup: API ERROR", {error})
-            // SHOW TO USER
-            return ServiceResultBase.failOne(error.message, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof UserAlreadyExist) {
-
-            logger.error("Signup: USER ALREADY EXISTS", {error})
-            // SHOW TO USER
-            return ServiceResultBase.failOne(error.message, HttpStatusCode.BadRequest)
-        }
-
-        logger.error("SignUp: FAIL", {error})
-        return ServiceResultBase.failOne("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorBaseSerialized({
+            actionName: "SignUp",
+            logger,
+            error,
+            expectedErrors: [APIError, UserAlreadyExist]
+        })
     }
     
 }

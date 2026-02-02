@@ -1,6 +1,6 @@
 // IMPORTS
 import { inject, injectable } from "inversify"
-import { FlashcardCategoryDto, FlashcardCategoryWithTotalCount } from "@/src/actions/FlashcardCategory/Response"
+import { FlashcardCategoryWithLanguageId, FlashcardCategoryWithLanguageIds } from "@/src/actions/FlashcardCategory/Response"
 import { GetAllFCategoriesQuery } from "./Query"
 import { IQueryHandler } from "@/src/infrastructure/mediatR/IQuery"
 import type { IFlashcardCategoryRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardCategoryRepository"
@@ -8,7 +8,7 @@ import type { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { TYPES } from "@/src/di/type"
 
 @injectable()
-export class GetAllFCategoriesQueryHandler implements IQueryHandler<GetAllFCategoriesQuery, FlashcardCategoryWithTotalCount> {
+export class GetAllFCategoriesQueryHandler implements IQueryHandler<GetAllFCategoriesQuery, FlashcardCategoryWithLanguageIds> {
 
     // FIELDS
     private readonly logger : ILogger
@@ -27,7 +27,7 @@ export class GetAllFCategoriesQueryHandler implements IQueryHandler<GetAllFCateg
         
     }
 
-    async Handle(request: GetAllFCategoriesQuery): Promise<FlashcardCategoryWithTotalCount> {
+    async Handle(request: GetAllFCategoriesQuery): Promise<FlashcardCategoryWithLanguageIds> {
         
         const userId = request.userId
 
@@ -38,13 +38,15 @@ export class GetAllFCategoriesQueryHandler implements IQueryHandler<GetAllFCateg
         this.logger.info(`GetAllFCategoriesQueryHandler: Successfully fetched ${items.length} flashcard categories for UserId ${userId}`)
 
         // MAP ITEMS TO FLASHCARD CATEGORY DTO
-        const flashcardCategoryDtos : FlashcardCategoryDto[] = items.map(fc => ({
+        const flashcardCategoryDtos : FlashcardCategoryWithLanguageId[] = items.map(fc => ({
 
+            id: fc.id,
             flashcardId: fc.flashcardId,
-            name: fc.name
+            name: fc.name,
+            languageId: fc.languageId
         }))
 
-        const response: FlashcardCategoryWithTotalCount = {
+        const response: FlashcardCategoryWithLanguageIds = {
 
             flashcardCategoryDtos,
             totalCount

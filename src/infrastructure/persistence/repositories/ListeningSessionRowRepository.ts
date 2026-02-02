@@ -65,9 +65,9 @@ export class ListeningSessionRowRepository implements IListeningSessionRowReposi
         return updatedListeningSessionRow.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.listeningSessionRow.delete({
+        await prisma.listeningSessionRow.delete({
             where: {
                 id: id
             }

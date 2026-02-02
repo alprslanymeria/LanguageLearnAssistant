@@ -3,6 +3,7 @@
 // REACT & NEXT
 import Link from 'next/link'
 import { Suspense } from 'react'
+import { useRouter } from 'next/navigation'
 // COMPONENTS
 import { GoogleLogo } from "@/src/components/svg/googleSvg"
 import Loader from '@/src/components/loader'
@@ -26,6 +27,7 @@ function SignupPage() {
     const {state , dispatch} = useSignupReducer()
     const { showAlert } = useAlert()
     const {isLoading, loadingSource, setLoading} = useLoading()
+    const router = useRouter()
 
     // STORE
     const hasHydrated = GlobalStore((state) => state.HasHydrated)
@@ -47,7 +49,7 @@ function SignupPage() {
         <div className="flex items-center justify-center">
             <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
                 <h2 className="text-2xl font-bold text-center">Sign Up</h2>
-                <form className="space-y-4" method="POST" onSubmit={(e) => handleSubmit({e, dispatch, setLoading})}>
+                <form className="space-y-4" method="POST" onSubmit={(e) => handleSubmit({e, router, dispatch, setLoading})}>
                     <input type="hidden" name="operation" value={"signup"} />
                     <div>
                         {state.authError && <p className="text-sm text-red-500 text-center">{state.authError}</p>}

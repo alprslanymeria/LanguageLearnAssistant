@@ -78,14 +78,16 @@ export default function ReadingFormComponent({dispatch} : ReadingFormComponentPr
                             
                             {/* //BUTTONS */}
                             <div className='flex flex-wrap gap-4 justify-around'>
-                                
-                                <button 
-                                
-                                    onClick={() => handleTextSelection({updateReadingSession})} 
-                                    className="w-full lg:flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200"
-                                >
-                                    Select Text
-                                </button>
+
+                                {sessionData.data.RShowSelectTextButton && (
+
+                                    <button 
+                                        onClick={() => handleTextSelection({updateReadingSession})} 
+                                        className="w-full lg:flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200"
+                                    >
+                                        Select Text
+                                    </button>
+                                )}
 
                                 {sessionData.data.RInputText && (
                                     <button 

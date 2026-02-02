@@ -6,29 +6,30 @@ export const TranslateTextQueryValidator = z.object({
 
     type: z.literal(TRANSLATE_TEXT_QUERY),
 
-    categoryId: z
-        .number()
-        .int()
-        .gt(0, {
-            message: "CATEGORY ID MUST BE GREATER THAN 0"
+    userId: z
+        .string()
+        .min(1, {
+            message: "USER ID MUST NOT BE EMPTY"
     }),
 
     request: z.object({
-        page: z
-        .number()
-        .int()
-        .gt(0, {
-            message: "PAGE MUST BE GREATER THAN 0"
+        
+        selectedText: z
+        .string()
+        .min(1, {
+            message: "SELECTED TEXT MUST NOT BE EMPTY"
         }),
 
-        pageSize: z
-        .number()
-        .int()
-        .gt(0, {
-            message: "PAGE SIZE MUST BE GREATER THAN 0"
-        })
-        .lte(100, {
-            message: "PAGE SIZE MUST NOT EXCEED 100"
+        practice: z
+        .string()
+        .min(1, {
+            message: "SELECTED TEXT MUST NOT BE EMPTY"
+        }),
+
+        language: z
+        .string()
+        .min(1, {
+            message: "LANGUAGE MUST NOT BE EMPTY"
         })
         
     })

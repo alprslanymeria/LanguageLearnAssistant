@@ -55,7 +55,7 @@ export class UpdateProfileInfosHandler implements ICommandHandler<UpdateProfileI
         var newImageUrl
 
         // UPDATE IMAGE IF NEW FILE PROVIDED
-        if(imageFile) {
+        if(imageFile && imageFile.size > 0) {
 
             this.logger.info(`UpdateProfileInfosHandler: Processing new profile image for User ID ${userId}`)
 

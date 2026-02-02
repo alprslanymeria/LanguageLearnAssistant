@@ -1,7 +1,6 @@
 "use server"
 
-import { ZodError } from "zod"
-import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
+import { SerializedServiceResult, ServiceResult } from "@/src/infrastructure/common/ServiceResult"
 import { PracticeDto } from "@/src/actions/Practice/Response"
 import container from "@/src/di/container"
 import { TYPES } from "@/src/di/type"
@@ -10,9 +9,9 @@ import { QueryBus } from "@/src/infrastructure/mediatR/QueryBus"
 import { getPracticesByLanguageQuery } from "@/src/actions/Practice/Queries/GetPracticesByLanguage/QueryFactory"
 import { GetPracticesByLanguageQueryValidator } from "@/src/actions/Practice/Queries/GetPracticesByLanguage/QueryValidator"
 import { NoLanguageFound } from "@/src/exceptions/NotFound"
-import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
+import { handleErrorSerialized } from "@/src/infrastructure/common/ErrorHandler"
 
-export async function GetPracticesByLanguage(language: string) : Promise<ServiceResult<PracticeDto[]>> {
+export async function GetPracticesByLanguage(language: string) : Promise<SerializedServiceResult<PracticeDto[]>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -32,26 +31,18 @@ export async function GetPracticesByLanguage(language: string) : Promise<Service
         // SEND QUERY TO BUS
         const practices = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<PracticeDto[]>(practices as PracticeDto[])
+        return ServiceResult.success<PracticeDto[]>(practices as PracticeDto[]).toPlain()
 
     } catch (error) {
 
-        if(error instanceof ZodError) {
+        return handleErrorSerialized<PracticeDto[]>({
 
-            const firstError = error.issues?.[0]?.message
-            logger.error("GetPracticesByLanguage: INVALID QUERY DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<PracticeDto[]>(firstError, HttpStatusCode.BadRequest)
-        }
+            actionName: "GetPracticesByLanguage",
+            logger,
+            error,
+            expectedErrors: [NoLanguageFound],
+            silentErrors: [NoLanguageFound]
+        })
 
-        if(error instanceof NoLanguageFound) {
-
-            logger.error("GetPracticesByLanguage: No language found!", {error})
-            return ServiceResult.failOne<PracticeDto[]>("No language found!", HttpStatusCode.NotFound)
-        }
-
-        logger.error("GetPracticesByLanguage: FAIL", {error})
-        return ServiceResult.failOne<PracticeDto[]>("SERVER ERROR!" , HttpStatusCode.InternalServerError)
-        
     }
 }

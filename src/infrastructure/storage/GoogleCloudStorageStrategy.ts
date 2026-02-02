@@ -10,6 +10,7 @@ export class GoogleCloudStorageStrategy implements IStorageStrategy {
 
     // FIELDS
     type: StorageType = 'gcloud'
+    private readonly bucket: Bucket
 
     // CTOR
     constructor(
@@ -17,10 +18,12 @@ export class GoogleCloudStorageStrategy implements IStorageStrategy {
         @inject(TYPES.GoogleCloudClient) 
         private readonly storage: Storage,
         @inject(TYPES.BucketName)
-        private readonly bucketName: string,
-        private readonly bucket : Bucket = this.storage.bucket(this.bucketName)
+        private readonly bucketName: string
 
-    ) {}
+    ) {
+
+        this.bucket = this.storage.bucket(this.bucketName)
+    }
 
     // UTILS
     async getPublicUrl(filePath: string): Promise<string> {

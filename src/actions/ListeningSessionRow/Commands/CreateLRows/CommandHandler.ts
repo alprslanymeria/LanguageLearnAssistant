@@ -34,20 +34,20 @@ export class CreateLRowsCommandHandler implements ICommandHandler<CreateLRowsCom
     async Handle(request: CreateLRowsCommand): Promise<number> {
         
         // LOG MESSAGE
-        this.logger.info(`CreateLRowsCommandHandler: Creating listening session rows for listening old session with Id ${request.request.listeningSessionId}`)
+        this.logger.info(`CreateLRowsCommandHandler: Creating listening session rows for listening old session with Id ${request.request.listeningOldSessionId}`)
     
-        const session = await this.listeningOldSessionRepository.getByIdAsync(request.request.listeningSessionId)
+        const session = await this.listeningOldSessionRepository.getByIdAsync(request.request.listeningOldSessionId)
     
         // FAST FAIL
         if(!session) {
 
-            this.logger.error(`CreateLRowsCommandHandler: Listening old session with Id ${request.request.listeningSessionId} not found!`)
+            this.logger.error(`CreateLRowsCommandHandler: Listening old session with Id ${request.request.listeningOldSessionId} not found!`)
             throw new ListeningOldSessionNotFound()
         }
 
         const rows : CreateListeningSessionRowData[] = request.request.rows.map(row => ({
 
-            oldSessionId: request.request.listeningSessionId,
+            oldSessionId: request.request.listeningOldSessionId,
             listenedSentence: row.listenedSentence,
             answer: row.answer,
             similarity: row.similarity
@@ -55,7 +55,7 @@ export class CreateLRowsCommandHandler implements ICommandHandler<CreateLRowsCom
 
         await this.listeningSessionRowRepository.createRangeAsync(rows)
 
-        this.logger.info(`CreateLRowsCommandHandler: Successfully created listening session rows for listening old session with Id ${request.request.listeningSessionId}`)
+        this.logger.info(`CreateLRowsCommandHandler: Successfully created listening session rows for listening old session with Id ${request.request.listeningOldSessionId}`)
 
         return rows.length
     }

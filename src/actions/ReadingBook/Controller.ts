@@ -1,9 +1,8 @@
 "use server"
 
-import { ZodError } from "zod"
 import container from "@/src/di/container"
 import { TYPES } from "@/src/di/type"
-import { ServiceResult, ServiceResultBase } from "@/src/infrastructure/common/ServiceResult"
+import { SerializedServiceResult, SerializedServiceResultBase, ServiceResult, ServiceResultBase } from "@/src/infrastructure/common/ServiceResult"
 import { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { CommandBus } from "@/src/infrastructure/mediatR/CommandBus"
 import { createReadingBookCommandFactory } from "@/src/actions/ReadingBook/Commands/CreateReadingBook/CommandFactory"
@@ -24,8 +23,10 @@ import { getRBookCreateItemsQuery } from "@/src/actions/ReadingBook/Queries/GetR
 import { GetRBookCreateItemsQueryValidator } from "@/src/actions/ReadingBook/Queries/GetRBookCreateItems/QueryValidator"
 import { getReadingBookByIdQuery } from "@/src/actions/ReadingBook/Queries/GetReadingBookById/QueryFactory"
 import { GetReadingBookByIdQueryValidator } from "@/src/actions/ReadingBook/Queries/GetReadingBookById/QueryValidator"
+import { QueryBus } from "@/src/infrastructure/mediatR/QueryBus"
+import { handleErrorBaseSerialized, handleErrorSerialized } from "@/src/infrastructure/common/ErrorHandler"
 
-export async function CreateReadingBook(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
+export async function CreateReadingBook(formData: FormData) : Promise<SerializedServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -39,46 +40,32 @@ export async function CreateReadingBook(prevState: ServiceResult<number> | undef
         // TURN FORM DATA TO PLAIN OBJECT
         const plainObject = Object.fromEntries(formData.entries())
 
+        logger.info("CreateReadingBook: CreateReadingBookRequest plainObject data:", {plainObject})
+
         // ZOD VALIDATION
         await CreateReadingBookCommandValidator.parseAsync(plainObject)
 
         // COMMAND
-        const command = createReadingBookCommandFactory(prevState, formData)
+        const command = createReadingBookCommandFactory(formData)
 
         // SEND COMMAND TO BUS
         const readingBookId = await commandBus.send(command)
 
-        return ServiceResult.successAsCreated<number>(readingBookId as number, "")
+        return ServiceResult.successAsCreated<number>(readingBookId as number, "").toPlain()
         
     } catch (error) {
 
-        if(error instanceof ZodError) {
-        
-            const firstError = error.issues?.[0]?.message
-            logger.error("CreateReadingBook: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof NoPracticeFound) {
-
-            logger.error("CreateReadingBook: No practice found!", {error})
-            return ServiceResult.failOne<number>("No practice found!", HttpStatusCode.NotFound)
-        }
-
-        if(error instanceof ReadingResultNotSuccess) {
-
-            logger.error("CreateReadingBook: Reading verification failed.", {error})
-            return ServiceResult.failOne<number>("Reading verification failed.", HttpStatusCode.BadRequest)
-        }
-
-        logger.error("CreateReadingBook: FAIL", {error})
-        return ServiceResult.failOne<number>("SERVER ERROR!", HttpStatusCode.InternalServerError)
-        
+        return handleErrorSerialized<number>({
+            actionName: "CreateReadingBook",
+            logger,
+            error,
+            expectedErrors: [NoPracticeFound, ReadingResultNotSuccess],
+            silentErrors: [NoPracticeFound, ReadingResultNotSuccess]
+        })
     }
 }
 
-export async function DeleteRBookItemById(id : number) : Promise<ServiceResultBase> {
+export async function DeleteRBookItemById(id : number) : Promise<SerializedServiceResultBase> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -98,31 +85,20 @@ export async function DeleteRBookItemById(id : number) : Promise<ServiceResultBa
         // SEND COMMAND TO BUS
         await commandBus.send(validatedCommand)
         
-        return ServiceResultBase.success(HttpStatusCode.NoContent)
+        return ServiceResultBase.success(HttpStatusCode.NoContent).toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("DeleteRBookItemById: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResultBase.failOne(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof ReadingBookNotFound) {
-
-            logger.error("DeleteRBookItemById: Reading book item not found!", {error})
-            return ServiceResultBase.failOne("Reading book item not found!", HttpStatusCode.NotFound)
-        }
-
-        logger.error("DeleteRBookItemById: FAIL", {error})
-        return ServiceResultBase.failOne("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorBaseSerialized({
+            actionName: "DeleteRBookItemById",
+            logger,
+            error,
+            expectedErrors: [ReadingBookNotFound]
+        })
     }
-
 }
 
-export async function UpdateReadingBook(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
+export async function UpdateReadingBook(formData: FormData) : Promise<SerializedServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -140,52 +116,30 @@ export async function UpdateReadingBook(prevState: ServiceResult<number> | undef
         await UpdateReadingBookCommandValidator.parseAsync(plainObject)
 
         // COMMAND
-        const command = updateReadingBookCommandFactory(prevState, formData)
+        const command = updateReadingBookCommandFactory(formData)
 
         // SEND COMMAND TO BUS
         const readingBookId = await commandBus.send(command)
 
-        return ServiceResult.success<number>(readingBookId as number)
+        return ServiceResult.success<number>(readingBookId as number).toPlain()
         
     } catch (error) {
 
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("UpdateReadingBook: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof NoPracticeFound) {
-
-            logger.error("UpdateReadingBook: No practice found!", {error})
-            return ServiceResult.failOne<number>("No practice found!", HttpStatusCode.NotFound)
-        }
-
-        if(error instanceof ReadingBookNotFound) {
-
-            logger.error("UpdateReadingBook: Reading book not found!", {error})
-            return ServiceResult.failOne<number>("Reading book not found!", HttpStatusCode.NotFound)
-        }
-
-        if(error instanceof ReadingResultNotSuccess) {
-
-            logger.error("UpdateReadingBook: Reading verification failed.", {error})
-            return ServiceResult.failOne<number>("Reading verification failed.", HttpStatusCode.BadRequest)
-        }
-
-        logger.error("UpdateReadingBook: FAIL", {error})
-        return ServiceResult.failOne<number>("SERVER ERROR!", HttpStatusCode.InternalServerError)
-        
+        return handleErrorSerialized<number>({
+            actionName: "UpdateReadingBook",
+            logger,
+            error,
+            expectedErrors: [NoPracticeFound, ReadingBookNotFound, ReadingResultNotSuccess],
+            silentErrors: [NoPracticeFound, ReadingResultNotSuccess]
+        })
     }
 }
 
-export async function GetAllRBooksWithPaging(userId: string, request: PagedRequest) : Promise<ServiceResult<PagedResult<ReadingBookWithTotalCount>>> {
+export async function GetAllRBooksWithPaging(userId: string, request: PagedRequest) : Promise<SerializedServiceResult<PagedResult<ReadingBookWithTotalCount>>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
-    const queryBus = container.get<CommandBus>(TYPES.QueryBus)
+    const queryBus = container.get<QueryBus>(TYPES.QueryBus)
 
     try {
 
@@ -201,29 +155,24 @@ export async function GetAllRBooksWithPaging(userId: string, request: PagedReque
         // SEND QUERY TO BUS
         const pagedResult = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<PagedResult<ReadingBookWithTotalCount>>(pagedResult as PagedResult<ReadingBookWithTotalCount>)
+        return ServiceResult.success<PagedResult<ReadingBookWithTotalCount>>(pagedResult as PagedResult<ReadingBookWithTotalCount>).toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
+        return handleErrorSerialized<PagedResult<ReadingBookWithTotalCount>>({
 
-            const firstError = error.issues?.[0]?.message
-            logger.error("GetAllRBooksWithPaging: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<PagedResult<ReadingBookWithTotalCount>>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        logger.error("GetAllRBooksWithPaging: FAIL", {error})
-        return ServiceResult.failOne<PagedResult<ReadingBookWithTotalCount>>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+            actionName: "GetAllRBooksWithPaging",
+            logger,
+            error
+        })
     }
-    
 }
 
-export async function GetRBookCreateItems(userId: string, language: string, practice: string) : Promise<ServiceResult<ReadingBookDto[]>> {
+export async function GetRBookCreateItems(userId: string, language: string, practice: string) : Promise<SerializedServiceResult<ReadingBookDto[]>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
-    const queryBus = container.get<CommandBus>(TYPES.QueryBus)
+    const queryBus = container.get<QueryBus>(TYPES.QueryBus)
 
     try {
 
@@ -239,40 +188,25 @@ export async function GetRBookCreateItems(userId: string, language: string, prac
         // SEND QUERY TO BUS
         const readingBooks = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<ReadingBookDto[]>(readingBooks as ReadingBookDto[])
+        return ServiceResult.success<ReadingBookDto[]>(readingBooks as ReadingBookDto[]).toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("GetRBookCreateItems: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<ReadingBookDto[]>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof NoLanguageFound) {
-
-            logger.error("GetRBookCreateItems: No language found!", {error})
-            return ServiceResult.failOne<ReadingBookDto[]>("No language found!", HttpStatusCode.NotFound)
-        }
-
-        if(error instanceof NoPracticeFound) {
-
-            logger.error("GetRBookCreateItems: No practice found!", {error})
-            return ServiceResult.failOne<ReadingBookDto[]>("No practice found!", HttpStatusCode.NotFound)
-        }
-
-        logger.error("GetRBookCreateItems: FAIL", {error})
-        return ServiceResult.failOne<ReadingBookDto[]>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorSerialized<ReadingBookDto[]>({
+            actionName: "GetRBookCreateItems",
+            logger,
+            error,
+            expectedErrors: [NoLanguageFound, NoPracticeFound],
+            silentErrors: [NoLanguageFound, NoPracticeFound]
+        })
     }
 }
 
-export async function GetReadingBookById(id: number) : Promise<ServiceResult<ReadingBookWithLanguageId>> {
+export async function GetReadingBookById(id: number) : Promise<SerializedServiceResult<ReadingBookWithLanguageId>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
-    const queryBus = container.get<CommandBus>(TYPES.QueryBus)
+    const queryBus = container.get<QueryBus>(TYPES.QueryBus)
 
     try {
 
@@ -288,25 +222,16 @@ export async function GetReadingBookById(id: number) : Promise<ServiceResult<Rea
         // SEND QUERY TO BUS
         const readingBook = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<ReadingBookWithLanguageId>(readingBook as ReadingBookWithLanguageId)
+        return ServiceResult.success<ReadingBookWithLanguageId>(readingBook as ReadingBookWithLanguageId).toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("GetReadingBookById: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<ReadingBookWithLanguageId>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof ReadingBookNotFound) {
-
-            logger.error("GetReadingBookById: Reading book not found!", {error})
-            return ServiceResult.failOne<ReadingBookWithLanguageId>("Reading book not found!", HttpStatusCode.NotFound)
-        }
-
-        logger.error("GetReadingBookById: FAIL", {error})
-        return ServiceResult.failOne<ReadingBookWithLanguageId>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorSerialized<ReadingBookWithLanguageId>({
+            
+            actionName: "GetReadingBookById",
+            logger,
+            error,
+            expectedErrors: [ReadingBookNotFound]
+        })
     }
 }

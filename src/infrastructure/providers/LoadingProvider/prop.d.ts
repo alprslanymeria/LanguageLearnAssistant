@@ -2,7 +2,8 @@
 export type LoadingSource = 
   "page" | "EmailHandleLogout" | "MenuHandleLogout" | "HandleStartClick" | "HandleCloseClick" | "ListeningCalculateRate" | "ListeningCloseAndSave" |
   "HandleDelete" | "ReadingHandleTranslate" | "ReadingCalculateRate" | "ReadingCloseAndSave" | "WritingHandleTranslate" | "WritingCalculateRate" | "WritingCloseAndSave" |
-  "ChooseHandler" | "LoginHandleSubmit" | "SignupHandleSubmit" | "HandleSave"
+  "ChooseHandler" | "LoginHandleSubmit" | "SignupHandleSubmit" | "HandleSave" | "ReadingAddHandleSubmit" | "ReadingEditHandleSubmit" | "WritingAddHandleSubmit" | "WritingEditHandleSubmit"
+  | "FlashcardAddHandleSubmit" | "FlashcardEditHandleSubmit" | "DeckWordAddHandleSubmit" | "DeckWordEditHandleSubmit" | "ProfileHandleSubmit"
 
 
 export type setLoadingProps = {

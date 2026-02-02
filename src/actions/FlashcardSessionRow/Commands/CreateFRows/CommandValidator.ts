@@ -20,7 +20,9 @@ export const FlashcardRowItemRequestValidator = z.object({
         })
         .max(500, {
             message: "ANSWER MUST NOT EXCEED 500 CHARACTERS."
-        })
+        }),
+
+    status: z.boolean()
 })
 
 export const CreateFRowsCommandValidator = z.object({

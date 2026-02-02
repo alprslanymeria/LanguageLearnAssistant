@@ -43,7 +43,8 @@ export class GetAllDWordsWithPagingQueryHandler implements IQueryHandler<GetAllD
         // MAP ITMES TO DECK WORD DTO
         const deckWordDtos : DeckWordDto[] = items.map(dw => ({
 
-            flashcardCategoryId: dw.categoryId,
+            id: dw.id,
+            categoryId: dw.categoryId,
             question: dw.question,
             answer: dw.answer
         }))

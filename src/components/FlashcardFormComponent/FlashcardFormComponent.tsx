@@ -37,7 +37,7 @@ export default function FlashcardFormComponent({dispatch} : FlashcardFormCompone
 
 
     //USE EFFECT
-    useFlashcardFormCustomEffect({item, hasHydrated, updateFlashcardSession})
+    useFlashcardFormCustomEffect({item, sessionData, hasHydrated, updateFlashcardSession})
     
 
     return (

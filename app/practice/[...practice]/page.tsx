@@ -4,7 +4,7 @@
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 // ASSETS
-import Fonts from "@/public/fonts/fonts"
+import {Fonts} from "@/public/fonts/fonts"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"

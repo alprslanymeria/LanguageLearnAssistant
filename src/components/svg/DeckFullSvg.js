@@ -1,7 +1,6 @@
 "use client"
 
-import React from 'react'
-import { markazi } from '@/public/fonts'
+import { Fonts } from '@/public/fonts/fonts'
 
 
 const DeckFullSvg = ({ text1, text2, language, category }) => {
@@ -73,7 +72,7 @@ const DeckFullSvg = ({ text1, text2, language, category }) => {
     
     <text x="225" y="150" fill="black" fontSize="40" fontFamily="Arial" transform="rotate(-6, 225, 150)" textAnchor="middle" dominantBaseline="middle">{text1}</text>
     <text x="225" y="330" fill="black" fontSize="40" fontFamily="Arial" transform="rotate(-6, 225, 330)" textAnchor="middle" dominantBaseline="middle">{text2}</text>
-    <text className={`${markazi.className}`} x="250" y="925" fill="black" fontSize="60" fontFamily="Arial" transform="rotate(-6, 225, 925)" textAnchor="middle" dominantBaseline="middle">{category}</text>
+    <text className={`${Fonts.markazi.className}`} x="250" y="925" fill="black" fontSize="60" fontFamily="Arial" transform="rotate(-6, 225, 925)" textAnchor="middle" dominantBaseline="middle">{category}</text>
 
     </svg>
 

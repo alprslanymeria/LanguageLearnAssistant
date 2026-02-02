@@ -1,4 +1,4 @@
-import { TranslateService } from "../services/translate/TranslateService";
+import { DeckVideoRepository } from "../infrastructure/persistence/repositories/DeckVideoRepository";
 
 export const TYPES = {
 
@@ -35,6 +35,7 @@ export const TYPES = {
 
   // REPOSITORIES
   DeckWordRepository: Symbol.for('DeckWordRepository'),
+  DeckVideoRepository: Symbol.for('DeckVideoRepository'),
   FlashcardCategoryRepository: Symbol.for('FlashcardCategoryRepository'),
   FlashcardOldSessionRepository: Symbol.for('FlashcardOldSessionRepository'),
   FlashcardRepository: Symbol.for('FlashcardRepository'),
@@ -62,5 +63,6 @@ export const TYPES = {
   // SERVICES
   EntityVerificationService: Symbol.for('EntityVerificationService'),
   ImageProcessingService: Symbol.for('ImageProcessingService'),
-  FileStorageHelper: Symbol.for('FileStorageHelper')
+  FileStorageHelper: Symbol.for('FileStorageHelper'),
+  InitialDataService: Symbol.for('InitialDataService')
 };

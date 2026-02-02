@@ -7,6 +7,13 @@ import { User } from "@/src/generated/prisma/client"
 @injectable()
 export class UserRepository implements IUserRepository {
 
+    async findByEmail(email: string): Promise<User | null> {
+        
+        return await prisma.user.findUnique({
+            where: { email }
+        })
+    }
+
     async isUserExist(id: string): Promise<boolean> {
         
         const isUserExist = await prisma.user.findFirst({
@@ -53,9 +60,9 @@ export class UserRepository implements IUserRepository {
         return updatedUser.id
     }
 
-    delete(user: User): void {
+    async deleteAsync(user: User): Promise<void> {
 
-        prisma.user.delete({
+        await prisma.user.delete({
             where: {
                 id: user.id
             }

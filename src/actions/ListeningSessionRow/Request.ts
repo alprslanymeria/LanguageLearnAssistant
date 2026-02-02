@@ -7,6 +7,6 @@ export type ListeningRowItemRequest = {
 
 export type SaveListeningRowsRequest = {
 
-    listeningSessionId: string
+    listeningOldSessionId: string
     rows: ListeningRowItemRequest[]
 }

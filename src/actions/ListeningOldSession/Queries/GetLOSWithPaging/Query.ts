@@ -11,4 +11,5 @@ export interface GetLOSWithPagingQuery extends IQuery<PagedResult<ListeningOldSe
     readonly type: typeof GET_LOS_WITH_PAGING_QUERY
     request: PagedRequest
     userId: string
+    language: string
 }

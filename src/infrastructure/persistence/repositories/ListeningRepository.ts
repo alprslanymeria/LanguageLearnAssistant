@@ -7,6 +7,20 @@ import { prisma } from "@/src/infrastructure/persistence/prisma"
 @injectable()
 export class ListeningRepository implements IListeningRepository {
 
+    async getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Listening | null> {
+            
+        const listening = await prisma.listening.findFirst({
+
+            where: {
+                practiceId: practiceId,
+                userId: userId,
+                languageId: languageId
+            }
+        })
+
+        return listening
+    }
+
     async createAsync(data: CreateListeningData): Promise<number> {
     
         const created = await prisma.listening.create({
@@ -40,9 +54,9 @@ export class ListeningRepository implements IListeningRepository {
         return updatedListening.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.listening.delete({
+        await prisma.listening.delete({
             where: {
                 id: id
             }

@@ -66,6 +66,7 @@ export class GetRBookCreateItemsQueryHandler implements IQueryHandler<GetRBookCr
     
         const result : ReadingBookDto[] = readingBooks.map(rb => ({
 
+            id: rb.id,
             readingId: rb.readingId,
             name: rb.name,
             imageUrl: rb.imageUrl,

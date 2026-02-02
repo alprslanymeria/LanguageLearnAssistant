@@ -6,7 +6,6 @@ import { LanguageDto } from "@/src/actions/Language/Response"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { TYPES } from "@/src/di/type"
 import type { ILanguageRepository } from "@/src/infrastructure/persistence/contracts/ILanguageRepository"
-import { NoLanguageFound } from "@/src/exceptions/NotFound"
 
 @injectable()
 export class GetLanguagesQueryHandler implements IQueryHandler<GetLanguagesQuery, LanguageDto[]> {
@@ -35,7 +34,7 @@ export class GetLanguagesQueryHandler implements IQueryHandler<GetLanguagesQuery
         // GET LANGUAGES FROM REPOSITORY
         const languages = await this.languageRepository.getAll()
 
-        if(languages.length === 0) throw new NoLanguageFound()
+        this.logger.info(`languages: ${JSON.stringify(languages)}`)
 
         this.logger.info(`GetLanguagesQueryHandler: Retrieved ${languages.length} languages from repository`)
 

@@ -1,6 +1,28 @@
 // TYPES
-import { HandleFileChangeOneProps, HandleFileChangeTwoProps } from "@/src/components/ReadingEditComponent/prop"
+import { UpdateReadingBook } from "@/src/actions/ReadingBook/Controller"
+import { HandleFileChangeOneProps, HandleFileChangeTwoProps, HandleSubmitProps } from "@/src/components/ReadingEditComponent/prop"
 
+export async function handleSubmit( params: HandleSubmitProps) {
+
+    const {e, dispatch, setLoading} = params
+
+    const kese = [e]
+
+    if(kese.some(k => !k)) return
+
+    e.preventDefault()
+
+    setLoading({value: true , source: "ReadingEditHandleSubmit"})
+
+    const formData = new FormData(e.currentTarget)
+
+    const response =  await UpdateReadingBook( formData )
+
+    dispatch({type: "SET_STATE", payload: {state: response}})
+
+    setLoading({value: false})
+
+}
 
 export function handleFileChangeOne(params : HandleFileChangeOneProps) {
 
@@ -30,7 +52,6 @@ export function handleFileChangeOne(params : HandleFileChangeOneProps) {
             dispatch({type: "SET_FILE_ERROR" , payload: {fileError: "You can only upload PNG and JPG files!"}})
             return
         }
-
 
         dispatch({type: "SET_FILE_ONE", payload: {fileOne: file}})
     }

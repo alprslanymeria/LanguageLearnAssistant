@@ -12,6 +12,12 @@ export const GetWOSWithPagingQueryValidator = z.object({
             message: "USER ID IS REQUIRED"
         }),
 
+    language: z
+        .string()
+        .min(1, {
+            message: "LANGUAGE IS REQUIRED"
+        }),
+
     request: z.object({
         page: z
             .number()

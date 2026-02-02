@@ -17,6 +17,7 @@ export interface IPracticeRepository {
 
     // HELPER
     getPracticesByLanguageAsync(language: string): Promise<Practice[]>
+    getPracticeByLanguageIdAndNameAsync(languageId: number, name: string): Promise<Practice | null>
     existsByLanguageIdAsync(languageId: number): Promise<Practice | null>
     existsByNameAndLanguageIdAsync(name: string, languageId: number): Promise<Practice | null>
 
@@ -24,5 +25,5 @@ export interface IPracticeRepository {
     createAsync(data: CreatePracticeData): Promise<number>
     getByIdAsync(id: number): Promise<Practice | null>
     update(id: number, data: UpdatePracticeData): Promise<number>
-    delete(id: number): void
+    deleteAsync(id: number): Promise<void>
 }

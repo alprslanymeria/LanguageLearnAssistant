@@ -1,30 +1,23 @@
 "use client"
 
-// REACT & NEXT
-import { useActionState } from "react"
-import { useRouter } from "next/navigation"
 // BETTER AUTH
 import { authClient } from "@/src/infrastructure/auth/auth-client"
-// PRISMA
-import { FlashcardCategory } from "@prisma/client"
-// ACTIONS
-import { CreateDeckWord, UpdateDeckWord } from "@/src/actions/DeckWord/Controller"
 // TYPES
 import { WordEditComponentProps } from "@/src/components/WordEditComponent/prop"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useWordEditReducer } from "@/src/components/WordEditComponent/useWordEditReducer"
 import { useWordEditCustomEffect } from "@/src/components/WordEditComponent/useWordEditCustomEffect"
+import { handleSubmit } from "./handlers"
 // PROVIDERS
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // COMPONENTS
 import Loader from "@/src/components/loader"
+// TYPES
+import { FlashcardCategoryWithLanguageId } from "@/src/actions/FlashcardCategory/Response"
 
 
 export default function WordEditComponent ({ itemId } : WordEditComponentProps) {
-
-    // ACTION
-    const [state, formAction, isPending] = useActionState(UpdateDeckWord, undefined)
 
     //SESSION
     const {data: session, isPending: isPendingBetterAuth} = authClient.useSession() 
@@ -34,10 +27,9 @@ export default function WordEditComponent ({ itemId } : WordEditComponentProps) 
     const {states , dispatch} = useWordEditReducer()
     const {showAlert} = useAlert()
     const {isLoading , loadingSource, setLoading} = useLoading()
-    const router = useRouter()
 
     // USE EFFECT
-    useWordEditCustomEffect({userId, router, state, itemId, setLoading, showAlert, dispatch})
+    useWordEditCustomEffect({userId, state: states.state, itemId, setLoading, showAlert, dispatch})
 
     if(isLoading && loadingSource === "page" ) return <Loader/>
 
@@ -48,7 +40,7 @@ export default function WordEditComponent ({ itemId } : WordEditComponentProps) 
             <div className="p-6">
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Edit Word</h2>
 
-                <form action={formAction} className="space-y-6">
+                <form className="space-y-6" method="POST" onSubmit={(e) => handleSubmit({ e, dispatch, setLoading })}>
 
                     {/* HIDDEN DATA'S*/}
                     <input type="hidden" name="userId" value={userId} />
@@ -76,7 +68,7 @@ export default function WordEditComponent ({ itemId } : WordEditComponentProps) 
                                         .filter(language => language.name && language.name.length > 0)
                                         .slice(0, 4)
                                         .map((language, index) => (
-                                            <option key={index} value={index}>{language.name.charAt(0).toUpperCase() + language.name.slice(1).toLowerCase()}</option>
+                                            <option key={index} value={language.id}>{language.name.charAt(0).toUpperCase() + language.name.slice(1).toLowerCase()}</option>
                                         ))
                             }
         
@@ -100,8 +92,8 @@ export default function WordEditComponent ({ itemId } : WordEditComponentProps) 
                             required
                         >
                             {states.categories.flashcardCategoryDtos
-                                .filter((category: any) => String(category.flashcard.languageId) === String(states.languageId))
-                                .map( (category : FlashcardCategory) => ( <option key={category.id} value={category.id}>{category.name}</option>
+                                .filter((category: FlashcardCategoryWithLanguageId) => String(category.languageId) === String(states.languageId))
+                                .map( (category : FlashcardCategoryWithLanguageId) => ( <option key={category.id} value={category.id}>{category.name}</option>
                             ))}
                         </select>
                     </div>
@@ -147,12 +139,12 @@ export default function WordEditComponent ({ itemId } : WordEditComponentProps) 
                     </div>
         
                     <button
-                        disabled= {isPending || isPendingBetterAuth}
+                        disabled= {(isLoading && loadingSource === "DeckWordEditHandleSubmit") || isPendingBetterAuth}
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                     >
 
-                        {isPending ? (
+                        {isLoading && loadingSource === "DeckWordEditHandleSubmit" ? (
                                 <div className="flex items-center justify-center">
                                     <div className="w-6 h-6 border-4 border-white-500 border-t-transparent rounded-full animate-spin"/>
                                 </div>

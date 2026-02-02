@@ -17,6 +17,7 @@ export type FlashcardFormComponentProps = {
 export type UseFlashcardFormCustomEffectProps = {
 
     item: FlashcardCategoryWithDeckWords
+    sessionData: SessionData
     hasHydrated: boolean
     updateFlashcardSession: (update: { data?: Partial<FlashcardSession["data"]>, rows?: FlashcardRowItemRequest[] }) => void
 }

@@ -1,18 +1,21 @@
 // IMPORTS
 import { z } from "zod"
-import { CREATE_FLASHCARD_CATEGORY_COMMAND } from "./Command"
 
 export const createFlashcardCategoryCommandValidator = z.object({
 
-  type: z.literal(CREATE_FLASHCARD_CATEGORY_COMMAND),
-
-  name: z
+  categoryName: z
     .string()
     .min(1, {
-      message: "NAME IS REQUIRED"
+      message: "CATEGORY NAME IS REQUIRED"
     })
     .max(200, {
-      message: "NAME MUST NOT EXCEED 200 CHARACTERS"
+      message: "CATEGORY NAME MUST NOT EXCEED 200 CHARACTERS"
+    }),
+  
+  practice: z
+    .string()
+    .min(1, {
+      message: "PRACTICE IS REQUIRED"
     }),
 
   userId: z

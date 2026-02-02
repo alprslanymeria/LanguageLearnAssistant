@@ -1,3 +1,5 @@
+import 'server-only'
+
 // IMPORTS
 import { Container } from "inversify"
 import { IContainerModule } from "@/src/di/IContainerModule"
@@ -24,12 +26,14 @@ import { WritingOldSessionRepository } from "@/src/infrastructure/persistence/re
 import { WritingRepository } from "@/src/infrastructure/persistence/repositories/WritingRepository"
 import { WritingSessionRowRepository } from "@/src/infrastructure/persistence/repositories/WritingSessionRowRepository"
 import { FlashcardRepository } from "@/src/infrastructure/persistence/repositories/FlashcardRepository"
+import { DeckVideoRepository } from '@/src/infrastructure/persistence/repositories/DeckVideoRepository'
 
 export class RepositoryModule implements IContainerModule {
 
     register(container: Container): void {
 
         container.bind<DeckWordRepository>(TYPES.DeckWordRepository).to(DeckWordRepository)
+        container.bind<DeckVideoRepository>(TYPES.DeckVideoRepository).to(DeckVideoRepository)
         container.bind<FlashcardCategoryRepository>(TYPES.FlashcardCategoryRepository).to(FlashcardCategoryRepository)
         container.bind<FlashcardOldSessionRepository>(TYPES.FlashcardOldSessionRepository).to(FlashcardOldSessionRepository)
         container.bind<FlashcardRepository>(TYPES.FlashcardRepository).to(FlashcardRepository)

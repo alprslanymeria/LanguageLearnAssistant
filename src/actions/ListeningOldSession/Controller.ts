@@ -1,7 +1,6 @@
 "use server"
 
-import { ZodError } from "zod"
-import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
+import { SerializedServiceResult, ServiceResult } from "@/src/infrastructure/common/ServiceResult"
 import { SaveListeningOldSessionRequest } from "@/src/actions/ListeningOldSession/Request"
 import { createLOSCommandFactory } from "@/src/actions/ListeningOldSession/Commands/CreateLOS/CommandFactory"
 import container from "@/src/di/container"
@@ -10,15 +9,15 @@ import { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { CommandBus } from "@/src/infrastructure/mediatR/CommandBus"
 import { CreateLOSCommandValidator } from "@/src/actions/ListeningOldSession/Commands/CreateLOS/CommandValidator"
 import { ListeningCategoryNotFound, ListeningNotFound } from "@/src/exceptions/NotFound"
-import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 import { PagedRequest } from "@/src/infrastructure/common/pagedRequest"
 import { PagedResult } from "@/src/infrastructure/common/pagedResult"
 import { QueryBus } from "@/src/infrastructure/mediatR/QueryBus"
 import { ListeningOldSessionWithTotalCount } from "@/src/actions/ListeningOldSession/Response"
 import { getLOSWithPagingQuery } from "@/src/actions/ListeningOldSession/Queries/GetLOSWithPaging/QueryFactory"
 import { GetLOSWithPagingQueryValidator } from "@/src/actions/ListeningOldSession/Queries/GetLOSWithPaging/QueryValidator"
+import { handleErrorSerialized } from "@/src/infrastructure/common/ErrorHandler"
 
-export async function CreateLOS(request: SaveListeningOldSessionRequest) : Promise<ServiceResult<string>> {
+export async function CreateLOS(request: SaveListeningOldSessionRequest) : Promise<SerializedServiceResult<string>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -38,36 +37,21 @@ export async function CreateLOS(request: SaveListeningOldSessionRequest) : Promi
         // SEND COMMAND TO BUS
         const losId = await commandBus.send(validatedCommand)
 
-        return ServiceResult.successAsCreated<string>(losId as string, "")
+        return ServiceResult.successAsCreated<string>(losId as string, "").toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("CreateLOS: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<string>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof ListeningNotFound) {
-
-            logger.error("CreateLOS: LISTENING NOT FOUND!", {error})
-            return ServiceResult.failOne<string>(error.message, HttpStatusCode.NotFound)
-        }
-
-        if(error instanceof ListeningCategoryNotFound) {
-
-            logger.error("CreateLOS: LISTENING CATEGORY NOT FOUND!", {error})
-            return ServiceResult.failOne<string>(error.message, HttpStatusCode.NotFound)
-        }
-
-        logger.error("CreateLOS: FAIL", {error})
-        return ServiceResult.failOne<string>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorSerialized<string>({
+            actionName: "CreateLOS",
+            logger,
+            error,
+            expectedErrors: [ListeningNotFound, ListeningCategoryNotFound],
+            silentErrors: [ListeningNotFound, ListeningCategoryNotFound]
+        })
     }
 }
 
-export async function GetLOSWithPaging(userId: string, request: PagedRequest) : Promise<ServiceResult<PagedResult<ListeningOldSessionWithTotalCount>>> {
+export async function GetLOSWithPaging(userId: string, language: string, request: PagedRequest) : Promise<SerializedServiceResult<PagedResult<ListeningOldSessionWithTotalCount>>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -79,7 +63,7 @@ export async function GetLOSWithPaging(userId: string, request: PagedRequest) : 
         logger.info("GetLOSWithPaging: userId and PagedRequest data:", {userId, request})
 
         // QUERY
-        const query = getLOSWithPagingQuery(userId, request)
+        const query = getLOSWithPagingQuery(userId, language, request)
 
         // ZOD VALIDATION
         const validatedQuery = await GetLOSWithPagingQueryValidator.parseAsync(query)
@@ -87,20 +71,14 @@ export async function GetLOSWithPaging(userId: string, request: PagedRequest) : 
         // SEND QUERY TO BUS
         const pagedResult = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<PagedResult<ListeningOldSessionWithTotalCount>>(pagedResult as PagedResult<ListeningOldSessionWithTotalCount>)
+        return ServiceResult.success<PagedResult<ListeningOldSessionWithTotalCount>>(pagedResult as PagedResult<ListeningOldSessionWithTotalCount>).toPlain()
         
     } catch (error) {
 
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("GetLOSWithPaging: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<PagedResult<ListeningOldSessionWithTotalCount>>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        logger.error("GetLOSWithPaging: FAIL", {error})
-        return ServiceResult.failOne<PagedResult<ListeningOldSessionWithTotalCount>>("SERVER ERROR!", HttpStatusCode.InternalServerError)
-        
+        return handleErrorSerialized<PagedResult<ListeningOldSessionWithTotalCount>>({
+            actionName: "GetLOSWithPaging",
+            logger,
+            error
+        })
     }
 }

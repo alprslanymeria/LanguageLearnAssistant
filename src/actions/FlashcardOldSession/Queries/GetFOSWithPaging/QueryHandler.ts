@@ -33,12 +33,12 @@ export class GetFOSWithPagingQueryHandler implements IQueryHandler<GetFOSWithPag
         // LOG MESSAGE
         this.logger.info(`GetFOSWithPagingQueryHandler: Fetching flashcard old sessions with paging for user!`)
 
-        const {items, totalCount} = await this.flashcardOldSessionRepository.getFlashcardOldSessionsWithPagingAsync(request.userId, request.request.page, request.request.pageSize)
+        const {items, totalCount} = await this.flashcardOldSessionRepository.getFlashcardOldSessionsWithPagingAsync(request.userId, request.language, request.request.page, request.request.pageSize)
     
         // MAP ITEMS TO FLASHCARD OLDSESSION DTO
         const flashcardOldSessionDtos: FlashcardOldSessionDto[] = items.map(fos => ({
 
-            id: fos.oldSessionId,
+            oldSessionId: fos.oldSessionId,
             flashcardId: fos.flashcardId,
             flashcardCategoryId: fos.categoryId,
             rate: fos.rate.toNumber(),

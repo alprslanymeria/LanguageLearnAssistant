@@ -67,8 +67,9 @@ export function useCreatePageCustomEffect(params: UseCreatePageCustomEffectProps
                 }
 
                 if(response && response.status != HttpStatusCode.OK) {
-
-                    showAlert({type: "error", title: "error" , message: response.errorMessage![0]})
+                                                
+                    if(response.shouldDisplayError) showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    
                     return
                 }
                     
@@ -76,7 +77,7 @@ export function useCreatePageCustomEffect(params: UseCreatePageCustomEffectProps
                 
             } catch (error) {
                 
-                showAlert({type: "error", title: "error" , message: "Unexpected error during Get Create Items!"})
+                showAlert({type: "error", title: "error" , message: "Unexpected error!"})
 
             } finally {
 
@@ -97,6 +98,7 @@ export function useCreatePageCustomEffect(params: UseCreatePageCustomEffectProps
         if(createItems?.length === 0) {
 
             setTimeout(() => { router.push(`${BASE}/`) }, 2000)
+            
             showAlert({type: "info", title: "info", message: "NO ITEMS FOUND!"})
 
             return

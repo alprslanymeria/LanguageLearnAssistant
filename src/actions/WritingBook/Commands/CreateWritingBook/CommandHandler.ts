@@ -52,22 +52,23 @@ export class CreateWritingBookCommandHandler implements ICommandHandler<CreateWr
     async Handle(request: CreateWritingBookCommand): Promise<number> {
 
         // FORM DATA'S
-        const name = request.formData.get("name")?.toString()!
+        const bookName = request.formData.get("bookName")?.toString()!
         const userId = request.formData.get("userId")?.toString()!
         const languageId = Number(request.formData.get("languageId"))
         const imageFile = request.formData.get("imageFile") as File
         const sourceFile = request.formData.get("sourceFile") as File
+        const practice = request.formData.get("practice")?.toString()!
         
         // LOG MESSAGE
-        this.logger.info(`CreateWritingBookCommandHandler: Creating writing book with name  ${name}`)
+        this.logger.info(`CreateWritingBookCommandHandler: Creating writing book with name  ${bookName}`)
 
-        const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
+        const isPracticeExists = await this.practiceRepository.getPracticeByLanguageIdAndNameAsync(languageId, practice)
         
-        if (!practice) throw new NoPracticeFound()
+        if (!isPracticeExists) throw new NoPracticeFound()
 
         const writingResult = await this.entityVerificationService.verifyOrCreateWritingAsync(
 
-            practice.id,
+            isPracticeExists.id,
             userId,
             languageId
         )
@@ -76,7 +77,7 @@ export class CreateWritingBookCommandHandler implements ICommandHandler<CreateWr
         if (!writingResult.isSuccess) throw new WritingResultNotSuccess()
 
         // UPLOAD FILES TO STORAGE
-        this.logger.info(`CreateWritingBookCommandHandler: Uploading files to storage for writing book with name  ${name}`)
+        this.logger.info(`CreateWritingBookCommandHandler: Uploading files to storage for writing book with name  ${bookName}`)
 
         const imageUrl = await this.fileStorageHelper.uploadFileToStorageAsync(
 
@@ -84,7 +85,6 @@ export class CreateWritingBookCommandHandler implements ICommandHandler<CreateWr
             userId,
             `wbooks`
         )
-
 
         const sourceUrl = await this.fileStorageHelper.uploadFileToStorageAsync(
 
@@ -98,7 +98,7 @@ export class CreateWritingBookCommandHandler implements ICommandHandler<CreateWr
 
         const data : CreateWritingBookData = {
 
-            name: name,
+            name: bookName,
             writingId: writingResult.data!.id,
             imageUrl: imageUrl,
             sourceUrl: sourceUrl,

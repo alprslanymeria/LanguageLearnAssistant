@@ -4,23 +4,28 @@ import { ICacheService } from '@/src/infrastructure/caching/ICacheService'
 import { ICacheStrategy } from '@/src/infrastructure/caching/ICacheStrategy'
 import type { ICacheFactory } from '@/src/infrastructure/caching/ICacheFactory'
 import { TYPES } from '@/src/di/type'
+import type { CacheOptions } from './Cache'
 
 @injectable()
 export class CacheService implements ICacheService {
 
     // FILEDS
     private readonly cacheStrategy: ICacheStrategy
+    private readonly defaultTtl: number
 
     // CTOR
     constructor(
 
         @inject(TYPES.CacheFactory)
         private readonly cacheFactory: ICacheFactory,
-        private readonly defaultTtl: number = 60
+
+        @inject(TYPES.CacheConfig)
+        private readonly cacheConfig: CacheOptions
 
     ) {
 
-        this.cacheStrategy = this.cacheFactory.createStrategy('memory')
+        this.defaultTtl = this.cacheConfig.defaultTtl || 60
+        this.cacheStrategy = this.cacheFactory.createStrategy(this.cacheConfig.type)
     }
 
     // INTERFACE IMPLEMENTATION

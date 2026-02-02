@@ -1,7 +1,7 @@
 "use client"
 
 // ASSETS
-import Fonts from "@/public/fonts/fonts"
+import {Fonts} from "@/public/fonts/fonts"
 // TYPES
 import { InfoMessageComponentProps } from "@/src/components/InfoMessageComponent/prop"
 

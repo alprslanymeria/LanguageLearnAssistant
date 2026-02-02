@@ -3,7 +3,6 @@ import { useEffect } from "react"
 import Image from "next/image"
 // TYPES
 import { Item, UseListPageCustomEffectProps } from "@/src/page/ListPage/prop"
-import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 import { ReadingBookDto, ReadingBookWithTotalCount } from "@/src/actions/ReadingBook/Response"
 import { PagedResult } from "@/src/infrastructure/common/pagedResult"
 import { WritingBookDto, WritingBookWithTotalCount } from "@/src/actions/WritingBook/Response"
@@ -14,6 +13,7 @@ import { GetAllRBooksWithPaging } from "@/src/actions/ReadingBook/Controller"
 import { GetAllWBooksWithPaging } from "@/src/actions/WritingBook/Controller"
 import { GetAllFCategoriesWithPaging } from "@/src/actions/FlashcardCategory/Controller"
 import { GetAllDWordsWithPaging } from "@/src/actions/DeckWord/Controller"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 
 
 export function useListPageCustomEffect( params : UseListPageCustomEffectProps) {
@@ -41,9 +41,10 @@ export function useListPageCustomEffect( params : UseListPageCustomEffectProps) 
 
                         response = await GetAllRBooksWithPaging(userId!, {page: state.page, pageSize: state.limit})
 
-                        if(response?.status != HttpStatusCode.OK)
-                        {
-                            showAlert({type: "error", title: "error", message: response?.errorMessage![0]})
+                        if(response && response.status != HttpStatusCode.OK) {
+                                                
+                            if(response.shouldDisplayError) showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                            
                             return
                         }
 
@@ -60,15 +61,17 @@ export function useListPageCustomEffect( params : UseListPageCustomEffectProps) 
                                                                                 (item: Item) => <Image src={(item as ReadingBookDto).imageUrl} alt="" width={100} height={100}></Image>
                                                                             ]}})
 
-                        return
+
+                        break;
 
                     case "wbooks":
 
                         response = await GetAllWBooksWithPaging(userId!, {page: state.page, pageSize: state.limit})
 
-                        if(response?.status != HttpStatusCode.OK)
-                        {
-                            showAlert({type: "error", title: "error", message: response?.errorMessage![0]})
+                        if(response && response.status != HttpStatusCode.OK) {
+                                                
+                            if(response.shouldDisplayError) showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                            
                             return
                         }
 
@@ -84,16 +87,17 @@ export function useListPageCustomEffect( params : UseListPageCustomEffectProps) 
                                                                                 (item: Item) => <span>{(item as WritingBookDto).name}</span>,
                                                                                 (item: Item) => <Image alt="" width={100} height={100} src={(item as WritingBookDto).imageUrl}/>
                                                                             ]}})
-
-                        return
+                        
+                        break;
 
                     case "fcategories":
 
                         response = await GetAllFCategoriesWithPaging(userId!, {page: state.page, pageSize: state.limit})
 
-                        if(response?.status != HttpStatusCode.OK)
-                        {
-                            showAlert({type: "error", title: "error", message: response?.errorMessage![0]})
+                        if(response && response.status != HttpStatusCode.OK) {
+                                                
+                            if(response.shouldDisplayError) showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                            
                             return
                         }
 
@@ -108,16 +112,17 @@ export function useListPageCustomEffect( params : UseListPageCustomEffectProps) 
                         dispatch({type: "SET_CONTENTS", payload: {contents: [
                                                                                 (item: Item) => <span className="text-gray-800">{(item as FlashcardCategoryDto).name}</span>
                                                                             ]}})
-
-                        return
+                        
+                        break;
 
                     case "fwords":
 
                         response = await GetAllDWordsWithPaging(userId!, {page: state.page, pageSize: state.limit})
 
-                        if(response?.status != HttpStatusCode.OK)
-                        {
-                            showAlert({type: "error", title: "error", message: response?.errorMessage![0]})
+                        if(response && response.status != HttpStatusCode.OK) {
+                                                
+                            if(response.shouldDisplayError) showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                            
                             return
                         }
 
@@ -133,14 +138,14 @@ export function useListPageCustomEffect( params : UseListPageCustomEffectProps) 
                                                                                 (item: Item) => <span className="text-gray-800">{(item as DeckWordDto).question}</span>,
                                                                                 (item: Item) => <span className="text-gray-800">{(item as DeckWordDto).answer}</span>
                                                                             ]}})
+                        
+                        break;
 
-                        return
                     default:
-
                         showAlert({type: "error", title: "error", message: "Invalid Slug!"})
-                        return
+                     
+                    return
                 }
-
                 
             } catch (error) {
 

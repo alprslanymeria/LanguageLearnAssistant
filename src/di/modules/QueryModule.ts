@@ -1,3 +1,5 @@
+import 'server-only'
+
 // IMPORTS
 import { Container } from "inversify"
 import { IContainerModule } from "@/src/di/IContainerModule"
@@ -82,6 +84,13 @@ import { GetProfileInfos } from "@/src/actions/User/Controller"
 import { GetProfileInfosQueryHandler } from "@/src/actions/User/Queries/GetProfileInfos/QueryHandler"
 import { GET_PROFILE_INFOS_QUERY } from "@/src/actions/User/Queries/GetProfileInfos/Query"
 import { COMPARE_LANGUAGE_ID_QUERY } from "@/src/actions/User/Queries/CompareLanguageId/Query"
+import { Types } from '@prisma/client/runtime/client'
+import { TYPES } from '../type'
+import { GetAllFCategories } from '@/src/actions/FlashcardCategory/Controller'
+import { GetAllFCategoriesQueryHandler } from '@/src/actions/FlashcardCategory/Queries/GetAllFCategories/QueryHandler'
+import { GET_ALL_FCATEGORIES_QUERY } from '@/src/actions/FlashcardCategory/Queries/GetAllFCategories/Query'
+import { GetLCategoryCreateItemsQueryHandler } from '@/src/actions/ListeningCategory/Queries/GetLCategoryCreateItems/QueryHandler'
+import { GET_LCATEGORY_CREATE_ITEMS_QUERY } from '@/src/actions/ListeningCategory/Queries/GetLCategoryCreateItems/Query'
 
 export class QueryModule implements IContainerModule {
 
@@ -92,12 +101,14 @@ export class QueryModule implements IContainerModule {
         container.bind(GetAllDWordsWithPagingQueryHandler).toSelf()
         container.bind(GetDeckWordByIdQueryHandler).toSelf()
         container.bind(GetAllFCategoriesWithPagingQueryHandler).toSelf()
+        container.bind(GetAllFCategoriesQueryHandler).toSelf()
         container.bind(GetFCategoryCreateItemsQueryHandler).toSelf()
         container.bind(GetFlashcardCategoryByIdQueryHandler).toSelf()
         container.bind(GetFOSWithPagingQueryHandler).toSelf()
         container.bind(GetFWordsByIdWithPagingQueryHandler).toSelf()
         container.bind(GetLOSWithPagingQueryHandler).toSelf()
         container.bind(GetLRowsByIdWithPagingQueryHandler).toSelf()
+        container.bind(GetLCategoryCreateItemsQueryHandler).toSelf()
         container.bind(GetPracticesByLanguageQueryHandler).toSelf()
         container.bind(GetAllRBooksWithPagingQueryHandler).toSelf()
         container.bind(GetRBookCreateItemsQueryHandler).toSelf()
@@ -115,7 +126,7 @@ export class QueryModule implements IContainerModule {
 
         // REGISTRY AND BUS BINDING
         container.bind(QueryHandlerRegistry).toSelf().inSingletonScope()
-        container.bind(QueryBus).toDynamicValue((context) => {
+        container.bind(TYPES.QueryBus).toDynamicValue((context) => {
 
             const registry = context.get(QueryHandlerRegistry)
 
@@ -123,12 +134,14 @@ export class QueryModule implements IContainerModule {
             registry.register(GET_ALL_DWORDS_WITH_PAGING_QUERY, context.get(GetAllDWordsWithPagingQueryHandler))
             registry.register(GET_DECK_WORD_BY_ID_QUERY, context.get(GetDeckWordByIdQueryHandler))
             registry.register(GET_ALL_FCATEGORIES_WITH_PAGING_QUERY, context.get(GetAllFCategoriesWithPagingQueryHandler))
+            registry.register(GET_ALL_FCATEGORIES_QUERY, context.get(GetAllFCategoriesQueryHandler))
             registry.register(GET_FCATEGORY_CREATE_ITEMS_QUERY, context.get(GetFCategoryCreateItemsQueryHandler))
             registry.register(GET_FLASHCARD_CATEGORY_BY_ID_QUERY, context.get(GetFlashcardCategoryByIdQueryHandler))
             registry.register(GET_FOS_WITH_PAGING_QUERY, context.get(GetFOSWithPagingQueryHandler))
             registry.register(GET_FWORDS_BY_ID_WITH_PAGING_QUERY, context.get(GetFWordsByIdWithPagingQueryHandler))
             registry.register(GET_LOS_WITH_PAGING_QUERY, context.get(GetLOSWithPagingQueryHandler))
             registry.register(GET_LROWS_BY_ID_WITH_PAGING_QUERY, context.get(GetLRowsByIdWithPagingQueryHandler))
+            registry.register(GET_LCATEGORY_CREATE_ITEMS_QUERY, context.get(GetLCategoryCreateItemsQueryHandler))
             registry.register(GET_PRACTICES_BY_LANGUAGE_QUERY, context.get(GetPracticesByLanguageQueryHandler))
             registry.register(GET_ALL_RBOOKS_WITH_PAGING_QUERY, context.get(GetAllRBooksWithPagingQueryHandler))
             registry.register(GET_RBOOK_CREATE_ITEMS_QUERY, context.get(GetRBookCreateItemsQueryHandler))

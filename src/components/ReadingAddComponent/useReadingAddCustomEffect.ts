@@ -9,7 +9,7 @@ import { GetLanguages } from "@/src/actions/Language/Controller"
 
 export function useReadingAddCustomEffect(params : useReadingAddCustomEffectProps) {
 
-    const {state, router, setLoading, showAlert, dispatch} = params
+    const {state, setLoading, showAlert, dispatch} = params
 
     // ALERT GÖSTERME
     useEffect(() => {
@@ -22,7 +22,10 @@ export function useReadingAddCustomEffect(params : useReadingAddCustomEffectProp
 
             showAlert({ type: "success", title: "success", message: "Reading book added successfully!" })
 
-            router.push(`/list/?table=rbooks`)
+            dispatch({ type: "SET_FILE_ONE", payload: { fileOne: null } })
+            dispatch({ type: "SET_FILE_TWO", payload: { fileTwo: null } })
+            dispatch({ type: "SET_NAME", payload: { name: "" } })
+            dispatch({ type: "SET_LANGUAGE_ID", payload: { languageId: 0 } })
 
             return
         }
@@ -43,10 +46,13 @@ export function useReadingAddCustomEffect(params : useReadingAddCustomEffectProp
 
                 const response = await GetLanguages()
 
-                if(response && response.status != HttpStatusCode.OK){
-
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
-
+                if(response && response.status != HttpStatusCode.OK) {
+                            
+                    if(response.shouldDisplayError) {
+        
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -56,7 +62,7 @@ export function useReadingAddCustomEffect(params : useReadingAddCustomEffectProp
                 
             } catch (error) {
 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Languages!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
                 
             } finally {
 

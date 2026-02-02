@@ -65,9 +65,9 @@ export class ReadingSessionRowRepository implements IReadingSessionRowRepository
         return updatedReadingSessionRow.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.readingSessionRow.delete({
+        await prisma.readingSessionRow.delete({
             where: {
                 id: id
             }

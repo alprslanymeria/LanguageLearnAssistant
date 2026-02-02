@@ -18,6 +18,7 @@ export type FlashcardCategoryWithDeckWords = {
 
 export type FlashcardCategoryWithLanguageId = {
 
+    id: number,
     flashcardId: number,
     name: string,
     languageId: number
@@ -26,5 +27,11 @@ export type FlashcardCategoryWithLanguageId = {
 export type FlashcardCategoryWithTotalCount = {
 
     flashcardCategoryDtos: FlashcardCategoryDto[],
+    totalCount: number
+}
+
+export type FlashcardCategoryWithLanguageIds = {
+
+    flashcardCategoryDtos: FlashcardCategoryWithLanguageId[],
     totalCount: number
 }

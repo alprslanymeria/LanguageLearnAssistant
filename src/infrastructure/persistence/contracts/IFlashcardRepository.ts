@@ -24,5 +24,5 @@ export interface IFlashcardRepository {
     createAsync(data: CreateFlashcardData): Promise<number>
     getByIdAsync(id: number): Promise<Flashcard | null>
     update(id: number, data: UpdateFlashcardData): Promise<number>
-    delete(id: number): void
+    deleteAsync(id: number): Promise<void>
 }

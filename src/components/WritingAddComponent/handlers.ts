@@ -1,5 +1,28 @@
 // TYPES
-import { HandleFileChangeOneProps, HandleFileChangeTwoProps } from "@/src/components/WritingAddComponent/prop"
+import { CreateWritingBook } from "@/src/actions/WritingBook/Controller"
+import { HandleFileChangeOneProps, HandleFileChangeTwoProps, HandleSubmitProps } from "@/src/components/WritingAddComponent/prop"
+
+export async function handleSubmit( params: HandleSubmitProps) {
+
+    const {e, dispatch, setLoading} = params
+
+    const kese = [e]
+
+    if(kese.some(k => !k)) return
+
+    e.preventDefault()
+
+    setLoading({value: true , source: "WritingAddHandleSubmit"})
+
+    const formData = new FormData(e.currentTarget)
+
+    const response =  await CreateWritingBook( formData )
+
+    dispatch({type: "SET_STATE", payload: {state: response}})
+
+    setLoading({value: false})
+
+}
 
 export function handleFileChangeOne(params : HandleFileChangeOneProps) {
 

@@ -12,6 +12,14 @@ Hata alırsan:
 5: npm install --legacy-peer-deps VEYA npm install --force
 
 
+# Development için (SQLite, PostgreSQL local):
+npx prisma db push
+
+# Production için (migration oluştur):
+npx prisma migrate dev --name init
+
+# Migration'ı production'a uygula:
+npx prisma migrate deploy
 
 NOT 1
 __________

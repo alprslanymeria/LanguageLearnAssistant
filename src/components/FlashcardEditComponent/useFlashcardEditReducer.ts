@@ -5,9 +5,10 @@ import { Action, State } from "@/src/components/FlashcardEditComponent/prop"
 
 const initialState: State = {
   
-    languageId: 0,
+    languageId: 1,
     languages: [],
-    name: ""
+    name: "",
+    state: undefined
 }
 
 function reducer(state: State, action: Action): State {
@@ -19,6 +20,8 @@ function reducer(state: State, action: Action): State {
         return {...state, languages: action.payload.languages}
     case "SET_NAME":
         return {...state, name: action.payload.name}
+    case "SET_STATE":
+        return {...state, state: action.payload.state}
     default:
       return state
   }

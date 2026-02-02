@@ -19,11 +19,11 @@ export interface UpdateListeningOldSessionData {
 export interface IListeningOldSessionRepository {
 
     // HELPER
-    getListeningOldSessionsWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: ListeningOldSession[]; totalCount: number }>
+    getListeningOldSessionsWithPagingAsync(userId: string, language: string, page: number, pageSize: number): Promise<{ items: ListeningOldSession[]; totalCount: number }>
 
     // CRUD
     createAsync(data: CreateListeningOldSessionData): Promise<string>
     getByIdAsync(id: string): Promise<ListeningOldSession | null>
     update(id: string, data: UpdateListeningOldSessionData): Promise<string>
-    delete(id: string): void
+    deleteAsync(id: string): Promise<void>
 }

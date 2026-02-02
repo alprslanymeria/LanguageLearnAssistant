@@ -1,9 +1,10 @@
 // TYPES
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
-import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
+import { SerializedServiceResult } from "@/src/infrastructure/common/ServiceResult"
 import { LanguageDto } from "@/src/actions/Language/Response"
 import { UserDto } from "@/src/actions/User/Response"
+import { FormEvent } from "react"
 
 // REDUCER
 export type State = {
@@ -13,6 +14,7 @@ export type State = {
   profileImage: File | string | null
   name: string
   nativeLanguageId: number
+  state: SerializedServiceResult<string> | undefined
 }
 
 export type Action =
@@ -21,13 +23,22 @@ export type Action =
   | { type: "SET_PROFILE_IMAGE", payload: {profileImage: File | string} }
   | { type: "SET_NAME", payload: {name: string} }
   | { type: "SET_NATIVE_LANGUAGE_ID", payload: {nativeLanguageId: number} }
+  | { type: "SET_STATE", payload: {state: SerializedServiceResult<string>} }
 
+
+// HANDLERS
+export type HandleSubmitProps = {
+
+    e: FormEvent<HTMLFormElement>
+    dispatch: (action: Action) => void
+    setLoading: (props: setLoadingProps) => void
+}
 
 // USE EFFECTS
 export type UseProfilePageCustomEffectProps = {
 
     userId: string | undefined
-    state: ServiceResult<string> | undefined
+    state: SerializedServiceResult<string> | undefined
     showAlert: (props: ShowAlertProps) => void
     setLoading: (props: setLoadingProps) => void
     dispatch: (action: Action) => void

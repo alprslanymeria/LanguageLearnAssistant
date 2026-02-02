@@ -1,38 +1,28 @@
-import { Mitr , Markazi_Text , Neuton } from 'next/font/google'
+import { Mitr, Markazi_Text, Neuton } from 'next/font/google'
 
-// HELPER: CREATE NEW FONT
-const createFont = (Font, options) => {
+const mitr = Mitr({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
+  variable: '--font-mitr'
+})
 
-  return Font({
+const markazi = Markazi_Text({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
+  variable: '--font-markazi'
+})
 
-    subsets: options.subsets,
-    weight: options.weight,
-    display: options.display,
+const neuton = Neuton({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap',
+  variable: '--font-neuton'
+})
 
-  })
+export const Fonts = {
+  mitr,
+  markazi,
+  neuton
 }
-
-
-// FONTS
-const Fonts = {
-
-  mitr: createFont(Mitr, {
-    subsets: ['latin'],
-    weight: ['400', '500' ,'700'],
-    display: 'swap'
-  }),
-
-  markazi: createFont(Markazi_Text, {
-    subsets: ['latin'],
-    weight: ['400', '500' ,'700'],
-    display: 'swap'
-  }),
-
-  neuton: createFont(Neuton, {
-    subsets: ['latin'],
-    weight: ['400' ,'700'],
-    display: 'swap'
-  })
-}
-
-export default Fonts

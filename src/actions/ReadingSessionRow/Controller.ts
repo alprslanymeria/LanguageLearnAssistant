@@ -1,7 +1,6 @@
 "use server"
 
-import { ZodError } from "zod"
-import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
+import { SerializedServiceResult, ServiceResult } from "@/src/infrastructure/common/ServiceResult"
 import { SaveReadingRowsRequest } from "@/src/actions/ReadingSessionRow/Request"
 import container from "@/src/di/container"
 import { TYPES } from "@/src/di/type"
@@ -9,14 +8,15 @@ import { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { CommandBus } from "@/src/infrastructure/mediatR/CommandBus"
 import { CreateRRowsCommandValidator } from "@/src/actions/ReadingSessionRow/Commands/CreateRRows/CommandValidator"
 import { createRRowsCommandFactory } from "@/src/actions/ReadingSessionRow/Commands/CreateRRows/CommandFactory"
-import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 import { PagedRequest } from "@/src/infrastructure/common/pagedRequest"
 import { ReadingRowsResponse } from "@/src/actions/ReadingSessionRow/Response"
 import { GetRRowsByIdWithPagingQueryValidator } from "@/src/actions/ReadingSessionRow/Queries/GetRRowsByIdWithPaging/QueryValidator"
 import { getRRowsByIdWithPagingQuery } from "@/src/actions/ReadingSessionRow/Queries/GetRRowsByIdWithPaging/QueryFactory"
 import { ReadingOldSessionNotFound } from "@/src/exceptions/NotFound"
+import { handleErrorSerialized } from "@/src/infrastructure/common/ErrorHandler"
+import { QueryBus } from "@/src/infrastructure/mediatR/QueryBus"
 
-export async function CreateRRows(request: SaveReadingRowsRequest) : Promise<ServiceResult<number>> {
+export async function CreateRRows(request: SaveReadingRowsRequest) : Promise<SerializedServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -36,34 +36,26 @@ export async function CreateRRows(request: SaveReadingRowsRequest) : Promise<Ser
         // SEND COMMAND TO BUS
         const createdRowsCount = await commandBus.send(validatedCommand)
 
-        return ServiceResult.successAsCreated<number>(createdRowsCount as number, "")
+        return ServiceResult.successAsCreated<number>(createdRowsCount as number, "").toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
+        return handleErrorSerialized<number>({
 
-            const firstError = error.issues?.[0]?.message
-            logger.error("CreateRRows: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof ReadingOldSessionNotFound) {
-
-            logger.error("CreateRRows: READING OLD SESSION NOT FOUND!", {error})
-            return ServiceResult.failOne<number>(error.message, HttpStatusCode.NotFound)
-        }
-        
-        logger.error("CreateRRows: FAIL", {error})
-        return ServiceResult.failOne<number>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+            actionName: "CreateRRows",
+            logger,
+            error,
+            expectedErrors: [ReadingOldSessionNotFound],
+            silentErrors: [ReadingOldSessionNotFound]
+        })
     }
 }
 
-export async function GetRRowsByIdWithPaging(oldSessionId: string, request: PagedRequest) : Promise<ServiceResult<ReadingRowsResponse>> {
+export async function GetRRowsByIdWithPaging(oldSessionId: string, request: PagedRequest) : Promise<SerializedServiceResult<ReadingRowsResponse>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
-    const queryBus = container.get<CommandBus>(TYPES.QueryBus)
+    const queryBus = container.get<QueryBus>(TYPES.QueryBus)
 
     try {
 
@@ -79,25 +71,16 @@ export async function GetRRowsByIdWithPaging(oldSessionId: string, request: Page
         // SEND QUERY TO BUS
         const readingRowsResponse = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<ReadingRowsResponse>(readingRowsResponse as ReadingRowsResponse)
+        return ServiceResult.success<ReadingRowsResponse>(readingRowsResponse as ReadingRowsResponse).toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("GetRRowsByIdWithPaging: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<ReadingRowsResponse>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof ReadingOldSessionNotFound) {
-
-            logger.error("GetRRowsByIdWithPaging: READING OLD SESSION NOT FOUND!", {error})
-            return ServiceResult.failOne<ReadingRowsResponse>(error.message, HttpStatusCode.NotFound)
-        }
-
-        logger.error("GetRRowsByIdWithPaging: FAIL", {error})
-        return ServiceResult.failOne<ReadingRowsResponse>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorSerialized<ReadingRowsResponse>({
+            actionName: "GetRRowsByIdWithPaging",
+            logger,
+            error,
+            expectedErrors: [ReadingOldSessionNotFound],
+            silentErrors: [ReadingOldSessionNotFound]
+        })
     }
 }

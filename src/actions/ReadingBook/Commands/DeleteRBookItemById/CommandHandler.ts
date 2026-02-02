@@ -56,7 +56,7 @@ export class DeleteRBookItemByIdCommandHandler implements ICommandHandler<Delete
         const imageUrl = readingBook.imageUrl
         const sourceUrl = readingBook.sourceUrl
 
-        this.readingBookRepository.delete(request.id)
+        await this.readingBookRepository.deleteAsync(request.id)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.readingBook.prefix)

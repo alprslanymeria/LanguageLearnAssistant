@@ -12,10 +12,11 @@ export interface IUserRepository {
 
     // HELPER
     isUserExist(id: string): Promise<boolean>
+    findByEmail(email: string): Promise<User | null>
 
     // CRUD
     createAsync(user: User): Promise<void>
     getByIdAsync(id: string): Promise<User | null>
     update(id: string, data: UpdateUserData): Promise<string>
-    delete(user: User): void
+    deleteAsync(user: User): Promise<void>
 }

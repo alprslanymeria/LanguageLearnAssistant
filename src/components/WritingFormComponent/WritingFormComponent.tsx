@@ -78,7 +78,17 @@ export default function WritingFormComponent({dispatch} : WritingFormComponentPr
                             
                             {/* //BUTTONS */}
                             <div className='flex flex-wrap gap-4 justify-around'>
-                                <button onClick={() => handleTextSelection({updateWritingSession})} className="w-full lg:flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200">Select Text</button>
+
+                                {sessionData.data.WShowSelectTextButton && (
+
+                                    <button 
+                                        onClick={() => handleTextSelection({updateWritingSession})} 
+                                        className="w-full lg:flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200"
+                                    >
+                                        Select Text
+                                    </button>
+                                )}
+                                
                                 {sessionData.data.WInputText && (
                                     <button 
                                         disabled= {(isLoading && loadingSource === "WritingHandleTranslate") || isPending}

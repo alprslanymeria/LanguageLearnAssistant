@@ -11,7 +11,8 @@ const initialState: State = {
     categories: {flashcardCategoryDtos: [], totalCount: 0},
     word: "",
     answer: "",
-    languages: []
+    languages: [],
+    state: undefined
 }
 
 function reducer(state: State, action: Action): State {
@@ -29,6 +30,8 @@ function reducer(state: State, action: Action): State {
         return {...state, word: action.payload.word}
     case "SET_ANSWER":
         return {...state, answer: action.payload.answer}
+    case "SET_STATE":
+        return {...state, state: action.payload.state}
     default:
       return state
   }

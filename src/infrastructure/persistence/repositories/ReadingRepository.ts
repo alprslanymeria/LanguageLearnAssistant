@@ -54,9 +54,9 @@ export class ReadingRepository implements IReadingRepository {
         return updatedReading.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.reading.delete({
+        await prisma.reading.delete({
             where: {
                 id: id
             }

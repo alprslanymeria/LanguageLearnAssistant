@@ -1,7 +1,6 @@
 // TYPES
 import { Item, State, Action } from "@/src/page/ListPage/prop"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
-import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { JSX } from "react"
 
@@ -38,5 +37,5 @@ export type HandleDeleteProps = {
     table: string
     dispatch: (action: Action) => void
     showAlert: (props: ShowAlertProps) => void
-    setLoading: (props: setLoadingProps) => void
+    setDeletingId: (id: number | null) => void
 }

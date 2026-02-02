@@ -95,9 +95,9 @@ export class WritingBookRepository implements IWritingBookRepository {
         return updatedWritingBook.id
     }
 
-    delete(id: number): void {
+    async deleteAsync(id: number): Promise<void> {
 
-        prisma.writingBook.delete({
+        await prisma.writingBook.delete({
             where: {
                 id: id
             }

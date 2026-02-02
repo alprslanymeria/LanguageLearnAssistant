@@ -25,7 +25,7 @@ export default function ListeningSessionComponent() {
 
 
     // USE EFFECT
-    useListeningSessionCustomEffect({state, sessionData, deckVideos: item.deckVideos, hasHydrated, updateListeningSession, dispatch})
+    useListeningSessionCustomEffect({state, sessionData, deckVideos: item ? item.deckVideos : [], hasHydrated, updateListeningSession, dispatch})
 
     return (
 

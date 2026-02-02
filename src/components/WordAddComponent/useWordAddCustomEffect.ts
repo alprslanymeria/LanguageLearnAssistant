@@ -10,7 +10,7 @@ import { GetAllFCategories } from "@/src/actions/FlashcardCategory/Controller"
 
 export function useWordAddCustomEffect(params : UseWordAddCustomEffectProps) {
 
-    const {userId, state, router, setLoading, showAlert, dispatch} = params
+    const {userId, router, state, setLoading, showAlert, dispatch} = params
 
     // ALERT GÖSTERME
     useEffect(() => {
@@ -23,7 +23,11 @@ export function useWordAddCustomEffect(params : UseWordAddCustomEffectProps) {
 
             showAlert({ type: "success", title: "success", message: "Word added successfully!" })
 
-            router.push(`/list/?table=fwords`)
+            // RESET FORM
+            dispatch({ type: "SET_WORD", payload: { word: "" } })
+            dispatch({ type: "SET_ANSWER", payload: { answer: "" } })
+            dispatch({ type: "SET_LANGUAGE_ID", payload: { languageId: 0 } })
+            dispatch({ type: "SET_CATEGORY_ID", payload: { categoryId: 0 } })
 
             return
         }
@@ -44,10 +48,13 @@ export function useWordAddCustomEffect(params : UseWordAddCustomEffectProps) {
 
                 const response = await GetLanguages()
 
-                if(response && response.status != HttpStatusCode.OK){
+                if(response && response.status != HttpStatusCode.OK) {
 
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    if(response.shouldDisplayError) {
 
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -57,7 +64,7 @@ export function useWordAddCustomEffect(params : UseWordAddCustomEffectProps) {
                 
             } catch (error) {
 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Languages!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
                 
             } finally {
 
@@ -85,10 +92,17 @@ export function useWordAddCustomEffect(params : UseWordAddCustomEffectProps) {
 
                 const response = await GetAllFCategories(userId!)
 
-                if(response?.status != HttpStatusCode.OK) {
+                if(response && response.data?.totalCount === 0) {
 
-                    showAlert({type: "error", title: "error", message: response?.errorMessage![0]})
+                    showAlert({type: "info" , title: "info" , message: "Please create a flashcard category first!"})
 
+                    router.push(`/list?table=fcategories`)
+                }
+
+                if(response && response.status != HttpStatusCode.OK ) {
+                
+                    if(response.shouldDisplayError) showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    
                     return
                 }
 
@@ -98,7 +112,7 @@ export function useWordAddCustomEffect(params : UseWordAddCustomEffectProps) {
 
             } catch (error) {
                 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Flashcard Categories!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
 
             } finally {
 

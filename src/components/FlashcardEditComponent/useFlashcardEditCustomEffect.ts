@@ -11,7 +11,7 @@ import { GetFlashcardCategoryById } from "@/src/actions/FlashcardCategory/Contro
 
 export function useFlashcardEditCustomEffect(params : useFlashcardEditCustomEffectProps) {
 
-    const {itemId, state, router, setLoading, showAlert, dispatch} = params
+    const {itemId, state, setLoading, showAlert, dispatch} = params
 
     // ALERT GÖSTERME
     useEffect(() => {
@@ -23,8 +23,6 @@ export function useFlashcardEditCustomEffect(params : useFlashcardEditCustomEffe
         if (state!.isSuccess) {
 
             showAlert({ type: "success", title: "success", message: "Flashcard category updated successfully!" })
-
-            router.push(`/list/?table=fcategories`)
 
             return
         }
@@ -46,9 +44,12 @@ export function useFlashcardEditCustomEffect(params : useFlashcardEditCustomEffe
                 const response = await GetLanguages()
 
                 if(response && response.status != HttpStatusCode.OK) {
-
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
-
+                            
+                    if(response.shouldDisplayError) {
+        
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -58,7 +59,7 @@ export function useFlashcardEditCustomEffect(params : useFlashcardEditCustomEffe
                 
             } catch (error) {
 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Languages!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
                 
             } finally {
 
@@ -87,9 +88,12 @@ export function useFlashcardEditCustomEffect(params : useFlashcardEditCustomEffe
                 const response = await GetFlashcardCategoryById(Number(itemId))
 
                 if(response && response.status != HttpStatusCode.OK) {
-
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
-
+                            
+                    if(response.shouldDisplayError) {
+        
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -101,7 +105,7 @@ export function useFlashcardEditCustomEffect(params : useFlashcardEditCustomEffe
                 
             } catch (error) {
 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Flashcard Category Item!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
                 
             } finally {
 

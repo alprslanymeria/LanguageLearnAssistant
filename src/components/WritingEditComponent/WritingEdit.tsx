@@ -1,18 +1,13 @@
 "use client"
 
-// REACT & NEXT
-import { useActionState } from "react"
-import { useRouter } from "next/navigation"
 // BETTER AUTH
 import { authClient } from "@/src/infrastructure/auth/auth-client"
 // ICONS
 import FileIcon from "@/src/components/svg/FileUpload"
-// ACTIONS
-import { UpdateWritingBook } from "@/src/actions/WritingBook/Controller"
 // TYPES
 import { WritingEditComponentProps } from "@/src/components/WritingEditComponent/prop"
 // REDUCER & HANDLERS & CUSTOM EFFECTS
-import { handleFileChangeOne, handleFileChangeTwo } from "@/src/components/WritingEditComponent/handlers"
+import { handleFileChangeOne, handleFileChangeTwo, handleSubmit } from "@/src/components/WritingEditComponent/handlers"
 import { useWritingEditReducer } from "./useWritingEditReducer"
 import { useWritingEditCustomEffect } from "./useWritingEditCustomEffect"
 // PROVIDERS
@@ -24,13 +19,9 @@ import Loader from "@/src/components/loader"
 
 export default function WritingEditComponent({ itemId } : WritingEditComponentProps) {
 
-    // ACTION
-    const [state, formAction, isPending] = useActionState(UpdateWritingBook, undefined)
-
     // HOOKS
     const {states , dispatch} = useWritingEditReducer()
     const {showAlert} = useAlert()
-    const router = useRouter()
     const {isLoading , loadingSource, setLoading} = useLoading()
 
     //SESSION
@@ -38,7 +29,7 @@ export default function WritingEditComponent({ itemId } : WritingEditComponentPr
     const userId = session?.user.id
 
     // USE EFFECT
-    useWritingEditCustomEffect({state, router, itemId, dispatch, setLoading, showAlert})
+    useWritingEditCustomEffect({state: states.state, itemId, dispatch, setLoading, showAlert})
 
     if(isLoading && loadingSource === "page" ) return <Loader/>
 
@@ -49,11 +40,12 @@ export default function WritingEditComponent({ itemId } : WritingEditComponentPr
             <div className="p-6">
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Edit Book</h2>
 
-                <form action={formAction} className="space-y-6">
+                <form className="space-y-6" method="POST" onSubmit={(e) => handleSubmit({ e, dispatch, setLoading })}>
 
                     {/* HIDDEN DATA'S*/}
                     <input type="hidden" name="userId" value={userId} />
                     <input type="hidden" name="itemId" value={itemId} />
+                    <input type="hidden" name="practice" value="writing" />
     
                     {/* LANGUAGE OPTIONS*/}
                     <div>
@@ -78,7 +70,7 @@ export default function WritingEditComponent({ itemId } : WritingEditComponentPr
                                         .filter(language => language.name && language.name.length > 0)
                                         .slice(0, 4)
                                         .map((language, index) => (
-                                            <option key={index} value={index}>{language.name.charAt(0).toUpperCase() + language.name.slice(1).toLowerCase()}</option>
+                                            <option key={index} value={language.id}>{language.name.charAt(0).toUpperCase() + language.name.slice(1).toLowerCase()}</option>
                                         ))
                             }
         
@@ -88,18 +80,18 @@ export default function WritingEditComponent({ itemId } : WritingEditComponentPr
                     {/* NAME */}
                     <div>
                         <label 
-                            htmlFor="name" 
+                            htmlFor="bookName" 
                             className="block text-sm font-medium text-gray-700 mb-1"
                         >
                             Book Name
                         </label>
                         <input
                             type="text"
-                            id="name"
+                            id="bookName"
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder={`Book Name`}
                             value={states.name}
-                            name='name'
+                            name='bookName'
                             onChange={(e) => dispatch({type: "SET_NAME", payload: {name: e.target.value}})}
                             required
                         />
@@ -194,12 +186,12 @@ export default function WritingEditComponent({ itemId } : WritingEditComponentPr
                     </div>
         
                     <button
-                        disabled={isPending || isPendingBetterAuth}
+                        disabled= {(isLoading && loadingSource === "WritingEditHandleSubmit") || isPendingBetterAuth}
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                     >
                         
-                        {isPending ? (
+                        {isLoading && loadingSource === "WritingEditHandleSubmit" ? (
                                 <div className="flex items-center justify-center">
                                     <div className="w-6 h-6 border-4 border-white-500 border-t-transparent rounded-full animate-spin"></div>
                                 </div>

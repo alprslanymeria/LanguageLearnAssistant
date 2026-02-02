@@ -52,22 +52,23 @@ export class CreateReadingBookCommandHandler implements ICommandHandler<CreateRe
     async Handle(request: CreateReadingBookCommand): Promise<number> {
 
         // FORM DATA'S
-        const name = request.formData.get("name")?.toString()!
+        const bookName = request.formData.get("bookName")?.toString()!
         const userId = request.formData.get("userId")?.toString()!
         const languageId = Number(request.formData.get("languageId"))
         const imageFile = request.formData.get("imageFile") as File
         const sourceFile = request.formData.get("sourceFile") as File
+        const practice = request.formData.get("practice")?.toString()!
         
         // LOG MESSAGE
-        this.logger.info(`CreateReadingBookCommandHandler: Creating reading book with name  ${name}`)
+        this.logger.info(`CreateReadingBookCommandHandler: Creating reading book with name  ${bookName}`)
 
-        const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
+        const isPracticeExists = await this.practiceRepository.getPracticeByLanguageIdAndNameAsync(languageId, practice)
         
-        if (!practice) throw new NoPracticeFound()
+        if (!isPracticeExists) throw new NoPracticeFound()
     
         const readingResult = await this.entityVerificationService.verifyOrCreateReadingAsync(
 
-            practice.id,
+            isPracticeExists.id,
             userId,
             languageId
         )
@@ -76,7 +77,7 @@ export class CreateReadingBookCommandHandler implements ICommandHandler<CreateRe
         if (!readingResult.isSuccess) throw new ReadingResultNotSuccess()
 
         // UPLOAD FILES TO STORAGE
-        this.logger.info(`CreateReadingBookCommandHandler: Uploading cover image for reading book with name  ${name}`)
+        this.logger.info(`CreateReadingBookCommandHandler: Uploading cover image for reading book with name  ${bookName}`)
 
         const imageUrl = await this.fileStorageHelper.uploadFileToStorageAsync(
 
@@ -93,13 +94,13 @@ export class CreateReadingBookCommandHandler implements ICommandHandler<CreateRe
         )
 
         // EXTRACT LEFT SIDE COLOR FROM IMAGE
-        this.logger.info(`CreateReadingBookCommandHandler: Processing cover image for reading book with name  ${name}`)
+        this.logger.info(`CreateReadingBookCommandHandler: Processing cover image for reading book with name  ${bookName}`)
 
         const leftSideColor = await this.imageProcessingService.extractLeftSideColorAsync(imageFile)
 
         const data : CreateReadingBookData = {
 
-            name : name,
+            name : bookName,
             readingId : readingResult.data!.id,
             imageUrl : imageUrl,
             sourceUrl : sourceUrl,
@@ -111,7 +112,7 @@ export class CreateReadingBookCommandHandler implements ICommandHandler<CreateRe
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.readingBook.prefix)
 
-        this.logger.info(`CreateReadingBookCommandHandler: Successfully created reading book with name  ${name}`)
+        this.logger.info(`CreateReadingBookCommandHandler: Successfully created reading book with name  ${bookName}`)
 
         return readingBookId
     

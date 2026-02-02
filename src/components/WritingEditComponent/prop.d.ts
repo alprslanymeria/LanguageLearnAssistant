@@ -1,9 +1,9 @@
 // TYPES
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
-import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
+import { SerializedServiceResult, ServiceResult } from "@/src/infrastructure/common/ServiceResult"
 import { LanguageDto } from "@/src/actions/Language/Response"
+import { FormEvent } from "react"
 
 // COMPONENT PROPS
 export type WritingEditComponentProps = {
@@ -20,6 +20,7 @@ export type State = {
   fileTwo: File | null
   fileError: string | null
   languages: LanguageDto[]
+  state: SerializedServiceResult<number> | undefined
 }
 
 export type Action =
@@ -29,9 +30,17 @@ export type Action =
   | { type: "SET_FILE_ONE"; payload: {fileOne: File}}
   | { type: "SET_FILE_TWO"; payload: {fileTwo: File}}
   | { type: "SET_FILE_ERROR"; payload: {fileError: string}}
+  | { type: "SET_STATE"; payload: {state: SerializedServiceResult<number> | undefined}}
 
   
 // HANDLERS
+export type HandleSubmitProps = {
+
+    e: FormEvent<HTMLFormElement>
+    dispatch: React.Dispatch<Action>
+    setLoading: (props: setLoadingProps) => void
+}
+
 export type HandleFileChangeOneProps = {
 
   e: ChangeEvent<HTMLInputElement>
@@ -47,8 +56,7 @@ export type HandleFileChangeTwoProps = {
 // USE EFFECT
 export type useWritingEditCustomEffectProps = {
   
-  state: ServiceResult<number> | undefined
-  router: AppRouterInstance
+  state: SerializedServiceResult<number> | undefined
   itemId: string | null | undefined
   dispatch: (action: Action) => void
   setLoading: (props: setLoadingProps) => void

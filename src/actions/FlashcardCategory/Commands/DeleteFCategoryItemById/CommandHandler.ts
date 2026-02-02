@@ -46,7 +46,7 @@ export class DeleteFCategoryItemByIdCommandHandler implements ICommandHandler<De
             throw new FlashcardCategoryNotFound()
         }
 
-        this.flashcardCategoryRepository.delete(request.id)
+        await this.flashcardCategoryRepository.deleteAsync(request.id)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.flashcardCategory.prefix)

@@ -8,6 +8,7 @@ import { CreateDeckWordCommand } from "./Command"
 import type { IFlashcardCategoryRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardCategoryRepository"
 import type { ICacheService } from "@/src/infrastructure/caching/ICacheService"
 import { CacheKeys } from "@/src/infrastructure/caching/CacheKeys"
+import { FlashcardCategoryNotFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
@@ -45,6 +46,13 @@ export class CreateDeckWordCommandHandler implements ICommandHandler<CreateDeckW
         this.logger.info(`CreateDeckWordCommandHandler: Creating deck word for CategoryId ${categoryId}`)
     
         const category = await this.flashcardCategoryRepository.getByIdAsync(categoryId)
+
+        // FAST FAIL
+        if(!category) {
+
+            this.logger.warn(`CreateDeckWordCommandHandler: Flashcard category with Id ${categoryId} not found!`)
+            throw new FlashcardCategoryNotFound()
+        }
 
         const data : CreateDeckWordData = {
 

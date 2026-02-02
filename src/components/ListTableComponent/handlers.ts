@@ -35,7 +35,7 @@ export function handleEdit(params: HandleEditProps) {
 
 export async function handleDelete(params : HandleDeleteProps) {
 
-    const {itemId , table, setLoading, showAlert, dispatch} = params
+    const {itemId , table, setDeletingId, showAlert, dispatch} = params
 
     const kese = [itemId, table]
 
@@ -43,7 +43,7 @@ export async function handleDelete(params : HandleDeleteProps) {
 
     try {
 
-        setLoading({value: true , source: "HandleDelete"})
+        setDeletingId(itemId)
 
         let response;
 
@@ -65,24 +65,27 @@ export async function handleDelete(params : HandleDeleteProps) {
                 break;
         }
 
-        if(response?.status != HttpStatusCode.NoContent) {
+        if(response && response.status != HttpStatusCode.NoContent) {
+                            
+            if(response.shouldDisplayError) {
 
-            showAlert({type: "error", title: "error", message: response?.errorMessage![0]!})
-
+                showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+            }
+            
             return
         }
 
         dispatch({type: "REMOVE_ITEM", payload: { id: itemId }})
 
-        showAlert({type: "success", title: "success", message: response?.errorMessage![0]})
+        showAlert({type: "success", title: "success", message: "Item deleted successfully!"})
 
     } catch (error) {
 
-        showAlert({type: "error", title: "error", message: "Unexpected error during delete!"})
+        showAlert({type: "error", title: "error", message: "Unexpected error!"})
         
     } finally {
 
-        setLoading({value: false})
+        setDeletingId(null)
     }
     
 }

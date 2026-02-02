@@ -11,7 +11,7 @@ import { GetReadingBookById } from "@/src/actions/ReadingBook/Controller"
 
 export function useReadingEditCustomEffect(params : useReadingEditCustomEffectProps) {
 
-    const {state, itemId, router, setLoading, showAlert, dispatch} = params
+    const {state, itemId, setLoading, showAlert, dispatch} = params
 
     // ALERT GÖSTERME
     useEffect(() => {
@@ -23,8 +23,6 @@ export function useReadingEditCustomEffect(params : useReadingEditCustomEffectPr
         if (state!.isSuccess) {
 
             showAlert({ type: "success", title: "success", message: "Reading book updated successfully!" })
-
-            router.push(`/list/?table=rbooks`)
 
             return
         }
@@ -45,10 +43,13 @@ export function useReadingEditCustomEffect(params : useReadingEditCustomEffectPr
 
                 const response = await GetLanguages()
 
-                if(response && response.status != HttpStatusCode.OK){
-
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
-
+                if(response && response.status != HttpStatusCode.OK) {
+                            
+                    if(response.shouldDisplayError) {
+        
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -58,7 +59,7 @@ export function useReadingEditCustomEffect(params : useReadingEditCustomEffectPr
                 
             } catch (error) {
 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Languages!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
                 
             } finally {
 
@@ -86,10 +87,13 @@ export function useReadingEditCustomEffect(params : useReadingEditCustomEffectPr
 
                 const response = await GetReadingBookById(Number(itemId))
 
-                if(response && response.status != HttpStatusCode.OK){
-
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
-
+                if(response && response.status != HttpStatusCode.OK) {
+                            
+                    if(response.shouldDisplayError) {
+        
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -101,7 +105,7 @@ export function useReadingEditCustomEffect(params : useReadingEditCustomEffectPr
                 
             } catch (error) {
 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Reading Book Item!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
                 
             } finally {
 

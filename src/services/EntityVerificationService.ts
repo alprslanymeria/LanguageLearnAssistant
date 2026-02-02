@@ -49,19 +49,11 @@ export class EntityVerificationService implements IEntityVerificationService {
 
         this.logger.info(`EntityVerificationService: Flashcard with Practice ID ${practiceId}, User ID ${userId}, and Language ID ${languageId} not found. Creating new flashcard for User ${userId} and Language ${languageId}.`)
 
-        const language = await this.languageRepository.getByIdAsync(languageId)
-
-        if (!language) throw new NoLanguageFound()
-
-        const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
-
-        if (!practice) throw new NoPracticeFound()
-
         const newFlashcard : CreateFlashcardData = {
 
             userId,
             languageId,
-            practiceId: practice.id,
+            practiceId
         }
 
         const createdFlashcardId = await this.flashcardRepository.createAsync(newFlashcard)
@@ -81,19 +73,11 @@ export class EntityVerificationService implements IEntityVerificationService {
 
         this.logger.info(`EntityVerificationService: Reading with Practice ID ${practiceId}, User ID ${userId}, and Language ID ${languageId} not found. Creating new reading for User ${userId} and Language ${languageId}.`)
         
-        const language = await this.languageRepository.getByIdAsync(languageId)
-
-        if (!language) throw new NoLanguageFound()
-
-        const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
-
-        if (!practice) throw new NoPracticeFound()
-        
         const newReading : CreateReadingData = {
 
             userId,
             languageId,
-            practiceId: practice.id,
+            practiceId
         }
 
         const createdReadingId = await this.readingRepository.createAsync(newReading)
@@ -114,19 +98,11 @@ export class EntityVerificationService implements IEntityVerificationService {
 
         this.logger.info(`EntityVerificationService: Writing with Practice ID ${practiceId}, User ID ${userId}, and Language ID ${languageId} not found. Creating new writing for User ${userId} and Language ${languageId}.`)
         
-        const language = await this.languageRepository.getByIdAsync(languageId)
-
-        if (!language) throw new NoLanguageFound()
-
-        const practice = await this.practiceRepository.existsByLanguageIdAsync(languageId)
-
-        if (!practice) throw new NoPracticeFound()
-        
         const newWriting : CreateWritingData = {
 
             userId,
             languageId,
-            practiceId: practice.id,
+            practiceId
         }
 
         const createdWritingId = await this.writingRepository.createAsync(newWriting)

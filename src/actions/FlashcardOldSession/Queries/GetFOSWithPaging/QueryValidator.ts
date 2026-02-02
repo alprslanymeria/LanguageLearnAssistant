@@ -1,5 +1,5 @@
 // IMPORTS
-import { z } from "zod"
+import { number, z } from "zod"
 import { GET_FOS_WITH_PAGING_QUERY } from "./Query"
 
 export const GetFOSWithPagingQueryValidator = z.object({
@@ -10,6 +10,12 @@ export const GetFOSWithPagingQueryValidator = z.object({
         .string()
         .min(1, {
             message: "USER ID IS REQUIRED"
+        }),
+
+    language: z
+        .string()
+        .min(1, {
+            message: "LANGUAGE IS REQUIRED"
         }),
 
     request: z.object({

@@ -12,7 +12,7 @@ import { GetDeckWordById } from "@/src/actions/DeckWord/Controller"
 
 export function useWordEditCustomEffect(params : UseWordEditCustomEffectProps) {
 
-    const {userId, state, itemId, router, setLoading, showAlert, dispatch} = params
+    const {userId, state, itemId, setLoading, showAlert, dispatch} = params
 
     // ALERT GÖSTERME
     useEffect(() => {
@@ -24,8 +24,6 @@ export function useWordEditCustomEffect(params : UseWordEditCustomEffectProps) {
         if (state!.isSuccess) {
 
             showAlert({ type: "success", title: "success", message: "Word updated successfully!" })
-
-            router.push(`/list/?table=fwords`)
 
             return
         }
@@ -46,10 +44,13 @@ export function useWordEditCustomEffect(params : UseWordEditCustomEffectProps) {
 
                 const response = await GetLanguages()
 
-                if(response && response.status != HttpStatusCode.OK){
+                if(response && response.status != HttpStatusCode.OK) {
 
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    if(response.shouldDisplayError) {
 
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -59,7 +60,7 @@ export function useWordEditCustomEffect(params : UseWordEditCustomEffectProps) {
                 
             } catch (error) {
 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Languages!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
                 
             } finally {
 
@@ -87,10 +88,13 @@ export function useWordEditCustomEffect(params : UseWordEditCustomEffectProps) {
 
                 const response = await GetAllFCategories(userId!)
 
-                if(response?.status != HttpStatusCode.OK) {
+                if(response && response.status != HttpStatusCode.OK) {
 
-                    showAlert({type: "error", title: "error", message: response?.errorMessage![0]})
+                    if(response.shouldDisplayError) {
 
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -100,7 +104,7 @@ export function useWordEditCustomEffect(params : UseWordEditCustomEffectProps) {
 
             } catch (error) {
                 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Flashcard Categories!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
 
             } finally {
 
@@ -130,22 +134,25 @@ export function useWordEditCustomEffect(params : UseWordEditCustomEffectProps) {
 
                 if(response && response.status != HttpStatusCode.OK) {
 
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    if(response.shouldDisplayError) {
 
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
                 const data : DeckWordWithLanguageId = response.data!
 
                 dispatch({ type: "SET_LANGUAGE_ID", payload: { languageId: data.languageId }})
-                dispatch({ type: "SET_CATEGORY_ID", payload: { categoryId: data.flashcardCategoryId }})
+                dispatch({ type: "SET_CATEGORY_ID", payload: { categoryId: data.categoryId }})
                 dispatch({ type: "SET_WORD", payload: {word: data.question}})
                 dispatch({ type: "SET_ANSWER", payload: {answer: data.answer}})
 
                 
             } catch (error) {
 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Deck Word Item!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
                 
             } finally {
 

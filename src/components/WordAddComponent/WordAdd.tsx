@@ -1,29 +1,23 @@
 "use client"
 
 // REACT & NEXT
-import { useActionState } from "react"
 import { useRouter } from "next/navigation"
 // BETTER AUTH
 import { authClient } from "@/src/infrastructure/auth/auth-client"
-// PRISMA
-import { FlashcardCategory } from "@prisma/client"
-// ACTIONS
-import { CreateDeckWord } from "@/src/actions/DeckWord/Controller"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useWordAddReducer } from "./useWordAddReducer"
 import { useWordAddCustomEffect } from "./useWordAddCustomEffect"
+import { handleSubmit } from "./handlers"
 // PROVIDERS
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // COMPONENTS
 import Loader from "@/src/components/loader"
-
+// TYPES
+import { FlashcardCategoryWithLanguageId } from "@/src/actions/FlashcardCategory/Response"
 
 
 export default function WordAddComponent () {
-
-    // ACTION
-    const [state, formAction, isPending] = useActionState(CreateDeckWord, undefined)
 
     //SESSION
     const {data: session, isPending: isPendingBetterAuth} = authClient.useSession() 
@@ -32,11 +26,11 @@ export default function WordAddComponent () {
     // HOOKS
     const {states , dispatch} = useWordAddReducer()
     const {showAlert} = useAlert()
-    const {isLoading , loadingSource, setLoading} = useLoading()
     const router = useRouter()
+    const {isLoading , loadingSource, setLoading} = useLoading()
 
     // USE EFFECT
-    useWordAddCustomEffect({userId, router, state, setLoading, showAlert, dispatch})
+    useWordAddCustomEffect({userId, router, state: states.state, setLoading, showAlert, dispatch})
 
     if(isLoading && loadingSource === "page" ) return <Loader/>
 
@@ -47,7 +41,7 @@ export default function WordAddComponent () {
             <div className="p-6">
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Add Word</h2>
 
-                <form action={formAction} className="space-y-6">
+                <form className="space-y-6" method="POST" onSubmit={(e) => handleSubmit({ e, dispatch, setLoading })}>
 
                     {/* HIDDEN DATA'S*/}
                     <input type="hidden" name="userId" value={userId} />
@@ -68,13 +62,15 @@ export default function WordAddComponent () {
                             onChange={(e) =>  dispatch({type: "SET_LANGUAGE_ID", payload: {languageId: Number(e.target.value)}})}
                             required
                         >
+                            <option value={0}>Select a language</option>
+
                             {
                                 states.languages!.length > 0 &&
                                 states.languages!
                                         .filter(language => language.name && language.name.length > 0)
                                         .slice(0, 4)
                                         .map((language, index) => (
-                                            <option key={index} value={index}>{language.name.charAt(0).toUpperCase() + language.name.slice(1).toLowerCase()}</option>
+                                            <option key={index} value={language.id}>{language.name.charAt(0).toUpperCase() + language.name.slice(1).toLowerCase()}</option>
                                         ))
                             }
         
@@ -97,9 +93,11 @@ export default function WordAddComponent () {
                             onChange={(e) => dispatch({type: "SET_CATEGORY_ID", payload: {categoryId: Number(e.target.value)}})}
                             required
                         >
+                            <option value={0}>Select a category</option>
+
                             {states.categories.flashcardCategoryDtos
-                                .filter((category: any) => String(category.flashcard.languageId) === String(states.languageId))
-                                .map( (category : FlashcardCategory) => ( <option key={category.id} value={category.id}>{category.name}</option>
+                                .filter((category: FlashcardCategoryWithLanguageId) => String(category.languageId) === String(states.languageId))
+                                .map( (category : FlashcardCategoryWithLanguageId) => ( <option key={category.id} value={category.id}>{category.name}</option>
                             ))}
                         </select>
                     </div>
@@ -145,12 +143,12 @@ export default function WordAddComponent () {
                     </div>
         
                     <button
-                        disabled= {isPending || isPendingBetterAuth}
+                        disabled= {(isLoading && loadingSource === "DeckWordAddHandleSubmit") || isPendingBetterAuth}
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                     >
 
-                        {isPending ? (
+                        {isLoading && loadingSource === "DeckWordAddHandleSubmit" ? (
                                 <div className="flex items-center justify-center">
                                     <div className="w-6 h-6 border-4 border-white-500 border-t-transparent rounded-full animate-spin"/>
                                 </div>

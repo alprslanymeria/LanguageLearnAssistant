@@ -1,17 +1,16 @@
 "use server"
 
-import { ZodError } from "zod"
 import container from "@/src/di/container"
 import { TYPES } from "@/src/di/type"
 import { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { CommandBus } from "@/src/infrastructure/mediatR/CommandBus"
 import { createDeckWordFactory } from "@/src/actions/DeckWord/Commands/CreateDeckWord/CommandFactory"
 import { CreateDeckWordCommandValidator } from "@/src/actions/DeckWord/Commands/CreateDeckWord/CommandValidator"
-import { ServiceResult, ServiceResultBase } from "@/src/infrastructure/common/ServiceResult"
+import { SerializedServiceResult, SerializedServiceResultBase, ServiceResult, ServiceResultBase } from "@/src/infrastructure/common/ServiceResult"
 import { createDeleteDWordItemByIdCommandFactory } from "@/src/actions/DeckWord/Commands/DeleteDWordItemById/CommandFactory"
 import { DeleteDWordItemByIdCommandValidator } from "@/src/actions/DeckWord/Commands/DeleteDWordItemById/CommandValidator"
 import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
-import { DeckWordNotFound } from "@/src/exceptions/NotFound"
+import { DeckWordNotFound, FlashcardCategoryNotFound } from "@/src/exceptions/NotFound"
 import { updateDeckWordCommandFactory } from "@/src/actions/DeckWord/Commands/UpdateDeckWord/CommandFactory"
 import { UpdateDeckWordCommandValidator } from "@/src/actions/DeckWord/Commands/UpdateDeckWord/CommandValidator"
 import { PagedRequest } from "@/src/infrastructure/common/pagedRequest"
@@ -22,8 +21,9 @@ import { PagedResult } from "@/src/infrastructure/common/pagedResult"
 import { DeckWordWithLanguageId, DeckWordWithTotalCount } from "@/src/actions/DeckWord/Response"
 import { getDeckWordByIdQuery } from "@/src/actions/DeckWord/Queries/GetDeckWordById/QueryFactory"
 import { GetDeckWordByIdQueryValidator } from "@/src/actions/DeckWord/Queries/GetDeckWordById/QueryValidator"
+import { handleErrorSerialized, handleErrorBaseSerialized } from "@/src/infrastructure/common/ErrorHandler"
 
-export async function CreateDeckWord(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
+export async function CreateDeckWord(formData: FormData) : Promise<SerializedServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -41,30 +41,26 @@ export async function CreateDeckWord(prevState: ServiceResult<number> | undefine
         await CreateDeckWordCommandValidator.parseAsync(plainObject)
 
         // COMMAND
-        const command = createDeckWordFactory(prevState, formData)
+        const command = createDeckWordFactory(formData)
 
         // SEND COMMAND TO BUS
         const deckWordId = await commandBus.send(command)
 
-        return ServiceResult.successAsCreated<number>(deckWordId as number, "")
+        return ServiceResult.successAsCreated<number>(deckWordId as number, "").toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-        
-            const firstError = error.issues?.[0]?.message
-            logger.error("CreateDeckWord: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        logger.error("CreateDeckWord: FAIL", {error})
-
-        return ServiceResult.failOne<number>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorSerialized<number>({
+            actionName: "CreateDeckWord",
+            logger,
+            error,
+            expectedErrors: [FlashcardCategoryNotFound],
+            silentErrors: [FlashcardCategoryNotFound]
+        })
     }
 }
 
-export async function DeleteDWordItemById(id: number) : Promise<ServiceResultBase> {
+export async function DeleteDWordItemById(id: number) : Promise<SerializedServiceResultBase> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -84,31 +80,20 @@ export async function DeleteDWordItemById(id: number) : Promise<ServiceResultBas
         // SEND COMMAND TO BUS
         await commandBus.send(validatedCommand)
 
-        return ServiceResultBase.success(HttpStatusCode.NoContent)
+        return ServiceResultBase.success(HttpStatusCode.NoContent).toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("DeleteDWordItemById: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResultBase.failOne(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof DeckWordNotFound) {
-
-            logger.error("DeleteDWordItemById: DECK WORD NOT FOUND!", {error})
-            // SHOW TO USER
-            return ServiceResultBase.failOne(error.message, HttpStatusCode.NotFound)
-        }
-
-        logger.error("DeleteDWordItemById: FAIL", {error})
-        return ServiceResultBase.failOne("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorBaseSerialized({
+            actionName: "DeleteDWordItemById",
+            logger,
+            error,
+            expectedErrors: [DeckWordNotFound]
+        })
     }
 }
 
-export async function UpdateDeckWord(prevState: ServiceResult<number> | undefined, formData: FormData) : Promise<ServiceResult<number>> {
+export async function UpdateDeckWord(formData: FormData) : Promise<SerializedServiceResult<number>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -126,37 +111,25 @@ export async function UpdateDeckWord(prevState: ServiceResult<number> | undefine
         await UpdateDeckWordCommandValidator.parseAsync(plainObject)
 
         // COMMAND
-        const command = updateDeckWordCommandFactory(prevState, formData)
+        const command = updateDeckWordCommandFactory(formData)
 
         // SEND COMMAND TO BUS
         const updatedId = await commandBus.send(command)
 
-        return ServiceResult.success<number>(updatedId as number)
+        return ServiceResult.success<number>(updatedId as number).toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("UpdateDeckWord: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<number>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof DeckWordNotFound) {
-
-            logger.error("UpdateDeckWord: DECK WORD NOT FOUND!", {error})
-            // SHOW TO USER
-            return ServiceResult.failOne<number>(error.message, HttpStatusCode.NotFound)
-        }
-
-        logger.error("UpdateDeckWord: FAIL", {error})
-        return ServiceResult.failOne<number>("SERVER ERROR!", HttpStatusCode.InternalServerError)
-
+        return handleErrorSerialized<number>({
+            actionName: "UpdateDeckWord",
+            logger,
+            error,
+            expectedErrors: [DeckWordNotFound]
+        })
     }
 }
 
-export async function GetAllDWordsWithPaging(userId: string, request: PagedRequest): Promise<ServiceResult<PagedResult<DeckWordWithTotalCount>>> {
+export async function GetAllDWordsWithPaging(userId: string, request: PagedRequest): Promise<SerializedServiceResult<PagedResult<DeckWordWithTotalCount>>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -176,24 +149,19 @@ export async function GetAllDWordsWithPaging(userId: string, request: PagedReque
         // SEND QUERY TO BUS
         const pagedResult = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<PagedResult<DeckWordWithTotalCount>>(pagedResult as PagedResult<DeckWordWithTotalCount>)        
+        return ServiceResult.success<PagedResult<DeckWordWithTotalCount>>(pagedResult as PagedResult<DeckWordWithTotalCount>).toPlain()       
 
     } catch (error) {
 
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("GetAllDWordsWithPaging: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<PagedResult<DeckWordWithTotalCount>>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        logger.error("GetAllDWordsWithPaging: FAIL", {error})
-        return ServiceResult.failOne<PagedResult<DeckWordWithTotalCount>>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorSerialized<PagedResult<DeckWordWithTotalCount>>({
+            actionName: "GetAllDWordsWithPaging",
+            logger,
+            error
+        })
     }   
 }
 
-export async function GetDeckWordById(id: number) : Promise<ServiceResult<DeckWordWithLanguageId>> {
+export async function GetDeckWordById(id: number) : Promise<SerializedServiceResult<DeckWordWithLanguageId>> {
 
     // SERVICES
     const logger = container.get<ILogger>(TYPES.Logger)
@@ -213,26 +181,15 @@ export async function GetDeckWordById(id: number) : Promise<ServiceResult<DeckWo
         // SEND QUERY TO BUS
         const deckWord = await queryBus.send(validatedQuery)
 
-        return ServiceResult.success<DeckWordWithLanguageId>(deckWord as DeckWordWithLanguageId)
+        return ServiceResult.success<DeckWordWithLanguageId>(deckWord as DeckWordWithLanguageId).toPlain()
         
     } catch (error) {
         
-        if(error instanceof ZodError) {
-
-            const firstError = error.issues?.[0]?.message
-            logger.error("GetDeckWordById: INVALID FORM DATA!", {firstError})
-            // SHOW TO USER
-            return ServiceResult.failOne<DeckWordWithLanguageId>(firstError, HttpStatusCode.BadRequest)
-        }
-
-        if(error instanceof DeckWordNotFound) {
-
-            logger.error("GetDeckWordById: DECK WORD NOT FOUND!", {error})
-            // SHOW TO USER
-            return ServiceResult.failOne<DeckWordWithLanguageId>(error.message, HttpStatusCode.NotFound)
-        }
-        
-        logger.error("GetDeckWordById: FAIL", {error})
-        return ServiceResult.failOne<DeckWordWithLanguageId>("SERVER ERROR!", HttpStatusCode.InternalServerError)
+        return handleErrorSerialized<DeckWordWithLanguageId>({
+            actionName: "GetDeckWordById",
+            logger,
+            error,
+            expectedErrors: [DeckWordNotFound]
+        })
     }
 }

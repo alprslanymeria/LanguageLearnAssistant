@@ -1,143 +1,143 @@
 export class NoLanguageFound extends Error {
 
-    constructor() {
-
-        super("No languages found!")
+    constructor(message?: string) {
+        
+        super(message ?? "No languages found!")
         this.name = "NoLanguageFound"
     }
 }
 
 export class NoPracticeFound extends Error {
 
-    constructor() {
+    constructor(message?: string) {
 
-        super("No practices found!")
+        super(message ?? "No practices found!")
         this.name = "NoPracticeFound"
     }
 }
 
 export class UserNotFound extends Error {
 
-    constructor() {
+    constructor(message?: string) {
 
-        super("User not found!")
+        super(message ?? "User not found!")
         this.name = "UserNotFound"
     }
 }
 
 export class DeckWordNotFound extends Error {
 
-    constructor() {
+    constructor(message?: string) {
 
-        super("No deck word found!")
+        super(message ?? "No deck word found!")
         this.name = "DeckWordNotFound"
     }
 }
 
 export class FlashcardNotFound extends Error {
 
-    constructor() {
+    constructor(message?: string) {
 
-        super("Flashcard not found!")
+        super(message ?? "Flashcard not found!")
         this.name = "FlashcardNotFound"
     }
 }
 
 export class FlashcardCategoryNotFound extends Error {
 
-    constructor() {
-        
-        super("Flashcard category not found!")
+    constructor(message?: string) {
+
+        super(message ?? "Flashcard category not found!")
         this.name = "FlashcardCategoryNotFound"
     }
 }
 
 export class FlashcardOldSessionNotFound extends Error {
 
-    constructor() {
-        
-        super("Flashcard old session not found!")
+    constructor(message?: string) {
+
+        super(message ?? "Flashcard old session not found!")
         this.name = "FlashcardOldSessionNotFound"
     }
 }
 
 export class ListeningNotFound extends Error {
 
-    constructor() {
+    constructor(message?: string) {
 
-        super("Listening not found!")
+        super(message ?? "Listening not found!")
         this.name = "ListeningNotFound"
     }
 }
 
 export class ListeningCategoryNotFound extends Error {
 
-    constructor() {
+    constructor(message?: string) {
 
-        super("Listening category not found!")
+        super(message ?? "Listening category not found!")
         this.name = "ListeningCategoryNotFound"
     }
 }
 
 export class ListeningOldSessionNotFound extends Error {
 
-    constructor() {
-        
-        super("Listening old session not found!")
+    constructor(message?: string) {
+
+        super(message ?? "Listening old session not found!")
         this.name = "ListeningOldSessionNotFound"
     }
 }
 
 export class ReadingNotFound extends Error {
 
-    constructor() {
+    constructor(message?: string) {
 
-        super("Reading not found!")
+        super(message ?? "Reading not found!")
         this.name = "ReadingNotFound"
     }
 }
 
 export class ReadingBookNotFound extends Error {
 
-    constructor() {
+    constructor(message?: string) {
 
-        super("Reading book not found!")
+        super(message ?? "Reading book not found!")
         this.name = "ReadingBookNotFound"
     }
 }
 
 export class ReadingOldSessionNotFound extends Error {
 
-    constructor() {
-        
-        super("Reading old session not found!")
+    constructor(message?: string) {
+
+        super(message ?? "Reading old session not found!")
         this.name = "ReadingOldSessionNotFound"
     }
 }
 
 export class WritingNotFound extends Error {
 
-    constructor() {
+    constructor(message?: string) {
 
-        super("Writing not found!")
+        super(message ?? "Writing not found!")
         this.name = "WritingNotFound"
     }
 }
 
 export class WritingBookNotFound extends Error {
 
-    constructor() {
+    constructor(message?: string) {
 
-        super("Writing book not found!")
+        super(message ?? "Writing book not found!")
         this.name = "WritingBookNotFound"
     }
 }
 
 export class WritingOldSessionNotFound extends Error {
 
-    constructor() {
-        
-        super("Writing old session not found!")
+    constructor(message?: string) {
+
+        super(message ?? "Writing old session not found!")
         this.name = "WritingOldSessionNotFound"
     }
 }

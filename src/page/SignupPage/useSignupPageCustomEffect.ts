@@ -21,10 +21,13 @@ export function useSignupPageCustomEffect(params: UseSignupPageCustomEffectProps
 
                 const response = await GetLanguages()
 
-                if(response && response.status != HttpStatusCode.OK)
-                {
-                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
-
+                if(response && response.status != HttpStatusCode.OK) {
+                            
+                    if(response.shouldDisplayError) {
+        
+                        showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                    }
+                    
                     return
                 }
 
@@ -34,7 +37,7 @@ export function useSignupPageCustomEffect(params: UseSignupPageCustomEffectProps
                 
             } catch (error) {
 
-                showAlert({type: "error" , title: "error" , message: "Unexpected error during Get Languages!"})
+                showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
                 
             } finally {
 

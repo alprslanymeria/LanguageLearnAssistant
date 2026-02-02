@@ -1,17 +1,12 @@
 "use client"
 
-// REACT & NEXT
-import { useActionState } from "react"
-import { useRouter } from "next/navigation"
 // BETTER AUTH
 import { authClient } from "@/src/infrastructure/auth/auth-client"
 // ICONS
 import FileIcon from "@/src/components/svg/FileUpload"
-// ACTIONS
-import { CreateReadingBook } from "@/src/actions/ReadingBook/Controller"
 // REDUCER & HANDLERS & CUSTOM EFFECTS
 import { useReadingAddReducer } from "./useReadingAddReducer"
-import { handleFileChangeOne, handleFileChangeTwo } from "@/src/components/ReadingEditComponent/handlers"
+import { handleFileChangeOne, handleFileChangeTwo, handleSubmit } from "@/src/components/ReadingAddComponent/handlers"
 import { useReadingAddCustomEffect } from "./useReadingAddCustomEffect"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
@@ -20,16 +15,11 @@ import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/Loadi
 import Loader from "@/src/components/loader"
 
 
-
 export default function ReadingAddComponent () {
-
-    // ACTION
-    const [state, formAction, isPending] = useActionState(CreateReadingBook, undefined)
 
     // HOOKS
     const {states , dispatch} = useReadingAddReducer()
     const {showAlert} = useAlert()
-    const router = useRouter()
     const {isLoading , loadingSource, setLoading} = useLoading()
 
     //SESSION
@@ -37,7 +27,7 @@ export default function ReadingAddComponent () {
     const userId = session?.user.id
 
     // USE EFFECT
-    useReadingAddCustomEffect({state, router, setLoading, dispatch, showAlert})
+    useReadingAddCustomEffect({state: states.state, setLoading, dispatch, showAlert})
 
     if(isLoading && loadingSource === "page" ) return <Loader/>
 
@@ -49,10 +39,11 @@ export default function ReadingAddComponent () {
             <div className="p-6">
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Create Book</h2>
 
-                <form action={formAction} className="space-y-6">
-
+                <form className="space-y-6" method="POST" onSubmit={(e) => handleSubmit({ e, dispatch, setLoading })} >
+                    
                     {/* HIDDEN DATA'S*/}
                     <input type="hidden" name="userId" value={userId} />
+                    <input type="hidden" name="practice" value="reading" />
     
                     {/* LANGUAGE OPTIONS*/}
                     <div>
@@ -71,13 +62,15 @@ export default function ReadingAddComponent () {
                             required
                         > 
 
+                            <option value={0}>Select a language</option>
+
                             {
                                 states.languages!.length > 0 &&
                                 states.languages!
                                         .filter(language => language.name && language.name.length > 0)
                                         .slice(0, 4)
                                         .map((language, index) => (
-                                            <option key={index} value={index}>{language.name.charAt(0).toUpperCase() + language.name.slice(1).toLowerCase()}</option>
+                                            <option key={index} value={language.id}>{language.name.charAt(0).toUpperCase() + language.name.slice(1).toLowerCase()}</option>
                                         ))
                             }
 
@@ -88,18 +81,18 @@ export default function ReadingAddComponent () {
                     {/* NAME */}
                     <div>
                         <label 
-                            htmlFor="name" 
+                            htmlFor="bookName" 
                             className="block text-sm font-medium text-gray-700 mb-1"
                         >
                             Book Name
                         </label>
                         <input
                             type="text"
-                            id="name"
+                            id="bookName"
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder={`Book Name`}
                             value={states.name}
-                            name='name'
+                            name='bookName'
                             onChange={(e) => dispatch({type: "SET_NAME", payload: {name: e.target.value}})}
                             required
                         />
@@ -127,8 +120,8 @@ export default function ReadingAddComponent () {
                                     name="imageFile"
                                     type="file"
                                     className="sr-only"
-                                    accept=".png,.jpg,.jpeg"
-                                    onChange={(e) => handleFileChangeOne({e, dispatch})}
+                                    accept="image/*"
+                                    onChange={(e) =>  handleFileChangeOne({e, dispatch})}
                                     required
                                 />
                                 </label>
@@ -172,7 +165,7 @@ export default function ReadingAddComponent () {
                                     type="file"
                                     className="sr-only"
                                     accept=".pdf,.mp4,.mov,.avi,.webm"
-                                    onChange={(e) => handleFileChangeTwo({e, dispatch})}
+                                    onChange={(e) =>  handleFileChangeTwo({e, dispatch})}
                                     required
                                 />
                                 </label>
@@ -194,12 +187,12 @@ export default function ReadingAddComponent () {
                     </div>
         
                     <button
-                        disabled= {isPending || isPendingBetterAuth}
                         type="submit"
+                        disabled= {(isLoading && loadingSource === "ReadingAddHandleSubmit") || isPendingBetterAuth}
                         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                     >
 
-                        {isPending ? (
+                        {isLoading && loadingSource === "ReadingAddHandleSubmit" ? (
                                 <div className="flex items-center justify-center">
                                     <div className="w-6 h-6 border-4 border-white-500 border-t-transparent rounded-full animate-spin"></div>
                                 </div>

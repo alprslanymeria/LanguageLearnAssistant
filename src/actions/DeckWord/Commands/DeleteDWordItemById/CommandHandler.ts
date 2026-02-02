@@ -46,7 +46,7 @@ export class DeleteDWordItemByIdCommandHandler implements ICommandHandler<Delete
             throw new DeckWordNotFound()
         }
 
-        this.deckWordRepository.delete(deckWord.id)
+        await this.deckWordRepository.deleteAsync(deckWord.id)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.deckWord.prefix)

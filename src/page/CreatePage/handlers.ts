@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 // ACTIONS
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 import  socket  from "@/src/infrastructure/socket/socketClient"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 
 //BASE
 const BASE = process.env.NEXT_PUBLIC_BASE_URL
@@ -54,6 +55,13 @@ export async function handleChoose(params : HandleChooseProps) {
     const liveSessionId = uuidv4()
     setOldSessionId(liveSessionId)
 
+    // CHECK SOCKET SERVER CONNECTION IS ACTIVE
+    if(!socket.connected) {
+        
+        showAlert({type: "error", title: "error", message: "Socket server connection failed!"})
+        return
+    }
+
     try {
 
         setLoading({value: true , source: "ChooseHandler"})
@@ -61,7 +69,7 @@ export async function handleChoose(params : HandleChooseProps) {
         //LIVESESSION İÇERİSİNE KAYDET
         socket.emit("create-live-session", {userId, liveSessionId}, (response : any) => {
 
-            if (response?.status !== 201) {
+            if (response?.status !== HttpStatusCode.Created) {
 
                 showAlert({ type: "error", title: "error", message: response?.message })
                 
@@ -80,8 +88,7 @@ export async function handleChoose(params : HandleChooseProps) {
         
     } catch (error) {
         
-        console.log("ERROR: Create Live Session", error)
-        showAlert({type: "error", title: "error", message: "Unexpected error during Create Live Session!"})
+        showAlert({type: "error", title: "error", message: "Unexpected error!"})
 
     } finally {
 

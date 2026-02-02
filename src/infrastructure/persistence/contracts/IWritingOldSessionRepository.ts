@@ -19,11 +19,11 @@ export interface UpdateWritingOldSessionData {
 export interface IWritingOldSessionRepository {
 
     // HELPER
-    getWritingOldSessionsWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: WritingOldSession[]; totalCount: number }>
+    getWritingOldSessionsWithPagingAsync(userId: string, language: string, page: number, pageSize: number): Promise<{ items: WritingOldSession[]; totalCount: number }>
 
     // CRUD
     createAsync(data: CreateWritingOldSessionData): Promise<string>
     getByIdAsync(id: string): Promise<WritingOldSession | null>
     update(id: string, data: UpdateWritingOldSessionData): Promise<string>
-    delete(id: string): void
+    deleteAsync(id: string): Promise<void>
 }

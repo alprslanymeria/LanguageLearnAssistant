@@ -34,12 +34,12 @@ export class GetWOSWithPagingQueryHandler implements IQueryHandler<GetWOSWithPag
         // LOG MESSAGE
         this.logger.info(`GetWOSWithPagingQueryHandler: Fetching writing old sessions with paging for user!`)
 
-        const {items, totalCount} = await this.writingOldSessionRepository.getWritingOldSessionsWithPagingAsync(request.userId, request.request.page, request.request.pageSize)
+        const {items, totalCount} = await this.writingOldSessionRepository.getWritingOldSessionsWithPagingAsync(request.userId, request.language, request.request.page, request.request.pageSize)
 
         // MAP ITEMS TO WRITING OLDSESSION DTO
         const writingOldSessionDtos : WritingOldSessionDto[] = items.map(wos => ({
 
-            id: wos.oldSessionId,
+            oldSessionId: wos.oldSessionId,
             writingId: wos.writingId,
             writingBookId: wos.bookId,
             rate: wos.rate.toNumber(),

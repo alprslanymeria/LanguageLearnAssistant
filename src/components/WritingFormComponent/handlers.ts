@@ -11,6 +11,7 @@ import { calculateSimilarityRate, calculateSuccessRate } from "@/src/utils/helpe
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // LIBRARIES
 import socket from "@/src/infrastructure/socket/socketClient"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 
 
 
@@ -48,25 +49,36 @@ export async function handleTranslate(params : HandleTranslateProps) {
             setLoading({value: true , source: "WritingHandleTranslate"})
 
             // GET TRANSLATIONS
-            const translations = await TranslateText(userId!, {
+            const response = await TranslateText(userId!, {
 
                 selectedText: sessionData.data.WSelectedText!,
                 practice: practice!,
                 language: language!
             })
+
+            if(response && response.status != HttpStatusCode.OK) {
+            
+                if(response.shouldDisplayError) {
+    
+                    showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                }
+                
+                return
+            }
             
             // UPDATE SESSION DATA
             updateWritingSession({
                 data: {
-                    WTranslatedText: translations.data!.translatedText,
-                    WShowTranslation: true
+                    WTranslatedText: response.data!.translatedText,
+                    WShowTranslation: true,
+                    WShowSelectTextButton: false
                 }
             })
         }
 
     } catch (error) {
 
-        showAlert({type: "error", title: "error", message: "ERR: handleTranslate!"})
+        showAlert({type: "error", title: "error", message: "Unexpected error!"})
         
     } finally {
 
@@ -101,7 +113,7 @@ export async function calculateRate(params : CalculateRateProps) {
 
             const similarity = calculateSimilarityRate({inputOne: sessionData.data.WInputText!, inputTwo: sessionData.data.WTranslatedText!})
 
-            showAlert({type: "info", title: "info", message: `Similarity rate: ${similarity}%`})
+            showAlert({type: "info", title: "info", message: `Similarity rate: ${(similarity * 100).toFixed(2)}%`})
 
             //SAVED TO LOCAL STATE
             const row: WritingRowItemRequest = {
@@ -118,7 +130,7 @@ export async function calculateRate(params : CalculateRateProps) {
         
     } catch (error) {
 
-        showAlert({type: "error" , title: "error", message: "Unexpected error during CalculateRate!"})
+        showAlert({type: "error" , title: "error", message: "Unexpected error!"})
         
     } finally {
 
@@ -126,7 +138,8 @@ export async function calculateRate(params : CalculateRateProps) {
             WSelectedText: "",
             WInputText: "",
             WTranslatedText: "",
-            WShowTranslation: false
+            WShowTranslation: false,
+            WShowSelectTextButton: true
         }})
 
         setLoading({value: false})
@@ -166,16 +179,50 @@ export async function closeAndSave(params : CloseAndSaveProps) {
         
         setLoading({value: true , source: "WritingCloseAndSave"})
 
+        if(rowsToSave.rows.length === 0) {
+
+            showAlert({type: "warning", title: "warning", message: "You need at least one row to save it!"})
+
+            return
+        }
+
         //SAVE OLD SESSION
-        await CreateWOS(oldSessionRow)
-            
+        const wosResponse = await CreateWOS(oldSessionRow)
+
+        if(wosResponse && wosResponse.status != HttpStatusCode.Created) {
+
+            if(wosResponse.shouldDisplayError) {
+
+                showAlert({type: "error", title: "error", message: wosResponse.errorMessage![0]})
+            }
+
+            return
+        }    
+
         //SAVE SENTENCES
-        await CreateWRows(rowsToSave)        
+        const rowsResponse = await CreateWRows(rowsToSave)
+
+        if(rowsResponse && rowsResponse.status != HttpStatusCode.Created) {
+
+            if(rowsResponse.shouldDisplayError) {
+
+                showAlert({type: "error", title: "error", message: rowsResponse.errorMessage![0]})
+            }
+
+            return
+        }
+        
+        // CHECK SOCKET SERVER CONNECTION IS ACTIVE
+        if(!socket.connected) {
+            
+            showAlert({type: "error", title: "error", message: "Socket server connection failed!"})
+            return
+        }
 
         //DELETE LIVE SESSION
         socket.emit("delete-live-session", {userId}, (response : any) => {
 
-            if (response?.status !== 204) {
+            if (response?.status !== HttpStatusCode.NoContent) {
 
                 showAlert({ type: "error", title: "error", message: response?.message })
                 return
@@ -186,7 +233,7 @@ export async function closeAndSave(params : CloseAndSaveProps) {
         
     } catch (error) {
 
-        showAlert({type: "error", title: "error", message: "ERR: closeAndSave!"})
+        showAlert({type: "error", title: "error", message: "Unexpected error!"})
         
     } finally {
 

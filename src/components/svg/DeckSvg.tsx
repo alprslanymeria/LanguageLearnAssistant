@@ -1,6 +1,6 @@
 "use client"
 
-import Fonts from '@/public/fonts/fonts'
+import {Fonts} from '@/public/fonts/fonts'
 import { FlashcardCategoryWithDeckWords } from '@/src/actions/FlashcardCategory/Response'
 import { FlashcardSessionRowDto } from '@/src/actions/FlashcardSessionRow/Response'
 

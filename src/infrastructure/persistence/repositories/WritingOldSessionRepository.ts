@@ -7,11 +7,14 @@ import { WritingOldSession } from "@/src/generated/prisma/client"
 @injectable()
 export class WritingOldSessionRepository implements IWritingOldSessionRepository {
 
-    async getWritingOldSessionsWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: WritingOldSession[]; totalCount: number }> {
+    async getWritingOldSessionsWithPagingAsync(userId: string, language: string, page: number, pageSize: number): Promise<{ items: WritingOldSession[]; totalCount: number }> {
         
         const whereClause = {
             writing: {
-                userId: userId
+                userId: userId,
+                language: {
+                    name: language
+                }
             }
         }
 
@@ -62,9 +65,9 @@ export class WritingOldSessionRepository implements IWritingOldSessionRepository
         return updatedWritingOldSession.oldSessionId
     }
 
-    delete(id: string): void {
+    async deleteAsync(id: string): Promise<void> {
 
-        prisma.writingOldSession.delete({
+        await prisma.writingOldSession.delete({
             where: {
                 oldSessionId: id
             }

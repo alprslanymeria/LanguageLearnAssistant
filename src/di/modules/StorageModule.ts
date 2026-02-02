@@ -1,3 +1,5 @@
+import 'server-only'
+
 // IMPORTS
 import { Container } from "inversify"
 import { Storage } from "@google-cloud/storage"
@@ -17,20 +19,34 @@ export class StorageModule implements IContainerModule {
 
     register(container: Container): void {
 
+        const storageConfig = StorageConfig.load()
+
         container.bind(TYPES.BucketName).toConstantValue(process.env.GCS_BUCKET_NAME || 'create-items')
         container.bind(TYPES.LocalStorageBasePath).toConstantValue(process.env.LOCAL_STORAGE_PATH || './uploads')
         container.bind<StorageOptions>(TYPES.StorageConfig).toConstantValue(StorageConfig.load())
-        container.bind<IStorageStrategy>(TYPES.StorageStrategy).to(LocalStorageStrategy)
-        container.bind<IStorageStrategy>(TYPES.StorageStrategy).to(GoogleCloudStorageStrategy)
-        container.bind<IStorageFactory>(TYPES.StorageFactory).to(StorageFactory)
-        container.bind<IStorageService>(TYPES.StorageService).to(StorageService)
-        container.bind<Storage>(TYPES.GoogleCloudClient).toDynamicValue(() => {
+        
+        if(storageConfig.type === "local") {
 
-            return new Storage({
-                projectId: process.env.GCP_PROJECT_ID,
-                keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
-            })
+            container.bind<IStorageStrategy>(TYPES.StorageStrategy).to(LocalStorageStrategy).inSingletonScope()
+        }
 
-        }).inSingletonScope()
+        if(storageConfig.type === "gcloud") {
+            
+            container.bind<IStorageStrategy>(TYPES.StorageStrategy).to(GoogleCloudStorageStrategy).inSingletonScope()
+        
+            container.bind<Storage>(TYPES.GoogleCloudClient).toDynamicValue(() => {
+
+                return new Storage({
+                    projectId: process.env.GCP_PROJECT_ID,
+                    keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
+                })
+
+            }).inSingletonScope()
+        
+        }
+
+        container.bind<IStorageFactory>(TYPES.StorageFactory).to(StorageFactory).inSingletonScope()
+        container.bind<IStorageService>(TYPES.StorageService).to(StorageService).inSingletonScope()
+
     }
 }

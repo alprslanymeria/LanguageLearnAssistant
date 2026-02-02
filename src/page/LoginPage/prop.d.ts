@@ -2,6 +2,7 @@
 import { FormEvent } from "react"
 import { ReadonlyURLSearchParams } from "next/navigation"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
 // REDUCER
 export type State = {
@@ -17,6 +18,7 @@ export type Action =
 export type HandleSubmitProps = {
   
   e: FormEvent<HTMLFormElement>
+  router: AppRouterInstance
   dispatch: React.Dispatch<Action>
   setLoading: (props: setLoadingProps) => void
 }

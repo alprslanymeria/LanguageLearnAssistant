@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 // TYPES
 import { FlagComponentProps } from "@/src/components/FlagComponent/prop"
 // ASSETS
-import Fonts from "@/public/fonts/fonts"
+import {Fonts} from "@/public/fonts/fonts"
 // BETTER AUTH
 import { authClient } from "@/src/infrastructure/auth/auth-client"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS

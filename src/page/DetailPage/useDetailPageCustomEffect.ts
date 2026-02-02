@@ -52,7 +52,13 @@ export function useDetailPageCustomEffect(params : UseDetailPageCustomEffectProp
                 switch (practice) {
                     case "reading":
                         response = await GetRRowsByIdWithPaging(oldSessionId!, {page: state.page, pageSize: state.limit})
-                        if(response && response.status != HttpStatusCode.OK) showAlert({type: "error", title: "error" , message: response?.errorMessage![0]})
+
+                        if(response && response.status != HttpStatusCode.OK) {
+                                                
+                            if(response.shouldDisplayError) showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                            
+                            return
+                        }
                         
                         const readingRowsResponse : ReadingRowsResponse = response.data as ReadingRowsResponse
                         const readingRowDtos = readingRowsResponse.contents
@@ -65,7 +71,13 @@ export function useDetailPageCustomEffect(params : UseDetailPageCustomEffectProp
                         break;
                     case "writing":
                         response = await GetWRowsByIdWithPaging(oldSessionId!, {page: state.page, pageSize: state.limit})
-                        if(response && response.status != HttpStatusCode.OK) showAlert({type: "error", title: "error" , message: response?.errorMessage![0]})
+
+                        if(response && response.status != HttpStatusCode.OK) {
+                                                
+                            if(response.shouldDisplayError) showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                            
+                            return
+                        }
 
                         const writingRowsResponse : WritingRowsResponse = response.data as WritingRowsResponse
                         const writingRowDtos = writingRowsResponse.contents
@@ -78,7 +90,13 @@ export function useDetailPageCustomEffect(params : UseDetailPageCustomEffectProp
                         break;
                     case "flashcard":
                         response = await GetFRowsByIdWithPaging(oldSessionId!, {page: state.page, pageSize: state.limit})
-                        if(response && response.status != HttpStatusCode.OK) showAlert({type: "error", title: "error" , message: response?.errorMessage![0]})
+                        
+                        if(response && response.status != HttpStatusCode.OK) {
+                                                
+                            if(response.shouldDisplayError) showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                            
+                            return
+                        }
 
                         const flashcardRowsResponse : FlashcardRowsResponse = response.data as FlashcardRowsResponse
                         const flashcardRowDtos = flashcardRowsResponse.contents
@@ -91,7 +109,13 @@ export function useDetailPageCustomEffect(params : UseDetailPageCustomEffectProp
                         break;
                     case "listening":
                         response = await GetLRowsByIdWithPaging(oldSessionId!, {page: state.page, pageSize: state.limit})
-                        if(response && response.status != HttpStatusCode.OK) showAlert({type: "error", title: "error" , message: response?.errorMessage![0]})
+                        
+                        if(response && response.status != HttpStatusCode.OK) {
+                                                
+                            if(response.shouldDisplayError) showAlert({type: "error" , title: "error" , message: response.errorMessage![0]})
+                            
+                            return
+                        }
 
                         const listeningRowsResponse : ListeningRowsResponse = response.data as ListeningRowsResponse
                         const listeningRowDtos = listeningRowsResponse.contents
@@ -108,7 +132,7 @@ export function useDetailPageCustomEffect(params : UseDetailPageCustomEffectProp
                 
             } catch (error) {
 
-                showAlert({type: "error", title: "error" , message: "Unexpected error occured during Get Rows By Id!"})
+                showAlert({type: "error", title: "error" , message: "Unexpected error!"})
 
             } finally {
 

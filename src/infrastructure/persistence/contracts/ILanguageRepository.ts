@@ -25,5 +25,5 @@ export interface ILanguageRepository {
     createAsync(data: CreateLanguageData): Promise<number>
     getByIdAsync(id: number): Promise<Language | null>
     update(id: number, data: UpdateLanguageData): Promise<number>
-    delete(id: number): void
+    deleteAsync(id: number): Promise<void>
 }

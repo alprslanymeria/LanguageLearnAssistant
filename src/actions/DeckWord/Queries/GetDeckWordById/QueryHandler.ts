@@ -47,7 +47,8 @@ export class GetDeckWordByIdQueryHandler implements IQueryHandler<GetDeckWordByI
 
         const response: DeckWordWithLanguageId = {
 
-            flashcardCategoryId: deckWord.categoryId,
+            id: deckWord.id,
+            categoryId: deckWord.categoryId,
             question: deckWord.question,
             answer: deckWord.answer,
             languageId: deckWord.category.flashcard.language.id

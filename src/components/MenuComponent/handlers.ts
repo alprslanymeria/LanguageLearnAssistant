@@ -2,6 +2,7 @@
 import { HandleIconClickProps, HandleLogoutProps } from "@/src/components/MenuComponent/prop"
 // BETTER AUTH
 import { SignOut } from "@/src/infrastructure/auth/auth-client"
+import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 // LIBRARY
 import socket from "@/src/infrastructure/socket/socketClient"
 // STORE
@@ -25,12 +26,19 @@ export async function handleLogout(params : HandleLogoutProps) {
         setLoading({value: true , source: "MenuHandleLogout"})
 
         // CHECK IF REQUEST COME FROM /SESSION
-        if(pathName!.startsWith('/session')){
+        if(pathName!.startsWith('/session')) {
+
+            // CHECK SOCKET SERVER CONNECTION IS ACTIVE
+            if(!socket.connected) {
+                
+                showAlert({type: "error", title: "error", message: "Socket server connection failed!"})
+                return
+            }
 
             //DELETE LIVE SESSION
             socket.emit("delete-live-session", {userId}, (response : any) => {
 
-                if (response?.status !== 204) {
+                if (response?.status !== HttpStatusCode.NoContent) {
 
                     showAlert({ type: "error", title: "error", message: response?.message })
                     return
@@ -42,7 +50,7 @@ export async function handleLogout(params : HandleLogoutProps) {
     
     } catch (error) {
 
-        showAlert({type: "error" , title: "error" , message: "Unexpected error during logout!"})
+        showAlert({type: "error" , title: "error" , message: "Unexpected error!"})
     
     } finally {
 

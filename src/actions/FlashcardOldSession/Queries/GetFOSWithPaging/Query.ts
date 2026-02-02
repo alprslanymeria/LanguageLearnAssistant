@@ -11,4 +11,5 @@ export interface GetFOSWithPagingQuery extends IQuery<PagedResult<FlashcardOldSe
     readonly type: typeof GET_FOS_WITH_PAGING_QUERY
     request: PagedRequest
     userId: string
+    language: string
 }

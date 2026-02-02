@@ -34,12 +34,12 @@ export class GetROSWithPagingQueryHandler implements IQueryHandler<GetROSWithPag
         // LOG MESSAGE
         this.logger.info(`GetROSWithPagingQueryHandler: Fetching reading old sessions with paging for user!`)
 
-        const {items, totalCount} = await this.readingOldSessionRepository.getReadingOldSessionsWithPagingAsync(request.userId, request.request.page, request.request.pageSize)
+        const {items, totalCount} = await this.readingOldSessionRepository.getReadingOldSessionsWithPagingAsync(request.userId, request.language, request.request.page, request.request.pageSize)
 
         // MAP ITEMS TO READING OLDSESSION DTO
         const readingOldSessionDtos : ReadingOldSessionDto[] = items.map(ros => ({
 
-            id: ros.oldSessionId,
+            oldSessionId: ros.oldSessionId,
             readingId: ros.readingId,
             readingBookId: ros.bookId,
             rate: ros.rate.toNumber(),
@@ -51,6 +51,8 @@ export class GetROSWithPagingQueryHandler implements IQueryHandler<GetROSWithPag
             readingOldSessionDtos,
             totalCount
         }
+
+        this.logger.info(`GetROSWithPagingQueryHandler: Fetched ${items.length} reading old sessions for user!`)
 
         const result = createPagedResult<ReadingOldSessionWithTotalCount>([response], request.request, totalCount)
     

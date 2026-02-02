@@ -43,13 +43,13 @@ export default function FlashcardSessionComponent() {
                             language={language}
                             text1={sessionData.data.FQuestion}
                             text2={sessionData.data.FAnswer}
-                            category={item!.name}
+                            category={item ? item.name : ""}
                         />
                         ) : (
                         <DeckHalfSvg
                             language={language}
                             text1={sessionData.data.FQuestion}
-                            category={item!.name}
+                            category={item ? item.name : ""}
                         />
                         )}
                     </div>
