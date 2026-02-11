@@ -1,11 +1,59 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { ListeningSessionRow } from "@/src/generated/prisma/client"
-import { IListeningSessionRowRepository, CreateListeningSessionRowData, UpdateListeningSessionRowData } from "@/src/infrastructure/persistence/contracts/IListeningSessionRowRepository"
+import { ListeningSessionRow, Prisma } from "@prisma/client"
+import { IListeningSessionRowRepository } from "@/src/infrastructure/persistence/contracts/IListeningSessionRowRepository"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
 
 @injectable()
 export class ListeningSessionRowRepository implements IListeningSessionRowRepository {
+
+    // CRUD OPERATIONS
+
+    async createAsync(data: Prisma.ListeningSessionRowCreateInput): Promise<void> {
+    
+        await prisma.listeningSessionRow.create({
+            data: data
+        })
+
+        return
+    }
+
+    async getByIdAsync(id: number): Promise<ListeningSessionRow | null> {
+
+        const listeningSessionRow = await prisma.listeningSessionRow.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        return listeningSessionRow
+    }
+
+    async updateAsync(id: number, data: Prisma.ListeningSessionRowUpdateInput): Promise<void> {
+
+        await prisma.listeningSessionRow.update({
+
+            where: {
+                id: id
+            },
+            data: data
+        })
+
+        return
+    }
+
+    async deleteAsync(id: number): Promise<void> {
+
+        await prisma.listeningSessionRow.delete({
+            where: {
+                id: id
+            }
+        })
+
+        return
+    }
+
+    // HELPER OPERATIONS
 
     async getListeningRowsByIdWithPagingAsync(sessionId: string, page: number, pageSize: number): Promise<{ items: ListeningSessionRow[]; totalCount: number }> {
         
@@ -25,53 +73,10 @@ export class ListeningSessionRowRepository implements IListeningSessionRowReposi
         return { items, totalCount }
     }
 
-    async createRangeAsync(rows: CreateListeningSessionRowData[]): Promise<void> {
+    async createRangeAsync(rows: Prisma.ListeningSessionRowCreateManyInput[]): Promise<void> {
         
         await prisma.listeningSessionRow.createMany({
             data: rows
         })
     }
-
-    async createAsync(data: CreateListeningSessionRowData): Promise<number> {
-    
-        const created = await prisma.listeningSessionRow.create({
-            data: data
-        })
-
-        return created.id
-    }
-
-    async getByIdAsync(id: number): Promise<ListeningSessionRow | null> {
-
-        const listeningSessionRow = await prisma.listeningSessionRow.findUnique({
-            where: {
-                id: id
-            }
-        })
-
-        return listeningSessionRow
-    }
-
-    async update(id: number, data: UpdateListeningSessionRowData): Promise<number> {
-
-        const updatedListeningSessionRow = await prisma.listeningSessionRow.update({
-
-            where: {
-                id: id
-            },
-            data: data
-        })
-
-        return updatedListeningSessionRow.id
-    }
-
-    async deleteAsync(id: number): Promise<void> {
-
-        await prisma.listeningSessionRow.delete({
-            where: {
-                id: id
-            }
-        })
-    }
-
 }

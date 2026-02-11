@@ -12,7 +12,6 @@ import { ICacheService } from "@/src/infrastructure/caching/ICacheService"
 import { ICacheStrategy } from "@/src/infrastructure/caching/ICacheStrategy"
 import { MemoryCacheStrategy } from "@/src/infrastructure/caching/MemoryCacheStrategy"
 import { RedisCacheStrategy } from "@/src/infrastructure/caching/RedisCacheStrategy"
-// import { CacheBehavior } from "@/src/infrastructure/caching/CacheBehavior"
 import { ICacheFactory } from "@/src/infrastructure/caching/ICacheFactory"
 import { CacheFactory } from "@/src/infrastructure/caching/CacheFactory"
 
@@ -22,17 +21,14 @@ export class CachingModule implements IContainerModule {
 
         const cacheConfig = CacheConfig.load()
 
-        container.bind<CacheOptions>(TYPES.CacheConfig).toConstantValue(CacheConfig.load())
-        // container.bind(TYPES.CacheBehavior).to(CacheBehavior).inSingletonScope()
+        container.bind<CacheOptions>(TYPES.CacheConfig).toConstantValue(cacheConfig)
 
-        if(cacheConfig.type === "memory") {
-
-            container.bind<ICacheStrategy>(TYPES.CacheStrategy).to(MemoryCacheStrategy).inSingletonScope()
-        }
+       
+        // REGISTER ALL STRATEGIES, THE FACTORY WILL SELECT THE RIGHT ONE BASED ON CONFIG
+        container.bind<ICacheStrategy>(TYPES.CacheStrategy).to(MemoryCacheStrategy).inSingletonScope()
+        
 
         if(cacheConfig.type === "redis") {
-
-            container.bind<ICacheStrategy>(TYPES.CacheStrategy).to(RedisCacheStrategy).inSingletonScope()
 
             container.bind<Redis>(TYPES.RedisClient).toDynamicValue(() => {
 
@@ -46,6 +42,8 @@ export class CachingModule implements IContainerModule {
                 })
 
             }).inSingletonScope()
+
+            container.bind<ICacheStrategy>(TYPES.CacheStrategy).to(RedisCacheStrategy).inSingletonScope()
         }
 
         container.bind<ICacheFactory>(TYPES.CacheFactory).to(CacheFactory).inSingletonScope()

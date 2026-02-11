@@ -3,7 +3,7 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { CreateFlashcardCategoryData, IFlashcardCategoryRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardCategoryRepository"
+import type { IFlashcardCategoryRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardCategoryRepository"
 import { CreateFlashcardCategoryCommand } from "./Command"
 import type { ICacheService } from "@/src/infrastructure/caching/ICacheService"
 import type { IEntityVerificationService } from "@/src/services/IEntityVerificationService"
@@ -11,9 +11,10 @@ import { CacheKeys } from "@/src/infrastructure/caching/CacheKeys"
 import { FlashcardResultNotSuccess } from "@/src/exceptions/NotSuccess"
 import type { IPracticeRepository } from "@/src/infrastructure/persistence/contracts/IPracticeRepository"
 import { NoPracticeFound } from "@/src/exceptions/NotFound"
+import { connect } from "http2"
 
 @injectable()
-export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<CreateFlashcardCategoryCommand, number> {
+export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<CreateFlashcardCategoryCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -40,7 +41,7 @@ export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<Cr
         this.entityVerificationService = entityVerificationService;
     }
 
-    async Handle(request: CreateFlashcardCategoryCommand): Promise<number> {
+    async Handle(request: CreateFlashcardCategoryCommand): Promise<void> {
 
         // FORM DATA'S
         const categoryName = request.formData.get("categoryName")?.toString()!
@@ -66,19 +67,19 @@ export class CreateFlashcardCategoryCommandHandler implements ICommandHandler<Cr
         // FAST FAIL
         if (!flashcardResult.isSuccess) throw new FlashcardResultNotSuccess()
              
-        const data : CreateFlashcardCategoryData = {
+        const data = {
 
             name: categoryName,
-            flashcardId: flashcardResult.data!.id,
+            flashcard: {connect: {id: flashcardResult.data!.id}},
         }
 
-        const flashcardCategoryId = await this.flashcardCategoryRepository.createAsync(data)
+        await this.flashcardCategoryRepository.createAsync(data)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.flashcardCategory.prefix)
 
         this.logger.info(`CreateFlashcardCategoryCommandHandler: Successfully created flashcard category with name  ${categoryName}`)
     
-        return flashcardCategoryId
+        return
     }
 }

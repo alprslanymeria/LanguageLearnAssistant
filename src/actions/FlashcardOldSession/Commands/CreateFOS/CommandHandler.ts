@@ -4,14 +4,14 @@ import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { CreateFOSCommand } from "./Command"
-import type { CreateFlashcardOldSessionData, IFlashcardOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardOldSessionRepository"
+import type { IFlashcardOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardOldSessionRepository"
 import { FlashcardRepository } from "@/src/infrastructure/persistence/repositories/FlashcardRepository"
 import { FlashcardCategoryRepository } from "@/src/infrastructure/persistence/repositories/FlashcardCategoryRepository"
 import { FlashcardCategoryNotFound, FlashcardNotFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
-export class CreateFOSCommandHandler implements ICommandHandler<CreateFOSCommand, string> {
+export class CreateFOSCommandHandler implements ICommandHandler<CreateFOSCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -34,7 +34,7 @@ export class CreateFOSCommandHandler implements ICommandHandler<CreateFOSCommand
         this.flashcardCategoryRepository = flashcardCategoryRepository;
     }
     
-    async Handle(request: CreateFOSCommand): Promise<string> {
+    async Handle(request: CreateFOSCommand): Promise<void> {
         
         // LOG MESSAGE
         this.logger.info(`CreateFOSCommandHandler: Creating flashcard old session for user!`)
@@ -57,18 +57,18 @@ export class CreateFOSCommandHandler implements ICommandHandler<CreateFOSCommand
             throw new FlashcardCategoryNotFound()
         }
 
-        const data : CreateFlashcardOldSessionData = {
+        const data = {
 
             oldSessionId: request.request.id,
-            flashcardId: request.request.flashcardId,
-            categoryId: request.request.flashcardCategoryId,
+            flashcard: {connect: {id: request.request.flashcardId}},
+            category: {connect: {id: request.request.flashcardCategoryId}},
             rate: request.request.rate
         }
 
-        const createdId = await this.flashcardOldSessionRepository.createAsync(data)
+        await this.flashcardOldSessionRepository.createAsync(data)
 
         this.logger.info(`CreateFOSCommandHandler: Successfully created flashcard old session for user!`)
     
-        return createdId
+        return
     }
 }

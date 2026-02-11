@@ -1,15 +1,64 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { WritingBook } from "@/src/generated/prisma/client"
-import { IWritingBookRepository, CreateWritingBookData, UpdateWritingBookData, WritingBookWithLanguage } from "@/src/infrastructure/persistence/contracts/IWritingBookRepository"
+import { Prisma, WritingBook } from "@prisma/client"
+import { IWritingBookRepository } from "@/src/infrastructure/persistence/contracts/IWritingBookRepository"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
+import { WritingBookWithLanguageId } from "@/src/actions/WritingBook/Response"
 
 @injectable()
 export class WritingBookRepository implements IWritingBookRepository {
 
-    async getWritingBookItemByIdAsync(id: number): Promise<WritingBookWithLanguage | null> {
+    // CRUD OPERATIONS
+
+    async createAsync(data: Prisma.WritingBookCreateInput): Promise<void> {
+    
+        await prisma.writingBook.create({
+            data: data
+        })
+
+        return
+    }
+
+    async getByIdAsync(id: number): Promise<WritingBook | null> {
+
+        const writingBook = await prisma.writingBook.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        return writingBook
+    }
+
+    async updateAsync(id: number, data: Prisma.WritingBookUpdateInput): Promise<void> {
+
+        await prisma.writingBook.update({
+
+            where: {
+                id: id
+            },
+            data: data
+        })
+
+        return
+    }
+
+    async deleteAsync(id: number): Promise<void> {
+
+        await prisma.writingBook.delete({
+            where: {
+                id: id
+            }
+        })
+
+        return
+    }
+
+    // HELPER OPERATIONS
+
+    async getWritingBookItemByIdAsync(id: number): Promise<WritingBookWithLanguageId | null> {
         
-        return await prisma.writingBook.findUnique({
+        const writingBook = await prisma.writingBook.findUnique({
             where: { id },
             select: {
                 id: true,
@@ -25,6 +74,21 @@ export class WritingBookRepository implements IWritingBookRepository {
                 }
             }
         })
+
+        if (!writingBook) return null
+
+        const result : WritingBookWithLanguageId = {
+
+            id: writingBook.id,
+            writingId: writingBook.writingId,
+            name: writingBook.name,
+            imageUrl: writingBook.imageUrl,
+            leftColor: writingBook.leftColor,
+            sourceUrl: writingBook.sourceUrl,
+            languageId: writingBook.writing.language.id
+        }
+
+        return result
     }
 
     async getAllWBooksWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: WritingBook[]; totalCount: number }> {
@@ -58,48 +122,6 @@ export class WritingBookRepository implements IWritingBookRepository {
                     languageId,
                     practiceId
                 }
-            }
-        })
-    }
-
-    async createAsync(data: CreateWritingBookData): Promise<number> {
-    
-        const created = await prisma.writingBook.create({
-            data: data
-        })
-
-        return created.id
-    }
-
-    async getByIdAsync(id: number): Promise<WritingBook | null> {
-
-        const writingBook = await prisma.writingBook.findUnique({
-            where: {
-                id: id
-            }
-        })
-
-        return writingBook
-    }
-
-    async update(id: number, data: UpdateWritingBookData): Promise<number> {
-
-        const updatedWritingBook = await prisma.writingBook.update({
-
-            where: {
-                id: id
-            },
-            data: data
-        })
-
-        return updatedWritingBook.id
-    }
-
-    async deleteAsync(id: number): Promise<void> {
-
-        await prisma.writingBook.delete({
-            where: {
-                id: id
             }
         })
     }

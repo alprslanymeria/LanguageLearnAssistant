@@ -3,7 +3,7 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { CreateWritingBookData, IWritingBookRepository } from "@/src/infrastructure/persistence/contracts/IWritingBookRepository"
+import type { IWritingBookRepository } from "@/src/infrastructure/persistence/contracts/IWritingBookRepository"
 import { CreateWritingBookCommand } from "./Command"
 import type { IFileStorageHelper } from "@/src/services/IFileStorageHelper"
 import type { ICacheService } from "@/src/infrastructure/caching/ICacheService"
@@ -16,7 +16,7 @@ import { NoPracticeFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
-export class CreateWritingBookCommandHandler implements ICommandHandler<CreateWritingBookCommand, number> {
+export class CreateWritingBookCommandHandler implements ICommandHandler<CreateWritingBookCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -49,7 +49,7 @@ export class CreateWritingBookCommandHandler implements ICommandHandler<CreateWr
         this.fileStorageHelper = fileStorageHelper;
     }
 
-    async Handle(request: CreateWritingBookCommand): Promise<number> {
+    async Handle(request: CreateWritingBookCommand): Promise<void> {
 
         // FORM DATA'S
         const bookName = request.formData.get("bookName")?.toString()!
@@ -96,22 +96,22 @@ export class CreateWritingBookCommandHandler implements ICommandHandler<CreateWr
         // EXTRACT LEFT SIDE COLOR FROM IMAGE
         const leftSideColor = await this.imageProcessingService.extractLeftSideColorAsync(imageFile)
 
-        const data : CreateWritingBookData = {
+        const data = {
 
             name: bookName,
-            writingId: writingResult.data!.id,
+            writing: { connect: { id: writingResult.data!.id } },
             imageUrl: imageUrl,
             sourceUrl: sourceUrl,
             leftColor: leftSideColor
         }
 
-        const writingBookId = await this.writingBookRepository.createAsync(data)
+        await this.writingBookRepository.createAsync(data)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.writingBook.prefix)
 
-        this.logger.info(`CreateWritingBookCommandHandler: Successfully created writing book with Id ${writingBookId} for user!`)
+        this.logger.info(`CreateWritingBookCommandHandler: Successfully created writing book for user!`)
         
-        return writingBookId
+        return
     }
 }

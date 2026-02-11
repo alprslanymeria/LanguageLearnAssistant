@@ -3,7 +3,7 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { IWritingBookRepository, UpdateWritingBookData } from "@/src/infrastructure/persistence/contracts/IWritingBookRepository"
+import type { IWritingBookRepository } from "@/src/infrastructure/persistence/contracts/IWritingBookRepository"
 import { UpdateWritingBookCommand } from "./Command"
 import type { ICacheService } from "@/src/infrastructure/caching/ICacheService"
 import type { IEntityVerificationService } from "@/src/services/IEntityVerificationService"
@@ -16,7 +16,7 @@ import type { IPracticeRepository } from "@/src/infrastructure/persistence/contr
 
 
 @injectable()
-export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWritingBookCommand, number> {
+export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWritingBookCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -49,7 +49,7 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
         this.fileStorageHelper = fileStorageHelper;
     }
     
-    async Handle(request: UpdateWritingBookCommand): Promise<number> {
+    async Handle(request: UpdateWritingBookCommand): Promise<void> {
 
         // FORM DATA'S
         const itemId = Number(request.formData.get("itemId"))
@@ -121,16 +121,16 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
             )
         }
 
-        const data : UpdateWritingBookData = {
+        const data = {
 
             name: bookName,
-            writingId: writingResult.data!.id,
+            writing: { connect: { id: writingResult.data!.id } },
             imageUrl: newImageUrl,
             sourceUrl: newSourceUrl,
             leftColor: newLeftColor
         }
 
-        const updatedId = await this.writingBookRepository.update(itemId, data)
+        await this.writingBookRepository.updateAsync(itemId, data)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.writingBook.prefix)
@@ -146,8 +146,8 @@ export class UpdateWritingBookCommandHandler implements ICommandHandler<UpdateWr
             await this.fileStorageHelper.deleteFileFromStorageAsync(oldSourceUrl)
         }
 
-        this.logger.info(`UpdateWritingBookCommandHandler: Successfully updated writing book with Id ${updatedId}`)
+        this.logger.info(`UpdateWritingBookCommandHandler: Successfully updated writing book with Id ${itemId}`)
 
-        return updatedId
+        return
     }
 }

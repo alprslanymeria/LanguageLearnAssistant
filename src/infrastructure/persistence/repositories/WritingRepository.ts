@@ -1,33 +1,21 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { Writing } from "@/src/generated/prisma/client"
-import { IWritingRepository, CreateWritingData, UpdateWritingData } from "@/src/infrastructure/persistence/contracts/IWritingRepository"
+import { Prisma, Writing } from "@prisma/client"
+import { IWritingRepository } from "@/src/infrastructure/persistence/contracts/IWritingRepository"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
 
 @injectable()
 export class WritingRepository implements IWritingRepository {
 
+    // CRUD OPERATIONS
 
-    async getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Writing | null> {
-        
-        const writing = await prisma.writing.findFirst({
-            where: {
-                practiceId: practiceId,
-                userId: userId,
-                languageId: languageId
-            }
-        })
-
-        return writing
-    }
-
-    async createAsync(data: CreateWritingData): Promise<number> {
+    async createAsync(data: Prisma.WritingCreateInput): Promise<void> {
     
-        const created = await prisma.writing.create({
+        await prisma.writing.create({
             data: data
         })
 
-        return created.id
+        return
     }
 
     async getByIdAsync(id: number): Promise<Writing | null> {
@@ -41,9 +29,9 @@ export class WritingRepository implements IWritingRepository {
         return writing
     }
 
-    async update(id: number, data: UpdateWritingData): Promise<number> {
+    async updateAsync(id: number, data: Prisma.WritingUpdateInput): Promise<void> {
 
-        const updatedWriting = await prisma.writing.update({
+        await prisma.writing.update({
 
             where: {
                 id: id
@@ -51,7 +39,7 @@ export class WritingRepository implements IWritingRepository {
             data: data
         })
 
-        return updatedWriting.id
+        return 
     }
 
     async deleteAsync(id: number): Promise<void> {
@@ -61,5 +49,22 @@ export class WritingRepository implements IWritingRepository {
                 id: id
             }
         })
+
+        return
+    }
+
+    // HELPER OPERATIONS
+
+    async getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Writing | null> {
+        
+        const writing = await prisma.writing.findFirst({
+            where: {
+                practiceId: practiceId,
+                userId: userId,
+                languageId: languageId
+            }
+        })
+
+        return writing
     }
 }

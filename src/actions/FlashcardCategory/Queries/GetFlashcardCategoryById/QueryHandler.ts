@@ -50,7 +50,7 @@ export class GetFlashcardCategoryByIdQueryHandler implements IQueryHandler<GetFl
             id: flashcardCategory.id,
             flashcardId: flashcardCategory.flashcardId,
             name: flashcardCategory.name,
-            languageId: flashcardCategory.flashcard.language.id
+            languageId: flashcardCategory.languageId
         }
 
         return response

@@ -12,6 +12,7 @@ import { RepositoryModule } from "./modules/RepositoryModule"
 import { ServiceModule } from "./modules/ServiceModule"
 import { StorageModule } from "./modules/StorageModule"
 import { TranslationModule } from "./modules/TranslationModule"
+import { PipelineBehaviorModule } from "./modules/PipelineBehaviorModule"
 
 
 const container = new Container()
@@ -19,6 +20,7 @@ const container = new Container()
 // MODULES TO REGISTER
 const modules: IContainerModule[] = [
     new LoggingModule(),
+    new PipelineBehaviorModule(),
     new CachingModule(),
     new StorageModule(),
     new TranslationModule(),

@@ -1,5 +1,0 @@
-beginner
-elementary
-intermediate
-upper
-advanced

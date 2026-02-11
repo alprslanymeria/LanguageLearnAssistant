@@ -29,10 +29,11 @@ export async function handleSubmit(params : HandleSubmitProps) {
             nativeLanguageId,
         }, {
 
-            onSuccess: () => {
+            onSuccess: async () => {
 
                 // REDIRECT TO HOME PAGE
                 router.push("/")
+                
             },
 
             onError: (ctx) => {

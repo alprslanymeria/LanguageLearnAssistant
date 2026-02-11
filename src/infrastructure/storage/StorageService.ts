@@ -4,6 +4,7 @@ import { IStorageService } from '@/src/infrastructure/storage/IStorageService'
 import { IStorageStrategy } from '@/src/infrastructure/storage/IStorageStrategy'
 import type { IStorageFactory } from '@/src/infrastructure/storage/IStorageFactory'
 import { TYPES } from '@/src/di/type'
+import type { StorageOptions } from './Storage'
 
 @injectable()
 export class StorageService implements IStorageService {
@@ -15,11 +16,14 @@ export class StorageService implements IStorageService {
     constructor(
 
         @inject(TYPES.StorageFactory)
-        private readonly storageFactory: IStorageFactory
+        private readonly storageFactory: IStorageFactory,
+
+        @inject(TYPES.StorageConfig)
+        private readonly storageConfig: StorageOptions
     
     ) {
 
-        this.storageStrategy = this.storageFactory.createStrategy("gcloud")
+        this.storageStrategy = this.storageFactory.createStrategy(this.storageConfig.type)
     }
 
 

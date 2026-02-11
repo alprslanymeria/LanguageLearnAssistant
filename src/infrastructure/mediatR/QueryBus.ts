@@ -1,16 +1,17 @@
 // IMPORTS
 import { IQuery } from "./IQuery"
+import { IPipelineBehavior } from "./IPipelineBehavior"
 import { QueryHandlerRegistry } from "./QueryRegistry"
 
 export class QueryBus {
 
     // CTOR
-    constructor(registry: QueryHandlerRegistry) 
-    {
-        this.registry = registry
-    }
+    constructor(
+        
+        private readonly registry: QueryHandlerRegistry,
+        private readonly behaviors: IPipelineBehavior<any, any>[] = []
 
-    private readonly registry: QueryHandlerRegistry
+    ) {}
 
     async send<TResponse>(
 
@@ -19,6 +20,17 @@ export class QueryBus {
     ): Promise<TResponse> {
 
         const handler = this.registry.get<TResponse>(query.type)
-        return handler.Handle(query)
+
+        // BUILD PIPELINE: HANDLER IS THE FINAL STEP, BEHAVIORS WRAP IN ORDER
+        let pipeline: () => Promise<TResponse> = () => handler.Handle(query)
+
+        // REVERSE SO FIRST BEHAVIOR IN ARRAY IS OUTERMOST (EXECUTED FIRST)
+        for (const behavior of [...this.behaviors].reverse()) {
+
+            const next = pipeline
+            pipeline = () => behavior.Handle(query, next)
+        }
+
+        return pipeline()
     }
 }

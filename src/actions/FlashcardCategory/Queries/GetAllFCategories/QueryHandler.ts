@@ -37,18 +37,9 @@ export class GetAllFCategoriesQueryHandler implements IQueryHandler<GetAllFCateg
 
         this.logger.info(`GetAllFCategoriesQueryHandler: Successfully fetched ${items.length} flashcard categories for UserId ${userId}`)
 
-        // MAP ITEMS TO FLASHCARD CATEGORY DTO
-        const flashcardCategoryDtos : FlashcardCategoryWithLanguageId[] = items.map(fc => ({
-
-            id: fc.id,
-            flashcardId: fc.flashcardId,
-            name: fc.name,
-            languageId: fc.languageId
-        }))
-
         const response: FlashcardCategoryWithLanguageIds = {
 
-            flashcardCategoryDtos,
+            flashcardCategoryDtos: items,
             totalCount
         }
 

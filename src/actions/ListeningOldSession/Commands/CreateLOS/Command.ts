@@ -4,7 +4,7 @@ import { SaveListeningOldSessionRequest } from "@/src/actions/ListeningOldSessio
 
 export const CREATE_LOS_COMMAND = "CREATE_LOS_COMMAND"
 
-export interface CreateLOSCommand extends ICommand<string> {
+export interface CreateLOSCommand extends ICommand {
 
     readonly type: typeof CREATE_LOS_COMMAND
     request: SaveListeningOldSessionRequest

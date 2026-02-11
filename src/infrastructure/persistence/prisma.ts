@@ -1,22 +1,22 @@
 // IMPORTS
 import { PrismaMssql } from '@prisma/adapter-mssql'
-import { PrismaClient } from '@/src/generated/prisma/client'
+import { PrismaClient } from '@prisma/client'
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
 const sqlConfig = {
 
   user: "sa",
-  password: "3156236845",
+  password: "iA69754.",
   database: "languageAssistant",
-  server: "localhost",
+  server: "sqlserver",
   pool: {
     max: 10,
     min: 0,
     idleTimeoutMillis: 30000
   },
   options: {
-    encrypt: true,
+    encrypt: false,
     trustServerCertificate: true
   }
 }

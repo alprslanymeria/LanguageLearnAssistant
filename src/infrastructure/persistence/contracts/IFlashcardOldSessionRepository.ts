@@ -1,29 +1,14 @@
 // IMPORTS
-import { FlashcardOldSession } from "@/src/generated/prisma/client"
-
-export interface CreateFlashcardOldSessionData {
-
-    oldSessionId: string
-    flashcardId: number
-    categoryId: number
-    rate: number
-}
-
-export interface UpdateFlashcardOldSessionData {
-
-    flashcardId: number
-    categoryId: number
-    rate: number
-}
+import { FlashcardOldSession, Prisma } from "@prisma/client"
 
 export interface IFlashcardOldSessionRepository {
 
+    // CRUD
+    createAsync(data: Prisma.FlashcardOldSessionCreateInput): Promise<void>
+    getByIdAsync(id: string): Promise<FlashcardOldSession | null>
+    updateAsync(id: string, data: Prisma.FlashcardOldSessionUpdateInput): Promise<void>
+    deleteAsync(id: string): Promise<void>
+
     // HELPER
     getFlashcardOldSessionsWithPagingAsync(userId: string, language: string, page: number, pageSize: number): Promise<{ items: FlashcardOldSession[]; totalCount: number }>
-
-    // CRUD
-    createAsync(data: CreateFlashcardOldSessionData): Promise<string>
-    getByIdAsync(id: string): Promise<FlashcardOldSession | null>
-    update(id: string, data: UpdateFlashcardOldSessionData): Promise<string>
-    deleteAsync(id: string): Promise<void>
 }

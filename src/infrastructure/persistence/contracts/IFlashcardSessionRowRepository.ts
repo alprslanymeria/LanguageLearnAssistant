@@ -1,31 +1,16 @@
 // IMPORTS
-import { FlashcardSessionRow } from "@/src/generated/prisma/client"
+import { FlashcardSessionRow, Prisma } from "@prisma/client"
 
-export interface CreateFlashcardSessionRowData {
-
-    oldSessionId: string
-    question: string
-    answer: string
-    status: boolean
-}
-
-export interface UpdateFlashcardSessionRowData {
-
-    oldSessionId?: string
-    question?: string
-    answer?: string
-    status?: boolean
-}
 
 export interface IFlashcardSessionRowRepository {
 
+    // CRUD
+    createAsync(data: Prisma.FlashcardSessionRowCreateInput): Promise<void>
+    getByIdAsync(id: number): Promise<FlashcardSessionRow | null>
+    updateAsync(id: number, data: Prisma.FlashcardSessionRowUpdateInput): Promise<void>
+    deleteAsync(id: number): Promise<void>
+
     // HELPER
     getFlashcardRowsByIdWithPagingAsync(sessionId: string, page: number, pageSize: number): Promise<{ items: FlashcardSessionRow[]; totalCount: number }>
-    createRangeAsync(rows: CreateFlashcardSessionRowData[]): Promise<void>
-
-    // CRUD
-    createAsync(data: CreateFlashcardSessionRowData): Promise<number>
-    getByIdAsync(id: number): Promise<FlashcardSessionRow | null>
-    update(id: number, data: UpdateFlashcardSessionRowData): Promise<number>
-    deleteAsync(id: number): Promise<void>
+    createRangeAsync(rows: Prisma.FlashcardSessionRowCreateManyInput[]): Promise<void>
 }

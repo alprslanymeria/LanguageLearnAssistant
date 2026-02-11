@@ -4,6 +4,7 @@ import { ITranslateService } from "@/src/services/translate/ITranslateService"
 import { ITranslationProvider } from "@/src/services/translate/ITranslationProvider"
 import { TYPES } from "@/src/di/type"
 import type { ITranslateFactory } from "@/src/services/translate/ITranslateFactory"
+import type { TranslateOptions } from "./Translate"
 
 @injectable()
 export class TranslateService implements ITranslateService {
@@ -15,11 +16,14 @@ export class TranslateService implements ITranslateService {
     constructor(
 
         @inject(TYPES.TranslateFactory)
-        private readonly translateFactory: ITranslateFactory
+        private readonly translateFactory: ITranslateFactory,
+
+        @inject(TYPES.TranslateConfig)
+        private readonly translateConfig: TranslateOptions
 
     ) {
         
-        this.translateProvider = this.translateFactory.createStrategy('google')
+        this.translateProvider = this.translateFactory.createStrategy(this.translateConfig.type)
     }
 
     async translateTextAsync(text: string, targetLanguageCode: string): Promise<string> {

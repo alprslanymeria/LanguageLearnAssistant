@@ -1,33 +1,15 @@
 // IMPORTS
-import { WritingSessionRow } from "@/src/generated/prisma/client"
-
-export interface CreateWritingSessionRowData {
-
-    oldSessionId: string
-    selectedSentence: string
-    answer: string
-    answerTranslate: string
-    similarity: number
-}
-
-export interface UpdateWritingSessionRowData {
-
-    oldSessionId?: string
-    selectedSentence?: string
-    answer?: string
-    answerTranslate?: string
-    similarity?: number
-}
+import { Prisma, WritingSessionRow } from "@prisma/client"
 
 export interface IWritingSessionRowRepository {
 
+    // CRUD
+    createAsync(data: Prisma.WritingSessionRowCreateInput): Promise<void>
+    getByIdAsync(id: number): Promise<WritingSessionRow | null>
+    updateAsync(id: number, data: Prisma.WritingSessionRowUpdateInput): Promise<void>
+    deleteAsync(id: number): Promise<void>
+
     // HELPER
     getWritingRowsByIdWithPagingAsync(sessionId: string, page: number, pageSize: number): Promise<{ items: WritingSessionRow[]; totalCount: number }>
-    createRangeAsync(rows: CreateWritingSessionRowData[]): Promise<void>
-
-    // CRUD
-    createAsync(data: CreateWritingSessionRowData): Promise<number>
-    getByIdAsync(id: number): Promise<WritingSessionRow | null>
-    update(id: number, data: UpdateWritingSessionRowData): Promise<number>
-    deleteAsync(id: number): Promise<void>
+    createRangeAsync(rows: Prisma.WritingSessionRowCreateManyInput[]): Promise<void>
 }

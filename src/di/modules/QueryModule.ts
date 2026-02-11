@@ -5,6 +5,7 @@ import { Container } from "inversify"
 import { IContainerModule } from "@/src/di/IContainerModule"
 import { QueryHandlerRegistry } from "@/src/infrastructure/mediatR/QueryRegistry"
 import { QueryBus } from "@/src/infrastructure/mediatR/QueryBus"
+import { IPipelineBehavior } from "@/src/infrastructure/mediatR/IPipelineBehavior"
 
 // LANGUAGE QUERIES
 import { GET_LANGUAGES_QUERY } from "@/src/actions/Language/Queries/GetLanguages/Query"
@@ -80,17 +81,42 @@ import { GET_WOS_WITH_PAGING_QUERY } from "@/src/actions/WritingOldSession/Queri
 import { GET_WROWS_BY_ID_WITH_PAGING_QUERY } from "@/src/actions/WritingSessionRow/Queries/GetWRowsByIdWithPaging/Query"
 import { GetWRowsByIdWithPagingQueryHandler } from "@/src/actions/WritingSessionRow/Queries/GetWRowsByIdWithPaging/QueryHandler"
 import { CompareLanguageIdQueryHandler } from "@/src/actions/User/Queries/CompareLanguageId/QueryHandler"
-import { GetProfileInfos } from "@/src/actions/User/Controller"
 import { GetProfileInfosQueryHandler } from "@/src/actions/User/Queries/GetProfileInfos/QueryHandler"
 import { GET_PROFILE_INFOS_QUERY } from "@/src/actions/User/Queries/GetProfileInfos/Query"
 import { COMPARE_LANGUAGE_ID_QUERY } from "@/src/actions/User/Queries/CompareLanguageId/Query"
-import { Types } from '@prisma/client/runtime/client'
 import { TYPES } from '../type'
-import { GetAllFCategories } from '@/src/actions/FlashcardCategory/Controller'
 import { GetAllFCategoriesQueryHandler } from '@/src/actions/FlashcardCategory/Queries/GetAllFCategories/QueryHandler'
 import { GET_ALL_FCATEGORIES_QUERY } from '@/src/actions/FlashcardCategory/Queries/GetAllFCategories/Query'
 import { GetLCategoryCreateItemsQueryHandler } from '@/src/actions/ListeningCategory/Queries/GetLCategoryCreateItems/QueryHandler'
 import { GET_LCATEGORY_CREATE_ITEMS_QUERY } from '@/src/actions/ListeningCategory/Queries/GetLCategoryCreateItems/Query'
+import { ValidationRegistry } from '@/src/infrastructure/mediatR/ValidationRegistry'
+
+// QUERY VALIDATORS
+import { GetAllDWordsWithPagingQueryValidator } from '@/src/actions/DeckWord/Queries/GetAllDWordsWithPaging/QueryValidator'
+import { GetDeckWordByIdQueryValidator } from '@/src/actions/DeckWord/Queries/GetDeckWordById/QueryValidator'
+import { GetAllFCategoriesWithPagingQueryValidator } from '@/src/actions/FlashcardCategory/Queries/GetAllFCategoriesWithPaging/QueryValidator'
+import { GetAllFCategoriesQueryValidator } from '@/src/actions/FlashcardCategory/Queries/GetAllFCategories/QueryValidator'
+import { GetFCategoryCreateItemsQueryValidator } from '@/src/actions/FlashcardCategory/Queries/GetFCategoryCreateItems/QueryValidator'
+import { GetFlashcardCategoryByIdQueryValidator } from '@/src/actions/FlashcardCategory/Queries/GetFlashcardCategoryById/QueryValidator'
+import { GetFOSWithPagingQueryValidator } from '@/src/actions/FlashcardOldSession/Queries/GetFOSWithPaging/QueryValidator'
+import { GetFWordsByIdWithPagingQueryValidator } from '@/src/actions/FlashcardSessionRow/Queries/GetFRowsByIdWithPaging/QueryValidator'
+import { GetLCategoryCreateItemsQueryValidator } from '@/src/actions/ListeningCategory/Queries/GetLCategoryCreateItems/QueryValidator'
+import { GetLOSWithPagingQueryValidator } from '@/src/actions/ListeningOldSession/Queries/GetLOSWithPaging/QueryValidator'
+import { GetLRowsByIdWithPagingQueryValidator } from '@/src/actions/ListeningSessionRow/Queries/GetLRowsByIdWithPaging/QueryValidator'
+import { GetPracticesByLanguageQueryValidator } from '@/src/actions/Practice/Queries/GetPracticesByLanguage/QueryValidator'
+import { GetAllRBooksWithPagingQueryValidator } from '@/src/actions/ReadingBook/Queries/GetAllRBooksWithPaging/QueryValidator'
+import { GetRBookCreateItemsQueryValidator } from '@/src/actions/ReadingBook/Queries/GetRBookCreateItems/QueryValidator'
+import { GetReadingBookByIdQueryValidator } from '@/src/actions/ReadingBook/Queries/GetReadingBookById/QueryValidator'
+import { GetROSWithPagingQueryValidator } from '@/src/actions/ReadingOldSession/Queries/GetROSWithPaging/QueryValidator'
+import { GetRRowsByIdWithPagingQueryValidator } from '@/src/actions/ReadingSessionRow/Queries/GetRRowsByIdWithPaging/QueryValidator'
+import { TranslateTextQueryValidator } from '@/src/actions/Translation/Queries/TranslateText/QueryValidator'
+import { GetAllWBooksWithPagingQueryValidator } from '@/src/actions/WritingBook/Queries/GetAllWBooksWithPaging/QueryValidator'
+import { GetWBookCreateItemsQueryValidator } from '@/src/actions/WritingBook/Queries/GetWBookCreateItems/QueryValidator'
+import { GetWritingBookByIdQueryValidator } from '@/src/actions/WritingBook/Queries/GetWritingBookById/QueryValidator'
+import { GetWOSWithPagingQueryValidator } from '@/src/actions/WritingOldSession/Queries/GetWOSWithPaging/QueryValidator'
+import { GetWRowsByIdWithPagingQueryValidator } from '@/src/actions/WritingSessionRow/Queries/GetWRowsByIdWithPaging/QueryValidator'
+import { CompareLanguageIdQueryValidator } from '@/src/actions/User/Queries/CompareLanguageId/QueryValidator'
+import { GetProfileInfosQueryValidator } from '@/src/actions/User/Queries/GetProfileInfos/QueryValidator'
 
 export class QueryModule implements IContainerModule {
 
@@ -157,7 +183,39 @@ export class QueryModule implements IContainerModule {
             registry.register(COMPARE_LANGUAGE_ID_QUERY, context.get(CompareLanguageIdQueryHandler))
             registry.register(GET_PROFILE_INFOS_QUERY, context.get(GetProfileInfosQueryHandler))
 
-            return new QueryBus(registry)
+            // REGISTER QUERY VALIDATORS
+            const validationRegistry = context.get<ValidationRegistry>(TYPES.ValidationRegistry)
+
+            validationRegistry.register(GET_ALL_DWORDS_WITH_PAGING_QUERY, GetAllDWordsWithPagingQueryValidator)
+            validationRegistry.register(GET_DECK_WORD_BY_ID_QUERY, GetDeckWordByIdQueryValidator)
+            validationRegistry.register(GET_ALL_FCATEGORIES_WITH_PAGING_QUERY, GetAllFCategoriesWithPagingQueryValidator)
+            validationRegistry.register(GET_ALL_FCATEGORIES_QUERY, GetAllFCategoriesQueryValidator)
+            validationRegistry.register(GET_FCATEGORY_CREATE_ITEMS_QUERY, GetFCategoryCreateItemsQueryValidator)
+            validationRegistry.register(GET_FLASHCARD_CATEGORY_BY_ID_QUERY, GetFlashcardCategoryByIdQueryValidator)
+            validationRegistry.register(GET_FOS_WITH_PAGING_QUERY, GetFOSWithPagingQueryValidator)
+            validationRegistry.register(GET_FWORDS_BY_ID_WITH_PAGING_QUERY, GetFWordsByIdWithPagingQueryValidator)
+            validationRegistry.register(GET_LCATEGORY_CREATE_ITEMS_QUERY, GetLCategoryCreateItemsQueryValidator)
+            validationRegistry.register(GET_LOS_WITH_PAGING_QUERY, GetLOSWithPagingQueryValidator)
+            validationRegistry.register(GET_LROWS_BY_ID_WITH_PAGING_QUERY, GetLRowsByIdWithPagingQueryValidator)
+            validationRegistry.register(GET_PRACTICES_BY_LANGUAGE_QUERY, GetPracticesByLanguageQueryValidator)
+            validationRegistry.register(GET_ALL_RBOOKS_WITH_PAGING_QUERY, GetAllRBooksWithPagingQueryValidator)
+            validationRegistry.register(GET_RBOOK_CREATE_ITEMS_QUERY, GetRBookCreateItemsQueryValidator)
+            validationRegistry.register(GET_READING_BOOK_BY_ID_QUERY, GetReadingBookByIdQueryValidator)
+            validationRegistry.register(GET_ROS_WITH_PAGING_QUERY, GetROSWithPagingQueryValidator)
+            validationRegistry.register(GET_RROWS_BY_ID_WITH_PAGING_QUERY, GetRRowsByIdWithPagingQueryValidator)
+            validationRegistry.register(TRANSLATE_TEXT_QUERY, TranslateTextQueryValidator)
+            validationRegistry.register(GET_ALL_WBOOKS_WITH_PAGING_QUERY, GetAllWBooksWithPagingQueryValidator)
+            validationRegistry.register(GET_WBOOK_CREATE_ITEMS_QUERY, GetWBookCreateItemsQueryValidator)
+            validationRegistry.register(GET_WRITING_BOOK_BY_ID_QUERY, GetWritingBookByIdQueryValidator)
+            validationRegistry.register(GET_WOS_WITH_PAGING_QUERY, GetWOSWithPagingQueryValidator)
+            validationRegistry.register(GET_WROWS_BY_ID_WITH_PAGING_QUERY, GetWRowsByIdWithPagingQueryValidator)
+            validationRegistry.register(COMPARE_LANGUAGE_ID_QUERY, CompareLanguageIdQueryValidator)
+            validationRegistry.register(GET_PROFILE_INFOS_QUERY, GetProfileInfosQueryValidator)
+
+            // RESOLVE PIPELINE BEHAVIORS
+            const behaviors = context.getAll<IPipelineBehavior<any, any>>(TYPES.PipelineBehavior)
+
+            return new QueryBus(registry, behaviors)
             
         }).inSingletonScope()
     }

@@ -3,14 +3,14 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { CreateListeningSessionRowData, IListeningSessionRowRepository } from "@/src/infrastructure/persistence/contracts/IListeningSessionRowRepository"
+import type { IListeningSessionRowRepository } from "@/src/infrastructure/persistence/contracts/IListeningSessionRowRepository"
 import { CreateLRowsCommand } from "./Command"
 import type { IListeningOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IListeningOldSessionRepository"
 import { ListeningOldSessionNotFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
-export class CreateLRowsCommandHandler implements ICommandHandler<CreateLRowsCommand, number> {
+export class CreateLRowsCommandHandler implements ICommandHandler<CreateLRowsCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -31,7 +31,7 @@ export class CreateLRowsCommandHandler implements ICommandHandler<CreateLRowsCom
         this.listeningOldSessionRepository = listeningOldSessionRepository;
     }
     
-    async Handle(request: CreateLRowsCommand): Promise<number> {
+    async Handle(request: CreateLRowsCommand): Promise<void> {
         
         // LOG MESSAGE
         this.logger.info(`CreateLRowsCommandHandler: Creating listening session rows for listening old session with Id ${request.request.listeningOldSessionId}`)
@@ -45,7 +45,7 @@ export class CreateLRowsCommandHandler implements ICommandHandler<CreateLRowsCom
             throw new ListeningOldSessionNotFound()
         }
 
-        const rows : CreateListeningSessionRowData[] = request.request.rows.map(row => ({
+        const rows = request.request.rows.map(row => ({
 
             oldSessionId: request.request.listeningOldSessionId,
             listenedSentence: row.listenedSentence,
@@ -57,6 +57,6 @@ export class CreateLRowsCommandHandler implements ICommandHandler<CreateLRowsCom
 
         this.logger.info(`CreateLRowsCommandHandler: Successfully created listening session rows for listening old session with Id ${request.request.listeningOldSessionId}`)
 
-        return rows.length
+        return
     }
 }

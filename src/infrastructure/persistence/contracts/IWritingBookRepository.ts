@@ -1,47 +1,18 @@
 // IMPORTS
-import { Language, WritingBook } from "@/src/generated/prisma/client"
+import { WritingBookWithLanguageId } from "@/src/actions/WritingBook/Response"
+import { Prisma, WritingBook } from "@prisma/client"
 
-export type WritingBookWithLanguage = {
-
-    id: number
-    name: string
-    writingId: number
-    imageUrl: string
-    leftColor: string
-    sourceUrl: string
-    writing: {
-        language: Language
-    }
-}
-
-export interface CreateWritingBookData {
-
-    name: string
-    writingId: number
-    imageUrl: string
-    leftColor: string
-    sourceUrl: string
-}
-
-export interface UpdateWritingBookData {
-
-    name?: string
-    writingId?: number
-    imageUrl?: string
-    leftColor?: string
-    sourceUrl?: string
-}
 
 export interface IWritingBookRepository {
 
+    // CRUD
+    createAsync(data: Prisma.WritingBookCreateInput): Promise<void>
+    getByIdAsync(id: number): Promise<WritingBook | null>
+    updateAsync(id: number, data: Prisma.WritingBookUpdateInput): Promise<void>
+    deleteAsync(id: number): Promise<void>
+
     // HELPER
-    getWritingBookItemByIdAsync(id: number): Promise<WritingBookWithLanguage | null>
+    getWritingBookItemByIdAsync(id: number): Promise<WritingBookWithLanguageId | null>
     getAllWBooksWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: WritingBook[]; totalCount: number }>
     getWBookCreateItemsAsync(userId: string, languageId: number, practiceId: number): Promise<WritingBook[]>
-
-    // CRUD
-    createAsync(data: CreateWritingBookData): Promise<number>
-    getByIdAsync(id: number): Promise<WritingBook | null>
-    update(id: number, data: UpdateWritingBookData): Promise<number>
-    deleteAsync(id: number): Promise<void>
 }

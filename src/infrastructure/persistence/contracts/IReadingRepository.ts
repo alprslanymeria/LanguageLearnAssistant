@@ -1,28 +1,14 @@
 // IMPORTS
-import { Reading } from "@/src/generated/prisma/client"
-
-export interface CreateReadingData {
-
-    userId: string
-    languageId: number
-    practiceId: number
-}
-
-export interface UpdateReadingData {
-
-    userId?: string
-    languageId?: number
-    practiceId?: number
-}
+import { Prisma, Reading } from "@prisma/client"
 
 export interface IReadingRepository {
 
+    // CRUD
+    createAsync(data: Prisma.ReadingCreateInput): Promise<void>
+    getByIdAsync(id: number): Promise<Reading | null>
+    updateAsync(id: number, data: Prisma.ReadingUpdateInput): Promise<void>
+    deleteAsync(id: number): Promise<void>
+
     // HELPER
     getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Reading | null>
-
-    // CRUD
-    createAsync(data: CreateReadingData): Promise<number>
-    getByIdAsync(id: number): Promise<Reading | null>
-    update(id: number, data: UpdateReadingData): Promise<number>
-    deleteAsync(id: number): Promise<void>
 }

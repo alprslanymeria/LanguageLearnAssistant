@@ -1,28 +1,14 @@
 // IMPORTS
-import { Listening } from "@/src/generated/prisma/client"
-
-export interface CreateListeningData {
-
-    userId: string
-    languageId: number
-    practiceId: number
-}
-
-export interface UpdateListeningData {
-
-    userId?: string
-    languageId?: number
-    practiceId?: number
-}
+import { Listening, Prisma } from "@prisma/client"
 
 export interface IListeningRepository {
 
+    // CRUD
+    createAsync(data: Prisma.ListeningCreateInput): Promise<void>
+    getByIdAsync(id: number): Promise<Listening | null>
+    updateAsync(id: number, data: Prisma.ListeningUpdateInput): Promise<void>
+    deleteAsync(id: number): Promise<void>
+
     // HELPER
     getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Listening | null>
-
-    // CRUD
-    createAsync(data: CreateListeningData): Promise<number>
-    getByIdAsync(id: number): Promise<Listening | null>
-    update(id: number, data: UpdateListeningData): Promise<number>
-    deleteAsync(id: number): Promise<void>
 }

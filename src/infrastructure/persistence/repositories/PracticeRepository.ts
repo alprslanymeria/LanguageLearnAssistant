@@ -1,12 +1,59 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { Practice } from "@/src/generated/prisma/client"
+import { Practice, Prisma } from "@prisma/client"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
-import { IPracticeRepository, CreatePracticeData, UpdatePracticeData } from "@/src/infrastructure/persistence/contracts/IPracticeRepository"
+import { IPracticeRepository } from "@/src/infrastructure/persistence/contracts/IPracticeRepository"
 
 @injectable()
 export class PracticeRepository implements IPracticeRepository {
 
+    // CRUD OPERATIONS
+
+    async createAsync(data: Prisma.PracticeCreateInput): Promise<void> {
+    
+        await prisma.practice.create({
+            data: data
+        })
+
+        return
+    }
+
+    async getByIdAsync(id: number): Promise<Practice | null> {
+
+        const practice = await prisma.practice.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        return practice
+    }
+
+    async updateAsync(id: number, data: Prisma.PracticeUpdateInput): Promise<void> {
+
+        await prisma.practice.update({
+
+            where: {
+                id: id
+            },
+            data: data
+        })
+
+        return
+    }
+
+    async deleteAsync(id: number): Promise<void> {
+
+        await prisma.practice.delete({
+            where: {
+                id: id
+            }
+        })
+
+        return
+    }
+
+    // HELPER OPERATIONS
 
     async getPracticeByLanguageIdAndNameAsync(languageId: number, name: string): Promise<Practice | null> {
         
@@ -42,48 +89,6 @@ export class PracticeRepository implements IPracticeRepository {
             where: {
                 name,
                 languageId
-            }
-        })
-    }
-
-     async createAsync(data: CreatePracticeData): Promise<number> {
-    
-        const created = await prisma.practice.create({
-            data: data
-        })
-
-        return created.id
-    }
-
-    async getByIdAsync(id: number): Promise<Practice | null> {
-
-        const practice = await prisma.practice.findUnique({
-            where: {
-                id: id
-            }
-        })
-
-        return practice
-    }
-
-    async update(id: number, data: UpdatePracticeData): Promise<number> {
-
-        const updatedPractice = await prisma.practice.update({
-
-            where: {
-                id: id
-            },
-            data: data
-        })
-
-        return updatedPractice.id
-    }
-
-    async deleteAsync(id: number): Promise<void> {
-
-        await prisma.practice.delete({
-            where: {
-                id: id
             }
         })
     }

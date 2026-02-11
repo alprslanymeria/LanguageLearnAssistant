@@ -4,7 +4,7 @@ import { SaveWritingOldSessionRequest } from "@/src/actions/WritingOldSession/Re
 
 export const CREATE_WOS_COMMAND = "CREATE_WOS_COMMAND"
 
-export interface CreateWOSCommand extends ICommand<string> {
+export interface CreateWOSCommand extends ICommand {
 
     readonly type: typeof CREATE_WOS_COMMAND
     request: SaveWritingOldSessionRequest

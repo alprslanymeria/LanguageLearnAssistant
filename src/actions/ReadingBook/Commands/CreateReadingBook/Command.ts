@@ -4,7 +4,7 @@ import { SerializedServiceResult } from "@/src/infrastructure/common/ServiceResu
 
 export const CREATE_READING_BOOK_COMMAND = "CREATE_READING_BOOK_COMMAND"
 
-export interface CreateReadingBookCommand extends ICommand<number> {
+export interface CreateReadingBookCommand extends ICommand {
 
     readonly type: typeof CREATE_READING_BOOK_COMMAND
     formData: FormData

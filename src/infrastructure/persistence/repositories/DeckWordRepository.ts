@@ -1,14 +1,62 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { DeckWord } from "@/src/generated/prisma/client"
-import { CreateDeckWordData, DeckWordWithLanguage, IDeckWordRepository, UpdateDeckWordData } from "@/src/infrastructure/persistence/contracts/IDeckWordRepository"
+import { DeckWord, Prisma } from "@prisma/client"
+import { IDeckWordRepository } from "@/src/infrastructure/persistence/contracts/IDeckWordRepository"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
+import { DeckWordWithLanguageId } from "@/src/actions/DeckWord/Response"
 
 @injectable()
 export class DeckWordRepository implements IDeckWordRepository {
 
+    // CRUD OPERATIONS
+
+    async createAsync(data: Prisma.DeckWordCreateInput): Promise<void> {
     
-    async getDeckWordItemByIdAsync(id: number): Promise<DeckWordWithLanguage | null> {
+        await prisma.deckWord.create({
+            data: data
+        })
+
+        return
+    }
+
+    async getByIdAsync(id: number): Promise<DeckWord | null> {
+
+        const deckWord = await prisma.deckWord.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        return deckWord
+    }
+
+    async updateAsync(id: number, data: Prisma.DeckWordUpdateInput): Promise<void> {
+
+        await prisma.deckWord.update({
+
+            where: {
+                id: id
+            },
+            data: data
+        })
+
+        return
+    }
+
+    async deleteAsync(id: number): Promise<void> {
+
+        await prisma.deckWord.delete({
+            where: {
+                id: id
+            }
+        })
+
+        return
+    }
+
+    // HELPER OPERATIONS
+    
+    async getDeckWordItemByIdAsync(id: number): Promise<DeckWordWithLanguageId | null> {
 
         const deckWord = await prisma.deckWord.findUnique({
             where: { id },
@@ -29,7 +77,18 @@ export class DeckWordRepository implements IDeckWordRepository {
             }
         })
 
-        return deckWord
+        if (!deckWord) return null
+
+        const result: DeckWordWithLanguageId = {
+
+            id: deckWord!.id,
+            categoryId: deckWord.categoryId,
+            question: deckWord.question,
+            answer: deckWord.answer,
+            languageId: deckWord.category.flashcard.language.id
+        }
+
+        return result
     }
 
     async getAllDWordsWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: DeckWord[]; totalCount: number }> {
@@ -57,47 +116,4 @@ export class DeckWordRepository implements IDeckWordRepository {
 
         return { items, totalCount }
     }
-
-     async createAsync(data: CreateDeckWordData): Promise<number> {
-    
-        const createdDeckWord = await prisma.deckWord.create({
-            data: data
-        })
-
-        return createdDeckWord.id
-    }
-
-    async getByIdAsync(id: number): Promise<DeckWord | null> {
-
-        const deckWord = await prisma.deckWord.findUnique({
-            where: {
-                id: id
-            }
-        })
-
-        return deckWord
-    }
-
-    async update(id: number, data: UpdateDeckWordData): Promise<number> {
-
-        const updatedDeckWord = await prisma.deckWord.update({
-
-            where: {
-                id: id
-            },
-            data: data
-        })
-
-        return updatedDeckWord.id
-    }
-
-    async deleteAsync(id: number): Promise<void> {
-
-        await prisma.deckWord.delete({
-            where: {
-                id: id
-            }
-        })
-    }
-
 }

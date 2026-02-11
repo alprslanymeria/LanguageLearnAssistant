@@ -1,33 +1,21 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { Reading } from "@/src/generated/prisma/client"
+import { Prisma, Reading } from "@prisma/client"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
-import { IReadingRepository, CreateReadingData, UpdateReadingData } from "@/src/infrastructure/persistence/contracts/IReadingRepository"
+import { IReadingRepository } from "@/src/infrastructure/persistence/contracts/IReadingRepository"
 
 @injectable()
 export class ReadingRepository implements IReadingRepository {
 
+    // CRUD OPERATIONS
 
-    async getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Reading | null> {
-        
-        const reading = await prisma.reading.findFirst({
-            where: {
-                practiceId: practiceId,
-                userId: userId,
-                languageId: languageId
-            }
-        })
-
-        return reading
-    }
-
-    async createAsync(data: CreateReadingData): Promise<number> {
+    async createAsync(data: Prisma.ReadingCreateInput): Promise<void> {
     
-        const created = await prisma.reading.create({
+        await prisma.reading.create({
             data: data
         })
 
-        return created.id
+        return
     }
 
     async getByIdAsync(id: number): Promise<Reading | null> {
@@ -41,9 +29,9 @@ export class ReadingRepository implements IReadingRepository {
         return reading
     }
 
-    async update(id: number, data: UpdateReadingData): Promise<number> {
+    async updateAsync(id: number, data: Prisma.ReadingUpdateInput): Promise<void> {
 
-        const updatedReading = await prisma.reading.update({
+        await prisma.reading.update({
 
             where: {
                 id: id
@@ -51,7 +39,7 @@ export class ReadingRepository implements IReadingRepository {
             data: data
         })
 
-        return updatedReading.id
+        return
     }
 
     async deleteAsync(id: number): Promise<void> {
@@ -61,5 +49,22 @@ export class ReadingRepository implements IReadingRepository {
                 id: id
             }
         })
+
+        return
+    }
+
+    // HELPER OPERATIONS
+
+    async getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Reading | null> {
+        
+        const reading = await prisma.reading.findFirst({
+            where: {
+                practiceId: practiceId,
+                userId: userId,
+                languageId: languageId
+            }
+        })
+
+        return reading
     }
 }

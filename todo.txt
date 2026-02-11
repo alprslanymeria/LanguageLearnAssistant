@@ -1,27 +1,9 @@
-1- Refactor işlemi yapılırken rate.ts içerisindeki metot bir endpoint olarak değil helper metot olarak tasarlanmalı ve burada kalmalıdır.
-
-2- prometheus.yml , otel-collector.yml , docker+compose.yml dosyaları , prisma orm veritabanı işlemleri, action metotlar buradan kaldırılır.
+1- prometheus.yml , otel-collector.yml , docker-compose.yml dosyaları , prisma orm veritabanı işlemleri, action metotlar buradan kaldırılır.
     Bu işlemler backend tarafından yürütülür.
 
-3- Entity'ler her iki taraf için aynı olmalı (user hariç)
-
-4- dockerfile içerisindeki prisma işlemleri olası bir problem olabilir.
-
-5- BAŞTA OLUŞACAK VERİLER --> LANGUAGE VE PRACTICE VERİLERİDİR.
-AYRICA HER YENİ USER KAYIT OLDUĞUNDA YENİ LISTENING VE LISTENING CATEGORY VERİLERİ EKLENİR. +
-
-6- YENİ READING BOOK VEYA WRITING BOOK GÜNCELLENDİĞİNDE CLOUD DA BULUNAN ESKİ VERİLER SİLİNECEK. +
-
-7- HER BİR SESSION İÇİNDE SAYFA YENİLENDİĞİ VAKİT KALDIĞI YERDEN PROBLEMSİZ ŞEKİLDE DEVAM ETMESİ SAĞLANIR. +
-
-8- ACTION METOTLARDAKİ REQUEST - RESPONSE - HANDLER - VALIDATOR UYUMLULUKLARI CHECK EDİLİR. +
-
-CacheService --> redis cache
-Logging --> console & elasticsearch -: kibana
-Trace --> Jaeger
-Metrics --> Prometheus , Grafana
-Storage Service --> gcloud
-
+2- PROJEMDE REPOSITORY INTERFACE'LERI DIREKT OLARAK PRISMA'A BAĞIMLI. BU YANLIŞ. BU İLERDE DEĞİŞTİRMELİ VENDOR AGNOSTIC HALİNE OLMALIDIR. 
+    EF CORE TARAFINDAKİ REPOSITORY INTERFACE'LER KAFA KARIŞTIRMASIN ÇÜNKÜ ORADAKİ CLASS'LARI BEN KENDİM OLUŞTURDUM FAKAT BURADA PRISMA TARAFINDAN GENERATE EDİLEN 
+    MODELLER KULLANILIYOR.
 
 REFACTOR (İNCELENEN) EDILEN DOSYALAR:
 -------------------------

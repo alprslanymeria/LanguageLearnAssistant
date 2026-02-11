@@ -1,5 +1,5 @@
 // IMPORTS
-import { Flashcard, Reading, Writing } from "@/src/generated/prisma/client"
+import { Flashcard, Reading, Writing } from "@prisma/client"
 import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
 
 export interface IEntityVerificationService  {

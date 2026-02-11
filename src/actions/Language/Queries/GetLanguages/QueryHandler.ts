@@ -32,7 +32,7 @@ export class GetLanguagesQueryHandler implements IQueryHandler<GetLanguagesQuery
         this.logger.info("GetLanguagesQueryHandler: Handling GetLanguagesQuery")
 
         // GET LANGUAGES FROM REPOSITORY
-        const languages = await this.languageRepository.getAll()
+        const languages = await this.languageRepository.getAllAsync()
 
         this.logger.info(`languages: ${JSON.stringify(languages)}`)
 

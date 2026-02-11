@@ -1,29 +1,14 @@
 // IMPORTS
-import { ListeningOldSession } from "@/src/generated/prisma/client"
-
-export interface CreateListeningOldSessionData {
-
-    oldSessionId: string
-    listeningId: number
-    categoryId: number
-    rate: number
-}
-
-export interface UpdateListeningOldSessionData {
-
-    listeningId?: number
-    categoryId?: number
-    rate?: number
-}
+import { ListeningOldSession, Prisma } from "@prisma/client"
 
 export interface IListeningOldSessionRepository {
 
+    // CRUD
+    createAsync(data: Prisma.ListeningOldSessionCreateInput): Promise<void>
+    getByIdAsync(id: string): Promise<ListeningOldSession | null>
+    updateAsync(id: string, data: Prisma.ListeningOldSessionUpdateInput): Promise<void>
+    deleteAsync(id: string): Promise<void>
+
     // HELPER
     getListeningOldSessionsWithPagingAsync(userId: string, language: string, page: number, pageSize: number): Promise<{ items: ListeningOldSession[]; totalCount: number }>
-
-    // CRUD
-    createAsync(data: CreateListeningOldSessionData): Promise<string>
-    getByIdAsync(id: string): Promise<ListeningOldSession | null>
-    update(id: string, data: UpdateListeningOldSessionData): Promise<string>
-    deleteAsync(id: string): Promise<void>
 }

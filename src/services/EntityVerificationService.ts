@@ -1,12 +1,12 @@
 // IMPORTS
 import { inject, injectable } from "inversify"
-import type { CreateWritingData, IWritingRepository } from "@/src/infrastructure/persistence/contracts/IWritingRepository"
-import type { CreateReadingData, IReadingRepository } from "@/src/infrastructure/persistence/contracts/IReadingRepository"
-import type { CreateFlashcardData, IFlashcardRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardRepository"
+import type { IWritingRepository } from "@/src/infrastructure/persistence/contracts/IWritingRepository"
+import type { IReadingRepository } from "@/src/infrastructure/persistence/contracts/IReadingRepository"
+import type { IFlashcardRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardRepository"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { TYPES } from "@/src/di/type"
 import { IEntityVerificationService } from "@/src/services/IEntityVerificationService"
-import { Flashcard, Reading, Writing } from "@/src/generated/prisma/client"
+import { Flashcard, Reading, Writing } from "@prisma/client"
 import type { ILanguageRepository } from "@/src/infrastructure/persistence/contracts/ILanguageRepository"
 import type { IPracticeRepository } from "@/src/infrastructure/persistence/contracts/IPracticeRepository"
 import { ServiceResult } from "@/src/infrastructure/common/ServiceResult"
@@ -49,18 +49,18 @@ export class EntityVerificationService implements IEntityVerificationService {
 
         this.logger.info(`EntityVerificationService: Flashcard with Practice ID ${practiceId}, User ID ${userId}, and Language ID ${languageId} not found. Creating new flashcard for User ${userId} and Language ${languageId}.`)
 
-        const newFlashcard : CreateFlashcardData = {
+        const newFlashcard = {
 
-            userId,
-            languageId,
-            practiceId
+            user: { connect: { id: userId } },
+            language: { connect: { id: languageId } },
+            practice: { connect: { id: practiceId } }
         }
 
-        const createdFlashcardId = await this.flashcardRepository.createAsync(newFlashcard)
+        await this.flashcardRepository.createAsync(newFlashcard)
 
         this.logger.info(`EntityVerificationService: Successfully created flashcard for User ${userId} and Language ${languageId}.`)
 
-        const createdFlashcard = await this.flashcardRepository.getByIdAsync(createdFlashcardId)
+        const createdFlashcard = await this.flashcardRepository.getByPracticeIdUserIdLanguageIdAsync(practiceId, userId, languageId)
 
         return ServiceResult.success(createdFlashcard!)
     }
@@ -73,19 +73,19 @@ export class EntityVerificationService implements IEntityVerificationService {
 
         this.logger.info(`EntityVerificationService: Reading with Practice ID ${practiceId}, User ID ${userId}, and Language ID ${languageId} not found. Creating new reading for User ${userId} and Language ${languageId}.`)
         
-        const newReading : CreateReadingData = {
+        const newReading = {
 
-            userId,
-            languageId,
-            practiceId
+            user: { connect: { id: userId } },
+            language: { connect: { id: languageId } },
+            practice: { connect: { id: practiceId } }
         }
 
-        const createdReadingId = await this.readingRepository.createAsync(newReading)
+        await this.readingRepository.createAsync(newReading)
 
         this.logger.info(`EntityVerificationService: Successfully created reading for User ${userId} and Language ${languageId}.`)
 
-        const createdReading = await this.readingRepository.getByIdAsync(createdReadingId)
-
+        const createdReading = await this.readingRepository.getByPracticeIdUserIdLanguageIdAsync(practiceId, userId, languageId)
+        
         return ServiceResult.success(createdReading!)
         
     }
@@ -98,19 +98,19 @@ export class EntityVerificationService implements IEntityVerificationService {
 
         this.logger.info(`EntityVerificationService: Writing with Practice ID ${practiceId}, User ID ${userId}, and Language ID ${languageId} not found. Creating new writing for User ${userId} and Language ${languageId}.`)
         
-        const newWriting : CreateWritingData = {
+        const newWriting = {
 
-            userId,
-            languageId,
-            practiceId
+            user: { connect: { id: userId } },
+            language: { connect: { id: languageId } },
+            practice: { connect: { id: practiceId } }
         }
 
-        const createdWritingId = await this.writingRepository.createAsync(newWriting)
+        await this.writingRepository.createAsync(newWriting)
 
         this.logger.info(`EntityVerificationService: Successfully created writing for User ${userId} and Language ${languageId}.`)
 
-        const createdWriting = await this.writingRepository.getByIdAsync(createdWritingId)
-
+        const createdWriting = await this.writingRepository.getByPracticeIdUserIdLanguageIdAsync(practiceId, userId, languageId)
+        
         return ServiceResult.success(createdWriting!)
     }
 }

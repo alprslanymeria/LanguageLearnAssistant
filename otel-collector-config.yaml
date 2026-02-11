@@ -35,7 +35,7 @@ exporters:
 
   # DATA SOURCES: TRACES
   otlp/jaeger:
-    endpoint: "${EXPORTER_OTLP/JAEGER_ENDPOINT}"
+    endpoint: "${EXPORTER_OTLP_JAEGER_ENDPOINT}"
     tls:
       insecure: true
 

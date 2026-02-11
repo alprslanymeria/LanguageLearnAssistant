@@ -4,7 +4,7 @@ import { SaveReadingOldSessionRequest } from "@/src/actions/ReadingOldSession/Re
 
 export const CREATE_ROS_COMMAND = "CREATE_ROS_COMMAND"
 
-export interface CreateROSCommand extends ICommand<string> {
+export interface CreateROSCommand extends ICommand {
 
     readonly type: typeof CREATE_ROS_COMMAND
     request: SaveReadingOldSessionRequest

@@ -1,21 +1,22 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { CreateDeckVideoData, IDeckVideoRepository, UpdateDeckVideoData } from "../contracts/IDeckVideoRepository"
-import { DeckVideo } from "@/src/generated/prisma/client"
+import { IDeckVideoRepository } from "@/src/infrastructure/persistence/contracts/IDeckVideoRepository"
+import { DeckVideo, Prisma } from "@prisma/client"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
 
 @injectable()
 export class DeckVideoRepository implements IDeckVideoRepository {
 
-    async createAsync(data: CreateDeckVideoData): Promise<number> {
+    // CRUD OPERATIONS
+
+    async createAsync(data: Prisma.DeckVideoCreateInput): Promise<void> {
         
-        const createdDeckVideo = await prisma.deckVideo.create({
+        await prisma.deckVideo.create({
             data: data
         })
 
-        return createdDeckVideo.id
+        return
     }
-
 
     async getByIdAsync(id: number): Promise<DeckVideo | null> {
         
@@ -26,22 +27,22 @@ export class DeckVideoRepository implements IDeckVideoRepository {
         return deckVideo
     }
 
-
-    async update(id: number, data: UpdateDeckVideoData): Promise<number> {
+    async updateAsync(id: number, data: Prisma.DeckVideoUpdateInput): Promise<void> {
         
-        const updatedDeckVideo = await prisma.deckVideo.update({
+        await prisma.deckVideo.update({
             where: { id },
             data: data
         })
 
-        return updatedDeckVideo.id
+        return
     }
-
 
     async deleteAsync(id: number): Promise<void> {
         
         await prisma.deckVideo.delete({
             where: { id }
         })
+
+        return
     }
 }

@@ -5,12 +5,12 @@ import { UpdateProfileInfosCommand } from "./Command"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
 import type { IFileStorageHelper } from "@/src/services/IFileStorageHelper"
 import { TYPES } from "@/src/di/type"
-import type { IUserRepository, UpdateUserData } from "@/src/infrastructure/persistence/contracts/IUserRepository"
+import type { IUserRepository } from "@/src/infrastructure/persistence/contracts/IUserRepository"
 import { UserNotFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
-export class UpdateProfileInfosHandler implements ICommandHandler<UpdateProfileInfosCommand, string> {
+export class UpdateProfileInfosHandler implements ICommandHandler<UpdateProfileInfosCommand> {
 
     // FIELDS
     private readonly logger : ILogger
@@ -31,7 +31,7 @@ export class UpdateProfileInfosHandler implements ICommandHandler<UpdateProfileI
         this.fileStorageHelper = fileStorageHelper
     }
 
-    async Handle(request: UpdateProfileInfosCommand): Promise<string> {
+    async Handle(request: UpdateProfileInfosCommand): Promise<void> {
         
         // FORM DATA'S
         const userId = request.formData.get("userId")?.toString()!
@@ -67,14 +67,14 @@ export class UpdateProfileInfosHandler implements ICommandHandler<UpdateProfileI
             )
         }
 
-        const data : UpdateUserData = {
+        const data = {
 
             name: name,
             nativeLanguageId: nativeLanguageId,
             image: newImageUrl
         }
 
-        const updatedId = await this.userRepository.update(userId, data)
+        await this.userRepository.updateAsync(userId, data)
 
         // DELETE OLD FILES FROM STORAGE IF URLS CHANGED
         if(imageFile && oldImageUrl?.toLowerCase() != newImageUrl?.toLowerCase()) {
@@ -84,6 +84,6 @@ export class UpdateProfileInfosHandler implements ICommandHandler<UpdateProfileI
 
         this.logger.info(`UpdateProfileInfosHandler: Successfully updated profile infos for User ID ${userId}`)
 
-        return updatedId
+        return
     }
 }

@@ -7,6 +7,7 @@ import type { IUserRepository } from "@/src/infrastructure/persistence/contracts
 import { TYPES } from "@/src/di/type"
 import { UserNotFound } from "@/src/exceptions/NotFound"
 import type { ILanguageRepository } from "@/src/infrastructure/persistence/contracts/ILanguageRepository"
+import { LanguageMapper } from "../../LanguageEnum"
 
 @injectable()
 export class CompareLanguageIdQueryHandler implements IQueryHandler<CompareLanguageIdQuery, boolean> {
@@ -14,20 +15,17 @@ export class CompareLanguageIdQueryHandler implements IQueryHandler<CompareLangu
     // FIELDS
     private readonly logger : ILogger
     private readonly userRepository: IUserRepository
-    private readonly languageRepository: ILanguageRepository
 
     // CTOR
     constructor(
 
         @inject(TYPES.Logger) logger : ILogger,
         @inject(TYPES.UserRepository) userRepository: IUserRepository,
-        @inject(TYPES.LanguageRepository) languageRepository: ILanguageRepository
 
     ) {
         
         this.logger = logger
         this.userRepository = userRepository
-        this.languageRepository = languageRepository
     }
 
     async Handle(request: CompareLanguageIdQuery): Promise<boolean> {
@@ -42,15 +40,15 @@ export class CompareLanguageIdQueryHandler implements IQueryHandler<CompareLangu
         }
 
         // GET LANGUAGE ID BY NAME
-        const language = await this.languageRepository.getByNameAsync(request.request.languageName)
+        const languageId = LanguageMapper.fromName(request.request.languageName)
 
-        if(user.nativeLanguageId === language?.id) {
+        if(user.nativeLanguageId === languageId) {
 
-            this.logger.info(`CompareLanguageIdQueryHandler: User's native language ID matches the provided language ID ${language?.id}.`)
+            this.logger.info(`CompareLanguageIdQueryHandler: User's native language ID matches the provided language ID ${languageId}.`)
             return true
         }
 
-        this.logger.info(`CompareLanguageIdQueryHandler: User's native language ID does not match the provided language ID ${language?.id}.`)
+        this.logger.info(`CompareLanguageIdQueryHandler: User's native language ID does not match the provided language ID ${languageId}.`)
         return false
 
     }

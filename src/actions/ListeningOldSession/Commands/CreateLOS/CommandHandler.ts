@@ -3,7 +3,7 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { CreateListeningOldSessionData, IListeningOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IListeningOldSessionRepository"
+import type { IListeningOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IListeningOldSessionRepository"
 import { CreateLOSCommand } from "./Command"
 import type { IListeningRepository } from "@/src/infrastructure/persistence/contracts/IListeningRepository"
 import type { IListeningCategoryRepository } from "@/src/infrastructure/persistence/contracts/IListeningCategoryRepository"
@@ -11,7 +11,7 @@ import { ListeningCategoryNotFound, ListeningNotFound } from "@/src/exceptions/N
 
 
 @injectable()
-export class CreateLOSCommandHandler implements ICommandHandler<CreateLOSCommand, string> {
+export class CreateLOSCommandHandler implements ICommandHandler<CreateLOSCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -35,7 +35,7 @@ export class CreateLOSCommandHandler implements ICommandHandler<CreateLOSCommand
         this.listeningCategoryRepository = listeningCategoryRepository;
     }
     
-    async Handle(request: CreateLOSCommand): Promise<string> {
+    async Handle(request: CreateLOSCommand): Promise<void> {
         
         // LOG MESSAGE
         this.logger.info(`CreateLOSCommandHandler: Creating listening old session for user!`)
@@ -58,18 +58,18 @@ export class CreateLOSCommandHandler implements ICommandHandler<CreateLOSCommand
             throw new ListeningCategoryNotFound()
         }
 
-        const data: CreateListeningOldSessionData = {
+        const data = {
 
             oldSessionId: request.request.id,
-            listeningId: request.request.listeningId,
-            categoryId: request.request.listeningCategoryId,
-            rate: request.request.rate,
+            listening: {connect: {id: request.request.listeningId}},
+            category: {connect: {id: request.request.listeningCategoryId}},
+            rate: request.request.rate
         }
 
-        const createdId = await this.listeningOldSessionRepository.createAsync(data)
+        await this.listeningOldSessionRepository.createAsync(data)
 
         this.logger.info(`CreateLOSCommandHandler: Successfully created listening old session for user!`)
         
-        return createdId
+        return
     }
 }

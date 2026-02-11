@@ -1,3 +1,4 @@
+import { Translate } from "@google-cloud/translate/build/src/v2";
 import { DeckVideoRepository } from "../infrastructure/persistence/repositories/DeckVideoRepository";
 
 export const TYPES = {
@@ -16,6 +17,7 @@ export const TYPES = {
   RedisClient: Symbol.for('RedisClient'),
 
   CacheBehavior: Symbol.for('CacheBehavior'),
+  PipelineBehavior: Symbol.for('PipelineBehavior'),
 
   // STORAGE
   StorageConfig: Symbol.for('StorageConfig'),
@@ -28,6 +30,7 @@ export const TYPES = {
   LocalStorageBasePath: Symbol.for('LocalStorageBasePath'),
 
   // TRANSLATION
+  TranslateConfig: Symbol.for('TranslateConfig'),
   TranslationProvider: Symbol.for('TranslationProvider'),
   TranslateFactory: Symbol.for('TranslateFactory'),
   TranslateService: Symbol.for('TranslateService'),
@@ -60,9 +63,11 @@ export const TYPES = {
   CommandBus: Symbol.for('CommandBus'),
   QueryBus: Symbol.for('QueryBus'),
 
+  // PIPELINE
+  ValidationRegistry: Symbol.for('ValidationRegistry'),
+
   // SERVICES
   EntityVerificationService: Symbol.for('EntityVerificationService'),
   ImageProcessingService: Symbol.for('ImageProcessingService'),
   FileStorageHelper: Symbol.for('FileStorageHelper'),
-  InitialDataService: Symbol.for('InitialDataService')
 };

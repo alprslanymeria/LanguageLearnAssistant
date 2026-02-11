@@ -3,7 +3,7 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { IDeckWordRepository, UpdateDeckWordData } from "@/src/infrastructure/persistence/contracts/IDeckWordRepository"
+import type { IDeckWordRepository } from "@/src/infrastructure/persistence/contracts/IDeckWordRepository"
 import { UpdateDeckWordCommand } from "./Command"
 import type { ICacheService } from "@/src/infrastructure/caching/ICacheService"
 import { CacheKeys } from "@/src/infrastructure/caching/CacheKeys"
@@ -11,7 +11,7 @@ import { DeckWordNotFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
-export class UpdateDeckWordCommandHandler implements ICommandHandler<UpdateDeckWordCommand, number> {
+export class UpdateDeckWordCommandHandler implements ICommandHandler<UpdateDeckWordCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -32,7 +32,7 @@ export class UpdateDeckWordCommandHandler implements ICommandHandler<UpdateDeckW
         this.deckWordRepository = deckWordRepository;
     }
 
-    async Handle(request: UpdateDeckWordCommand): Promise<number> {
+    async Handle(request: UpdateDeckWordCommand): Promise<void> {
 
         // FORM DATA'S
         const itemId = Number(request.formData.get("itemId"))
@@ -51,20 +51,20 @@ export class UpdateDeckWordCommandHandler implements ICommandHandler<UpdateDeckW
             throw new DeckWordNotFound()
         }
 
-        const data : UpdateDeckWordData = {
+        const data = {
 
-            categoryId: categoryId,
+            category: { connect: { id: categoryId } },
             question: word,
             answer: answer
         }
 
-        const updatedId = await this.deckWordRepository.update(itemId, data)
+        await this.deckWordRepository.updateAsync(itemId, data)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.deckWord.prefix)
 
         this.logger.info(`UpdateDeckWordCommandHandler: Successfully updated deck word with Id ${itemId}`)
 
-        return updatedId
+        return
     }
 }

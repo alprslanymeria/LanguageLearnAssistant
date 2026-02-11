@@ -6,14 +6,15 @@ import type { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { UpdateFlashcardCategoryCommand } from "./Command"
 import type { ICacheService } from "@/src/infrastructure/caching/ICacheService"
 import { CacheKeys } from "@/src/infrastructure/caching/CacheKeys"
-import type { IFlashcardCategoryRepository, UpdateFlashcardCategoryData } from "@/src/infrastructure/persistence/contracts/IFlashcardCategoryRepository"
+import type { IFlashcardCategoryRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardCategoryRepository"
 import type { IEntityVerificationService } from "@/src/services/IEntityVerificationService"
 import { FlashcardCategoryNotFound, NoPracticeFound } from "@/src/exceptions/NotFound"
 import { FlashcardResultNotSuccess } from "@/src/exceptions/NotSuccess"
 import type { IPracticeRepository } from "@/src/infrastructure/persistence/contracts/IPracticeRepository"
+import { connect } from "http2"
 
 @injectable()
-export class UpdateFlashcardCategoryCommandHandler implements ICommandHandler<UpdateFlashcardCategoryCommand, number> {
+export class UpdateFlashcardCategoryCommandHandler implements ICommandHandler<UpdateFlashcardCategoryCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -40,7 +41,7 @@ export class UpdateFlashcardCategoryCommandHandler implements ICommandHandler<Up
         this.entityVerificationService = entityVerificationService;
     }
 
-    async Handle(request: UpdateFlashcardCategoryCommand): Promise<number> {
+    async Handle(request: UpdateFlashcardCategoryCommand): Promise<void> {
 
         // FORM DATA'S
         const itemId = Number(request.formData.get("itemId"))
@@ -75,19 +76,19 @@ export class UpdateFlashcardCategoryCommandHandler implements ICommandHandler<Up
         // FAST FAIL
         if (!flashcardResult.isSuccess) throw new FlashcardResultNotSuccess()
 
-        const data : UpdateFlashcardCategoryData = {
+        const data = {
 
             name: categoryName,
-            flashcardId: flashcardResult.data!.id            
+            flashcard: {connect : { id: flashcardResult.data!.id }}
         }
 
-        const updatedId = await this.flashcardCategoryRepository.update(itemId, data)
+        await this.flashcardCategoryRepository.updateAsync(itemId, data)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.flashcardCategory.prefix)
 
         this.logger.info(`UpdateFlashcardCategoryCommandHandler: Successfully updated flashcard category with Id ${itemId}`)
 
-        return updatedId
+        return
     }
 }

@@ -1,12 +1,60 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { ListeningCategory } from "@/src/generated/prisma/client"
-import { IListeningCategoryRepository, CreateListeningCategoryData, UpdateListeningCategoryData } from "@/src/infrastructure/persistence/contracts/IListeningCategoryRepository"
+import { ListeningCategory, Prisma } from "@prisma/client"
+import { IListeningCategoryRepository } from "@/src/infrastructure/persistence/contracts/IListeningCategoryRepository"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
 import { ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
 
 @injectable()
 export class ListeningCategoryRepository implements IListeningCategoryRepository {
+
+    // CRUD OPERATIONS
+
+    async createAsync(data: Prisma.ListeningCategoryCreateInput): Promise<void> {
+    
+        await prisma.listeningCategory.create({
+            data: data
+        })
+
+        return
+    }
+
+    async getByIdAsync(id: number): Promise<ListeningCategory | null> {
+
+        const listeningCategory = await prisma.listeningCategory.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        return listeningCategory
+    }
+
+    async updateAsync(id: number, data: Prisma.ListeningCategoryUpdateInput): Promise<void> {
+
+        await prisma.listeningCategory.update({
+
+            where: {
+                id: id
+            },
+            data: data
+        })
+
+        return
+    }
+
+    async deleteAsync(id: number): Promise<void> {
+
+        await prisma.listeningCategory.delete({
+            where: {
+                id: id
+            }
+        })
+
+        return
+    }
+
+    // HELPER OPERATIONS
 
     async getLCategoryCreateItemsAsync(userId: string, languageId: number, practiceId: number): Promise<ListeningCategoryWithDeckVideos[]> {
             
@@ -43,47 +91,5 @@ export class ListeningCategoryRepository implements IListeningCategoryRepository
         })
 
         return listeningCategory
-    }
-
-    async createAsync(data: CreateListeningCategoryData): Promise<number> {
-    
-        const created = await prisma.listeningCategory.create({
-            data: data
-        })
-
-        return created.id
-    }
-
-    async getByIdAsync(id: number): Promise<ListeningCategory | null> {
-
-        const listeningCategory = await prisma.listeningCategory.findUnique({
-            where: {
-                id: id
-            }
-        })
-
-        return listeningCategory
-    }
-
-    async update(id: number, data: UpdateListeningCategoryData): Promise<number> {
-
-        const updatedListeningCategory = await prisma.listeningCategory.update({
-
-            where: {
-                id: id
-            },
-            data: data
-        })
-
-        return updatedListeningCategory.id
-    }
-
-    async deleteAsync(id: number): Promise<void> {
-
-        await prisma.listeningCategory.delete({
-            where: {
-                id: id
-            }
-        })
     }
 }

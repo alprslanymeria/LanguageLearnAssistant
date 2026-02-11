@@ -3,7 +3,7 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { IReadingBookRepository, UpdateReadingBookData } from "@/src/infrastructure/persistence/contracts/IReadingBookRepository"
+import type { IReadingBookRepository } from "@/src/infrastructure/persistence/contracts/IReadingBookRepository"
 import { UpdateReadingBookCommand } from "./Command"
 import type { ICacheService } from "@/src/infrastructure/caching/ICacheService"
 import type { IEntityVerificationService } from "@/src/services/IEntityVerificationService"
@@ -16,7 +16,7 @@ import type { IPracticeRepository } from "@/src/infrastructure/persistence/contr
 
 
 @injectable()
-export class UpdateReadingBookCommandHandler implements ICommandHandler<UpdateReadingBookCommand, number> {
+export class UpdateReadingBookCommandHandler implements ICommandHandler<UpdateReadingBookCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -49,7 +49,7 @@ export class UpdateReadingBookCommandHandler implements ICommandHandler<UpdateRe
         this.fileStorageHelper = fileStorageHelper;
     }
     
-    async Handle(request: UpdateReadingBookCommand): Promise<number> {
+    async Handle(request: UpdateReadingBookCommand): Promise<void> {
 
         // FORM DATA'S
         const itemId = Number(request.formData.get("itemId"))
@@ -121,16 +121,16 @@ export class UpdateReadingBookCommandHandler implements ICommandHandler<UpdateRe
             )
         }
 
-        const data : UpdateReadingBookData = {
+        const data = {
 
             name: bookName,
-            readingId: readingResult.data!.id,
+            reading: {connect: {id: readingResult.data!.id}},
             imageUrl: newImageUrl,
             sourceUrl: newSourceUrl,
             leftColor: newLeftColor
         }
 
-        const updatedId = await this.readingBookRepository.update(itemId, data)
+        await this.readingBookRepository.updateAsync(itemId, data)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.readingBook.prefix)
@@ -148,7 +148,6 @@ export class UpdateReadingBookCommandHandler implements ICommandHandler<UpdateRe
 
         this.logger.info(`UpdateReadingBookCommandHandler: Successfully updated reading book with Id ${itemId}`)
 
-        return updatedId
-
+        return
     }
 }

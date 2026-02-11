@@ -59,6 +59,26 @@ services:
     container_name: otel-collector
     volumes:
       - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    environment:
+      - RECEIVER_OTLP_GRPC_ENDPOINT=${RECEIVER_OTLP_GRPC_ENDPOINT}
+      - RECEIVER_OTLP_HTTP_ENDPOINT=${RECEIVER_OTLP_HTTP_ENDPOINT}
+      - EXPORTER_OTLP_JAEGER_ENDPOINT=${EXPORTER_OTLP_JAEGER_ENDPOINT}
+      - EXPORTER_OTLP_ENDPOINT=${EXPORTER_OTLP_ENDPOINT}
+      - EXPORTER_PROMETHEUS_ENDPOINT=${EXPORTER_PROMETHEUS_ENDPOINT}
+
+# DATABASE MIGRATIONS
+  migrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    container_name: migrator
+    env_file:
+      - .env
+    depends_on:
+      sqlserver:
+        condition: service_started
+    restart: "no"
 
 # APPLICATION
   nextjs:
@@ -76,17 +96,19 @@ services:
       - elasticsearch
       - jaeger
       - otel-collector
+      - migrator
       - sqlserver
     environment:
       NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: 1
+      GOOGLE_APPLICATION_CREDENTIALS: /app/gcp-key.json
     volumes:
-      - ./totemic-atom-447420-b0-943ce371ff89.json:/app/gcp-key.json:ro # HOST:DOCKER:PERMISSIONS
+      - C:\Users\alpar\Documents\projects\totemic-atom-447420-b0-d685515ea319.json:/app/gcp-key.json:ro # HOST:DOCKER:PERMISSIONS
     restart: unless-stopped
 
 # SOCKET SERVER FOR LIVE SESSIONS
   socket-server:
-    image: us-central1-docker.pkg.dev/totemic-atom-447420-b0/language-learn-repository/socket-server:latest
+    image: alparslanorgnl/apps:socket-server
     container_name: socket-server
     restart: always
     ports:

@@ -3,14 +3,14 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { CreateFlashcardSessionRowData, IFlashcardSessionRowRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardSessionRowRepository"
+import type { IFlashcardSessionRowRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardSessionRowRepository"
 import { CreateFRowsCommand } from "./Command"
 import type { IFlashcardOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardOldSessionRepository"
 import { FlashcardOldSessionNotFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
-export class CreateFRowsCommandHandler implements ICommandHandler<CreateFRowsCommand, number> {
+export class CreateFRowsCommandHandler implements ICommandHandler<CreateFRowsCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -31,7 +31,7 @@ export class CreateFRowsCommandHandler implements ICommandHandler<CreateFRowsCom
         this.flashcardOldSessionRepository = flashcardOldSessionRepository;
     }
     
-    async Handle(request: CreateFRowsCommand): Promise<number> {
+    async Handle(request: CreateFRowsCommand): Promise<void> {
         
         // LOG MESSAGE
         this.logger.info(`CreateFRowsCommandHandler: Creating flashcard session rows for flashcard old session with Id ${request.request.flashcardOldSessionId}`)
@@ -45,7 +45,7 @@ export class CreateFRowsCommandHandler implements ICommandHandler<CreateFRowsCom
             throw new FlashcardOldSessionNotFound()
         }
 
-        const rows : CreateFlashcardSessionRowData[]  = request.request.rows.map(row => ({
+        const rows = request.request.rows.map(row => ({
 
             oldSessionId: request.request.flashcardOldSessionId,
             question: row.question,
@@ -57,6 +57,6 @@ export class CreateFRowsCommandHandler implements ICommandHandler<CreateFRowsCom
 
         this.logger.info(`CreateFRowsCommandHandler: Successfully created flashcard session rows for flashcard old session with Id ${request.request.flashcardOldSessionId}`)
 
-        return rows.length
+        return
     }
 }

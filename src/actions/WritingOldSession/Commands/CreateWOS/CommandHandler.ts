@@ -3,16 +3,17 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { CreateWritingOldSessionData, IWritingOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IWritingOldSessionRepository"
+import type { IWritingOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IWritingOldSessionRepository"
 import { CreateWOSCommand } from "./Command"
 import type { IWritingRepository } from "@/src/infrastructure/persistence/contracts/IWritingRepository"
 import type { IWritingBookRepository } from "@/src/infrastructure/persistence/contracts/IWritingBookRepository"
 import { WritingBookNotFound, WritingNotFound } from "@/src/exceptions/NotFound"
+import { connect } from "http2"
 
 
 @injectable()
-export class CreateWOSCommandHandler implements ICommandHandler<CreateWOSCommand, string> {
-    
+export class CreateWOSCommandHandler implements ICommandHandler<CreateWOSCommand> {
+
     // FIELDS
     private readonly logger : ILogger
     private readonly writingOldSessionRepository : IWritingOldSessionRepository
@@ -35,7 +36,7 @@ export class CreateWOSCommandHandler implements ICommandHandler<CreateWOSCommand
         this.writingBookRepository = writingBookRepository;
     }
     
-    async Handle(request: CreateWOSCommand): Promise<string> {
+    async Handle(request: CreateWOSCommand): Promise<void> {
         
         // LOG MESSAGE
         this.logger.info(`CreateWOSCommandHandler: Creating writing old session for user!`)
@@ -60,18 +61,18 @@ export class CreateWOSCommandHandler implements ICommandHandler<CreateWOSCommand
             throw new WritingBookNotFound()
         }
 
-        const data : CreateWritingOldSessionData = {
+        const data = {
 
             oldSessionId: request.request.id,
-            writingId: request.request.writingId,
-            bookId: request.request.writingBookId,
+            writing: { connect: { id: request.request.writingId } },
+            book: { connect: { id: request.request.writingBookId } },
             rate: request.request.rate
         }
 
-        const createdId = await this.writingOldSessionRepository.createAsync(data)
+        await this.writingOldSessionRepository.createAsync(data)
 
-        this.logger.info(`CreateWOSCommandHandler: Successfully created writing old session with Id ${createdId} for user!`)
+        this.logger.info(`CreateWOSCommandHandler: Successfully created writing old session for user!`)
 
-        return createdId
+        return
     }
 }

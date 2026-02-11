@@ -1,31 +1,15 @@
 // IMPORTS
-import { ListeningSessionRow } from "@/src/generated/prisma/client"
-
-export interface CreateListeningSessionRowData {
-
-    oldSessionId: string
-    listenedSentence: string
-    answer: string
-    similarity: number
-}
-
-export interface UpdateListeningSessionRowData {
-
-    oldSessionId?: string
-    listenedSentence?: string
-    answer?: string
-    similarity?: number
-}
+import { ListeningSessionRow, Prisma } from "@prisma/client"
 
 export interface IListeningSessionRowRepository {
 
+    // CRUD
+    createAsync(data: Prisma.ListeningSessionRowCreateInput): Promise<void>
+    getByIdAsync(id: number): Promise<ListeningSessionRow | null>
+    updateAsync(id: number, data: Prisma.ListeningSessionRowUpdateInput): Promise<void>
+    deleteAsync(id: number): Promise<void>
+
     // HELPER
     getListeningRowsByIdWithPagingAsync(sessionId: string, page: number, pageSize: number): Promise<{ items: ListeningSessionRow[]; totalCount: number }>
-    createRangeAsync(rows: CreateListeningSessionRowData[]): Promise<void>
-
-    // CRUD
-    createAsync(data: CreateListeningSessionRowData): Promise<number>
-    getByIdAsync(id: number): Promise<ListeningSessionRow | null>
-    update(id: number, data: UpdateListeningSessionRowData): Promise<number>
-    deleteAsync(id: number): Promise<void>
+    createRangeAsync(rows: Prisma.ListeningSessionRowCreateManyInput[]): Promise<void>
 }

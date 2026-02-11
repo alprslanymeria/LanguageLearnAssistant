@@ -12,23 +12,34 @@ import { ITranslateFactory } from "@/src/services/translate/ITranslateFactory"
 import { TranslateFactory } from "@/src/services/translate/TranslateFactory"
 import { ITranslateService } from "@/src/services/translate/ITranslateService"
 import { TranslateService } from "@/src/services/translate/TranslateService"
+import { TranslateConfig } from '@/src/services/translate/TranslateConfig'
+import { TranslateOptions } from '@/src/services/translate/Translate'
 
 export class TranslationModule implements IContainerModule {
 
     register(container: Container): void {
 
-        container.bind<ITranslationProvider>(TYPES.TranslationProvider).to(GoogleTranslationProvider)
-        container.bind<ITranslateFactory>(TYPES.TranslateFactory).to(TranslateFactory)
-        container.bind<ITranslateService>(TYPES.TranslateService).to(TranslateService)
-        container.bind<Translate>(TYPES.GoogleTranslationProvider).toDynamicValue(() => {
+        const translateConfig = TranslateConfig.load()
 
-            const { Translate } = v2
+        container.bind<TranslateOptions>(TYPES.TranslateConfig).toConstantValue(translateConfig)
 
-            return new Translate({
+        if(translateConfig.type === "google") {
 
-                keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
-            })
+            container.bind<Translate>(TYPES.GoogleTranslationProvider).toDynamicValue(() => {
 
-        }).inTransientScope()
+                const { Translate } = v2
+
+                return new Translate({
+
+                    keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
+                })
+
+            }).inSingletonScope()
+
+            container.bind<ITranslationProvider>(TYPES.TranslationProvider).to(GoogleTranslationProvider).inSingletonScope()
+        }
+
+        container.bind<ITranslateFactory>(TYPES.TranslateFactory).to(TranslateFactory).inSingletonScope()
+        container.bind<ITranslateService>(TYPES.TranslateService).to(TranslateService).inSingletonScope()
     }
 }

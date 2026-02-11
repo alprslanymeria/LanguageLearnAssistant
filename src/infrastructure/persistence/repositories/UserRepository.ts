@@ -1,32 +1,13 @@
 // IMPORTS
 import { injectable } from "inversify"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
-import { IUserRepository, UpdateUserData } from "@/src/infrastructure/persistence/contracts/IUserRepository"
-import { User } from "@/src/generated/prisma/client"
+import { IUserRepository } from "@/src/infrastructure/persistence/contracts/IUserRepository"
+import { Prisma, User } from "@prisma/client"
 
 @injectable()
 export class UserRepository implements IUserRepository {
 
-    async findByEmail(email: string): Promise<User | null> {
-        
-        return await prisma.user.findUnique({
-            where: { email }
-        })
-    }
-
-    async isUserExist(id: string): Promise<boolean> {
-        
-        const isUserExist = await prisma.user.findFirst({
-
-            where: {
-                id: id
-            }
-        })
-
-        if(!isUserExist) return false
-
-        return true
-    }
+    // CRUD OPERATIONS
 
     async createAsync(user: User): Promise<void> {
         
@@ -47,9 +28,9 @@ export class UserRepository implements IUserRepository {
         return user
     }
 
-    async update(id: string, data: UpdateUserData): Promise<string> {
+    async updateAsync(id: string, data: Prisma.UserUpdateInput): Promise<void> {
 
-        const updatedUser = await prisma.user.update({
+        await prisma.user.update({
 
             where: {
                 id: id
@@ -57,7 +38,7 @@ export class UserRepository implements IUserRepository {
             data: data
         })
 
-        return updatedUser.id
+        return
     }
 
     async deleteAsync(user: User): Promise<void> {
@@ -67,5 +48,30 @@ export class UserRepository implements IUserRepository {
                 id: user.id
             }
         })
+
+        return
+    }
+
+    // HELPER OPERATIONS
+
+    async findByEmail(email: string): Promise<User | null> {
+        
+        return await prisma.user.findUnique({
+            where: { email }
+        })
+    }
+
+    async isUserExist(id: string): Promise<boolean> {
+        
+        const isUserExist = await prisma.user.findFirst({
+
+            where: {
+                id: id
+            }
+        })
+
+        if(!isUserExist) return false
+
+        return true
     }
 }

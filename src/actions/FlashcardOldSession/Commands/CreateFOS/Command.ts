@@ -4,7 +4,7 @@ import { SaveFlashcardOldSessionRequest } from "@/src/actions/FlashcardOldSessio
 
 export const CREATE_FOS_COMMAND = "CREATE_FOS_COMMAND"
 
-export interface CreateFOSCommand extends ICommand<string> {
+export interface CreateFOSCommand extends ICommand {
 
     readonly type: typeof CREATE_FOS_COMMAND
     request: SaveFlashcardOldSessionRequest

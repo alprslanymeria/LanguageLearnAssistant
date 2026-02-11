@@ -1,28 +1,16 @@
 // IMPORTS
 import { ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory/Response"
-import { ListeningCategory } from "@/src/generated/prisma/client"
-
-export interface CreateListeningCategoryData {
-
-    name: string
-    listeningId: number
-}
-
-export interface UpdateListeningCategoryData {
-
-    name?: string
-    listeningId?: number
-}
+import { ListeningCategory, Prisma } from "@prisma/client"
 
 export interface IListeningCategoryRepository {
+
+    // CRUD
+    createAsync(data: Prisma.ListeningCategoryCreateInput): Promise<void>
+    getByIdAsync(id: number): Promise<ListeningCategory | null>
+    updateAsync(id: number, data: Prisma.ListeningCategoryUpdateInput): Promise<void>
+    deleteAsync(id: number): Promise<void>
 
     // HELPER
     getLCategoryCreateItemsAsync(userId: string, languageId: number, practiceId: number): Promise<ListeningCategoryWithDeckVideos[]>
     getByIdWithDeckVideosAsync(id: number): Promise<ListeningCategoryWithDeckVideos | null>
-
-    // CRUD
-    createAsync(data: CreateListeningCategoryData): Promise<number>
-    getByIdAsync(id: number): Promise<ListeningCategory | null>
-    update(id: number, data: UpdateListeningCategoryData): Promise<number>
-    deleteAsync(id: number): Promise<void>
 }

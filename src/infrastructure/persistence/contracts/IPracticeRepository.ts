@@ -1,29 +1,17 @@
 // IMPORTS
-import { Practice } from "@/src/generated/prisma/client"
-
-export interface CreatePracticeData {
-
-    name: string
-    languageId: number
-}
-
-export interface UpdatePracticeData {
-
-    name?: string
-    languageId: number
-}
+import { Practice, Prisma } from "@prisma/client"
 
 export interface IPracticeRepository {
+
+    // CRUD
+    createAsync(data: Prisma.PracticeCreateInput): Promise<void>
+    getByIdAsync(id: number): Promise<Practice | null>
+    updateAsync(id: number, data: Prisma.PracticeUpdateInput): Promise<void>
+    deleteAsync(id: number): Promise<void>
 
     // HELPER
     getPracticesByLanguageAsync(language: string): Promise<Practice[]>
     getPracticeByLanguageIdAndNameAsync(languageId: number, name: string): Promise<Practice | null>
     existsByLanguageIdAsync(languageId: number): Promise<Practice | null>
     existsByNameAndLanguageIdAsync(name: string, languageId: number): Promise<Practice | null>
-
-    // CRUD
-    createAsync(data: CreatePracticeData): Promise<number>
-    getByIdAsync(id: number): Promise<Practice | null>
-    update(id: number, data: UpdatePracticeData): Promise<number>
-    deleteAsync(id: number): Promise<void>
 }

@@ -1,28 +1,14 @@
 // IMPORTS
-import { Flashcard } from "@/src/generated/prisma/client"
-
-export interface CreateFlashcardData {
-
-    userId: string
-    languageId: number
-    practiceId: number
-}
-
-export interface UpdateFlashcardData {
-
-    userId?: string
-    languageId?: number
-    practiceId?: number
-}
+import { Flashcard, Prisma } from "@prisma/client"
 
 export interface IFlashcardRepository {
 
+    // CRUD
+    createAsync(data: Prisma.FlashcardCreateInput): Promise<void>
+    getByIdAsync(id: number): Promise<Flashcard | null>
+    updateAsync(id: number, data: Prisma.FlashcardUpdateInput): Promise<void>
+    deleteAsync(id: number): Promise<void>
+
     // HELPER
     getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Flashcard | null>
-
-    // CRUD
-    createAsync(data: CreateFlashcardData): Promise<number>
-    getByIdAsync(id: number): Promise<Flashcard | null>
-    update(id: number, data: UpdateFlashcardData): Promise<number>
-    deleteAsync(id: number): Promise<void>
 }

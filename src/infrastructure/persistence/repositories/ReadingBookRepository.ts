@@ -1,15 +1,64 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { ReadingBook } from "@/src/generated/prisma/client"
-import { IReadingBookRepository, CreateReadingBookData, UpdateReadingBookData, ReadingBookWithLanguage } from "@/src/infrastructure/persistence/contracts/IReadingBookRepository"
+import { Prisma, ReadingBook } from "@prisma/client"
+import { IReadingBookRepository } from "@/src/infrastructure/persistence/contracts/IReadingBookRepository"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
+import { ReadingBookWithLanguageId } from "@/src/actions/ReadingBook/Response"
 
 @injectable()
 export class ReadingBookRepository implements IReadingBookRepository {
 
-    async getReadingBookItemByIdAsync(id: number): Promise<ReadingBookWithLanguage | null> {
+    // CRUD OPERATIONS
+
+    async createAsync(data: Prisma.ReadingBookCreateInput): Promise<void> {
+    
+        await prisma.readingBook.create({
+            data: data
+        })
+
+        return
+    }
+
+    async getByIdAsync(id: number): Promise<ReadingBook | null> {
+
+        const readingBook = await prisma.readingBook.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        return readingBook
+    }
+
+    async updateAsync(id: number, data: Prisma.ReadingBookUpdateInput): Promise<void> {
+
+        await prisma.readingBook.update({
+
+            where: {
+                id: id
+            },
+            data: data
+        })
+
+        return
+    }
+
+    async deleteAsync(id: number): Promise<void> {
+
+        await prisma.readingBook.delete({
+            where: {
+                id: id
+            }
+        })
+
+        return
+    }
+
+    // HELPER OPERATIONS
+
+    async getReadingBookItemByIdAsync(id: number): Promise<ReadingBookWithLanguageId | null> {
         
-        return await prisma.readingBook.findUnique({
+        const readingBook = await prisma.readingBook.findUnique({
             where: { id },
             select: {
                 id: true,
@@ -25,6 +74,21 @@ export class ReadingBookRepository implements IReadingBookRepository {
                 }
             }
         })
+
+        if (!readingBook) return null
+
+        const result : ReadingBookWithLanguageId = {
+
+            id: readingBook.id,
+            readingId: readingBook.readingId,
+            name: readingBook.name,
+            imageUrl: readingBook.imageUrl,
+            leftColor: readingBook.leftColor,
+            sourceUrl: readingBook.sourceUrl,
+            languageId: readingBook.reading.language.id
+        }
+
+        return result
     }
 
     async getAllRBooksWithPagingAsync(userId: string, page: number, pageSize: number): Promise<{ items: ReadingBook[]; totalCount: number }> {
@@ -61,47 +125,4 @@ export class ReadingBookRepository implements IReadingBookRepository {
             }
         })
     }
-
-    async createAsync(data: CreateReadingBookData): Promise<number> {
-    
-        const created = await prisma.readingBook.create({
-            data: data
-        })
-
-        return created.id
-    }
-
-    async getByIdAsync(id: number): Promise<ReadingBook | null> {
-
-        const readingBook = await prisma.readingBook.findUnique({
-            where: {
-                id: id
-            }
-        })
-
-        return readingBook
-    }
-
-    async update(id: number, data: UpdateReadingBookData): Promise<number> {
-
-        const updatedReadingBook = await prisma.readingBook.update({
-
-            where: {
-                id: id
-            },
-            data: data
-        })
-
-        return updatedReadingBook.id
-    }
-
-    async deleteAsync(id: number): Promise<void> {
-
-        await prisma.readingBook.delete({
-            where: {
-                id: id
-            }
-        })
-    }
-
 }

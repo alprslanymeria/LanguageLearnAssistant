@@ -51,7 +51,7 @@ export class GetDeckWordByIdQueryHandler implements IQueryHandler<GetDeckWordByI
             categoryId: deckWord.categoryId,
             question: deckWord.question,
             answer: deckWord.answer,
-            languageId: deckWord.category.flashcard.language.id
+            languageId: deckWord.languageId
         }
 
         return response

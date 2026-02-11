@@ -1,12 +1,60 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { IListeningOldSessionRepository , CreateListeningOldSessionData, UpdateListeningOldSessionData} from "@/src/infrastructure/persistence/contracts/IListeningOldSessionRepository"
+import { IListeningOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IListeningOldSessionRepository"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
-import { ListeningOldSession } from "@/src/generated/prisma/client"
+import { ListeningOldSession, Prisma } from "@prisma/client"
 
 @injectable()
 export class ListeningOldSessionRepository implements IListeningOldSessionRepository {
 
+    // CRUD OPERATIONS
+
+    async createAsync(data: Prisma.ListeningOldSessionCreateInput): Promise<void> {
+    
+        await prisma.listeningOldSession.create({
+            data: data
+        })
+
+        return
+    }
+
+    async getByIdAsync(id: string): Promise<ListeningOldSession | null> {
+
+        const listeningOldSession = await prisma.listeningOldSession.findUnique({
+            where: {
+                oldSessionId: id
+            }
+        })
+
+        return listeningOldSession
+    }
+
+    async updateAsync(id: string, data: Prisma.ListeningOldSessionUpdateInput): Promise<void> {
+
+        await prisma.listeningOldSession.update({
+
+            where: {
+                oldSessionId: id
+            },
+            data: data
+        })
+
+        return
+    }
+
+    async deleteAsync(id: string): Promise<void> {
+
+        await prisma.listeningOldSession.delete({
+            where: {
+                oldSessionId: id
+            }
+        })
+
+        return
+    }
+
+    // HELPER OPERATIONS
+    
     async getListeningOldSessionsWithPagingAsync(userId: string, language: string, page: number, pageSize: number): Promise<{ items: ListeningOldSession[]; totalCount: number }> {
         
         const whereClause = {
@@ -30,47 +78,5 @@ export class ListeningOldSessionRepository implements IListeningOldSessionReposi
         })
 
         return { items, totalCount }
-    }
-
-    async createAsync(data: CreateListeningOldSessionData): Promise<string> {
-    
-        const created = await prisma.listeningOldSession.create({
-            data: data
-        })
-
-        return created.oldSessionId
-    }
-
-    async getByIdAsync(id: string): Promise<ListeningOldSession | null> {
-
-        const listeningOldSession = await prisma.listeningOldSession.findUnique({
-            where: {
-                oldSessionId: id
-            }
-        })
-
-        return listeningOldSession
-    }
-
-    async update(id: string, data: UpdateListeningOldSessionData): Promise<string> {
-
-        const updatedListeningOldSession = await prisma.listeningOldSession.update({
-
-            where: {
-                oldSessionId: id
-            },
-            data: data
-        })
-
-        return updatedListeningOldSession.oldSessionId
-    }
-
-    async deleteAsync(id: string): Promise<void> {
-
-        await prisma.listeningOldSession.delete({
-            where: {
-                oldSessionId: id
-            }
-        })
     }
 }

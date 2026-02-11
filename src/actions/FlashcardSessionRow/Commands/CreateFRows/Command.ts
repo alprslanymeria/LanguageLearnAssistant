@@ -4,7 +4,7 @@ import { SaveFlashcardRowsRequest } from "@/src/actions/FlashcardSessionRow/Requ
 
 export const CREATE_FROWS_COMMAND = "CREATE_FROWS_COMMAND"
 
-export interface CreateFRowsCommand extends ICommand<number> {
+export interface CreateFRowsCommand extends ICommand {
 
     readonly type: typeof CREATE_FROWS_COMMAND
     request: SaveFlashcardRowsRequest

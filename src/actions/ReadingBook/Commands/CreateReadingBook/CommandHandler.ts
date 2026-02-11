@@ -4,7 +4,7 @@ import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { CreateReadingBookCommand } from "./Command"
-import type { CreateReadingBookData, IReadingBookRepository } from "@/src/infrastructure/persistence/contracts/IReadingBookRepository"
+import type { IReadingBookRepository } from "@/src/infrastructure/persistence/contracts/IReadingBookRepository"
 import type { ICacheService } from "@/src/infrastructure/caching/ICacheService"
 import type { IEntityVerificationService } from "@/src/services/IEntityVerificationService"
 import type { IImageProcessingService } from "@/src/services/IImageProcessingService"
@@ -16,7 +16,7 @@ import { NoPracticeFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
-export class CreateReadingBookCommandHandler implements ICommandHandler<CreateReadingBookCommand, number> {
+export class CreateReadingBookCommandHandler implements ICommandHandler<CreateReadingBookCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -49,7 +49,7 @@ export class CreateReadingBookCommandHandler implements ICommandHandler<CreateRe
         this.fileStorageHelper = fileStorageHelper;
     }
 
-    async Handle(request: CreateReadingBookCommand): Promise<number> {
+    async Handle(request: CreateReadingBookCommand): Promise<void> {
 
         // FORM DATA'S
         const bookName = request.formData.get("bookName")?.toString()!
@@ -98,23 +98,22 @@ export class CreateReadingBookCommandHandler implements ICommandHandler<CreateRe
 
         const leftSideColor = await this.imageProcessingService.extractLeftSideColorAsync(imageFile)
 
-        const data : CreateReadingBookData = {
+        const data = {
 
             name : bookName,
-            readingId : readingResult.data!.id,
+            reading: {connect: {id: readingResult.data!.id}},
             imageUrl : imageUrl,
             sourceUrl : sourceUrl,
             leftColor : leftSideColor
         }
 
-        const readingBookId = await this.readingBookRepository.createAsync(data)
+        await this.readingBookRepository.createAsync(data)
 
         // CACHE INVALIDATION
         await this.cacheService.invalidateByPrefix(CacheKeys.readingBook.prefix)
 
         this.logger.info(`CreateReadingBookCommandHandler: Successfully created reading book with name  ${bookName}`)
 
-        return readingBookId
-    
+        return
     }
 }

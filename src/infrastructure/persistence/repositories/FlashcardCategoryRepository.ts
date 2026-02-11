@@ -1,18 +1,65 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { FlashcardCategory } from "@/src/generated/prisma/client"
+import { FlashcardCategory, Prisma } from "@prisma/client"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
-import { CreateFlashcardCategoryData, FlashcardCategoryWithLanguage, IFlashcardCategoryRepository, UpdateFlashcardCategoryData } from "@/src/infrastructure/persistence/contracts/IFlashcardCategoryRepository"
+import { IFlashcardCategoryRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardCategoryRepository"
 import { FlashcardCategoryWithDeckWords, FlashcardCategoryWithLanguageId } from "@/src/actions/FlashcardCategory/Response"
 
 @injectable()
 export class FlashcardCategoryRepository implements IFlashcardCategoryRepository {
+
+    // CRUF OPERATIONS
+
+    async createAsync(data: Prisma.FlashcardCategoryCreateInput): Promise<void> {
     
+        await prisma.flashcardCategory.create({
+            data: data
+        })
 
-    async getFlashcardCategoryItemByIdAsync(id: number): Promise<FlashcardCategoryWithLanguage | null> {
+        return
+    }
+
+    async getByIdAsync(id: number): Promise<FlashcardCategory | null> {
+
+        const flashcardCategory = await prisma.flashcardCategory.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        return flashcardCategory
+    }
+
+    async updateAsync(id: number, data: Prisma.FlashcardCategoryUpdateInput): Promise<void> {
+
+        await prisma.flashcardCategory.update({
+
+            where: {
+                id: id
+            },
+            data: data
+        })
+
+        return
+    }
+
+    async deleteAsync(id: number): Promise<void> {
+
+        await prisma.flashcardCategory.delete({
+            where: {
+                id: id
+            }
+        })
+
+        return
+    }
+    
+    // HELPER OPERATIONS
+
+    async getFlashcardCategoryItemByIdAsync(id: number): Promise<FlashcardCategoryWithLanguageId | null> {
 
 
-        return await prisma.flashcardCategory.findUnique({
+        const category = await prisma.flashcardCategory.findUnique({
             where: { id },
             select: {
                 id: true,
@@ -25,6 +72,18 @@ export class FlashcardCategoryRepository implements IFlashcardCategoryRepository
                 }
             }
         })
+
+        if (!category)  return null
+
+        const result : FlashcardCategoryWithLanguageId = {
+
+            id:  category.id,
+            flashcardId: category.flashcardId,
+            name: category.name,
+            languageId: category.flashcard.language.id
+        }
+        
+        return result
     }
 
     async getAllFCategoriesAsync(userId: string): Promise<{ items: FlashcardCategoryWithLanguageId[]; totalCount: number }> {
@@ -122,48 +181,6 @@ export class FlashcardCategoryRepository implements IFlashcardCategoryRepository
         })
 
         return flashcardCategory
-    }
-
-     async createAsync(data: CreateFlashcardCategoryData): Promise<number> {
-    
-        const created = await prisma.flashcardCategory.create({
-            data: data
-        })
-
-        return created.id
-    }
-
-    async getByIdAsync(id: number): Promise<FlashcardCategory | null> {
-
-        const flashcardCategory = await prisma.flashcardCategory.findUnique({
-            where: {
-                id: id
-            }
-        })
-
-        return flashcardCategory
-    }
-
-    async update(id: number, data: UpdateFlashcardCategoryData): Promise<number> {
-
-        const updatedFlashcardCategory = await prisma.flashcardCategory.update({
-
-            where: {
-                id: id
-            },
-            data: data
-        })
-
-        return updatedFlashcardCategory.id
-    }
-
-    async deleteAsync(id: number): Promise<void> {
-
-        await prisma.flashcardCategory.delete({
-            where: {
-                id: id
-            }
-        })
     }
 
 }

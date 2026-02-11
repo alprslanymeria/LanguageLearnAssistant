@@ -24,7 +24,12 @@ export class QueryHandlerRegistry {
 
     ): IQueryHandler<IQuery<TResponse>, TResponse> {
 
-        const handler = this.handlers.get(type)!
+        const handler = this.handlers.get(type)
+
+        if (!handler) {
+
+            throw new Error(`No query handler registered for type: "${type}". Ensure the handler is registered in QueryModule.`)
+        }
 
         return handler
     }

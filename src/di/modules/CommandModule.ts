@@ -5,12 +5,8 @@ import { Container } from "inversify"
 import { IContainerModule } from "@/src/di/IContainerModule"
 import { CommandHandlerRegistry } from "@/src/infrastructure/mediatR/CommandRegistry"
 import { CommandBus } from "@/src/infrastructure/mediatR/CommandBus"
-
-// AUTH COMMANDS
-import { SignInCommandHandler } from "@/src/actions/Auth/Commands/SignIn/CommandHandler"
-import { SIGN_IN_COMMAND } from "@/src/actions/Auth/Commands/SignIn/Command"
-import { SignUpCommandHandler } from "@/src/actions/Auth/Commands/SignUp/CommandHandler"
-import { SIGN_UP_COMMAND } from "@/src/actions/Auth/Commands/SignUp/Command"
+import { IPipelineBehavior } from "@/src/infrastructure/mediatR/IPipelineBehavior"
+import { ValidationRegistry } from "@/src/infrastructure/mediatR/ValidationRegistry"
 
 // DECKWORD COMMANDS
 import { CREATE_DECK_WORD_COMMAND } from "@/src/actions/DeckWord/Commands/CreateDeckWord/Command"
@@ -79,13 +75,25 @@ import { UpdateProfileInfosHandler } from "@/src/actions/User/Commands/UpdatePro
 import { UPDATE_PROFILE_INFOS_COMMAND } from "@/src/actions/User/Commands/UpdateProfileInfos/Command"
 import { TYPES } from '../type'
 
+// COMMAND VALIDATORS (NON-FORMDATA)
+import { DeleteDWordItemByIdCommandValidator } from "@/src/actions/DeckWord/Commands/DeleteDWordItemById/CommandValidator"
+import { DeleteFCategoryItemByIdCommandValidator } from "@/src/actions/FlashcardCategory/Commands/DeleteFCategoryItemById/CommandValidator"
+import { CreateFOSCommandValidator } from "@/src/actions/FlashcardOldSession/Commands/CreateFOS/CommandValidator"
+import { CreateFRowsCommandValidator } from "@/src/actions/FlashcardSessionRow/Commands/CreateFRows/CommandValidator"
+import { CreateLOSCommandValidator } from "@/src/actions/ListeningOldSession/Commands/CreateLOS/CommandValidator"
+import { CreateLRowsCommandValidator } from "@/src/actions/ListeningSessionRow/Commands/CreateLRows/CommandValidator"
+import { DeleteRBookItemByIdCommandValidator } from "@/src/actions/ReadingBook/Commands/DeleteRBookItemById/CommandValidator"
+import { CreateROSCommandValidator } from "@/src/actions/ReadingOldSession/Commands/CreateROS/CommandValidator"
+import { CreateRRowsCommandValidator } from "@/src/actions/ReadingSessionRow/Commands/CreateRRows/CommandValidator"
+import { DeleteWBookItemByIdCommandValidator } from "@/src/actions/WritingBook/Commands/DeleteWBookItemById/CommandValidator"
+import { CreateWOSCommandValidator } from "@/src/actions/WritingOldSession/Commands/CreateWOS/CommandValidator"
+import { CreateWRowsCommandValidator } from "@/src/actions/WritingSessionRow/Commands/CreateWRows/CommandValidator"
+
 export class CommandModule implements IContainerModule {
 
     register(container: Container): void {
 
         // HANDLERS BINDING
-        container.bind(SignInCommandHandler).toSelf()
-        container.bind(SignUpCommandHandler).toSelf()
         container.bind(CreateDeckWordCommandHandler).toSelf()
         container.bind(DeleteDWordItemByIdCommandHandler).toSelf()
         container.bind(UpdateDeckWordCommandHandler).toSelf()
@@ -114,8 +122,6 @@ export class CommandModule implements IContainerModule {
 
             const registry = context.get(CommandHandlerRegistry)
 
-            registry.register(SIGN_IN_COMMAND, context.get(SignInCommandHandler))
-            registry.register(SIGN_UP_COMMAND, context.get(SignUpCommandHandler))
             registry.register(CREATE_DECK_WORD_COMMAND, context.get(CreateDeckWordCommandHandler))
             registry.register(DELETE_DWORD_ITEM_BY_ID_COMMAND, context.get(DeleteDWordItemByIdCommandHandler))
             registry.register(UPDATE_DECK_WORD_COMMAND, context.get(UpdateDeckWordCommandHandler))
@@ -138,7 +144,26 @@ export class CommandModule implements IContainerModule {
             registry.register(CREATE_WROWS_COMMAND, context.get(CreateWRowsCommandHandler))
             registry.register(UPDATE_PROFILE_INFOS_COMMAND, context.get(UpdateProfileInfosHandler))
 
-            return new CommandBus(registry)
+            // REGISTER COMMAND VALIDATORS (NON-FORMDATA COMMANDS ONLY)
+            const validationRegistry = context.get<ValidationRegistry>(TYPES.ValidationRegistry)
+
+            validationRegistry.register(DELETE_DWORD_ITEM_BY_ID_COMMAND, DeleteDWordItemByIdCommandValidator)
+            validationRegistry.register(DELETE_FCATEGORY_ITEM_BY_ID_COMMAND, DeleteFCategoryItemByIdCommandValidator)
+            validationRegistry.register(CREATE_FOS_COMMAND, CreateFOSCommandValidator)
+            validationRegistry.register(CREATE_FROWS_COMMAND, CreateFRowsCommandValidator)
+            validationRegistry.register(CREATE_LOS_COMMAND, CreateLOSCommandValidator)
+            validationRegistry.register(CREATE_LROWS_COMMAND, CreateLRowsCommandValidator)
+            validationRegistry.register(DELETE_RBOOK_ITEM_BY_ID_COMMAND, DeleteRBookItemByIdCommandValidator)
+            validationRegistry.register(CREATE_ROS_COMMAND, CreateROSCommandValidator)
+            validationRegistry.register(CREATE_RROWS_COMMAND, CreateRRowsCommandValidator)
+            validationRegistry.register(DELETE_WBOOK_ITEM_BY_ID_COMMAND, DeleteWBookItemByIdCommandValidator)
+            validationRegistry.register(CREATE_WOS_COMMAND, CreateWOSCommandValidator)
+            validationRegistry.register(CREATE_WROWS_COMMAND, CreateWRowsCommandValidator)
+
+            // RESOLVE PIPELINE BEHAVIORS
+            const behaviors = context.getAll<IPipelineBehavior<any, any>>(TYPES.PipelineBehavior)
+
+            return new CommandBus(registry, behaviors)
 
         }).inSingletonScope()
     }

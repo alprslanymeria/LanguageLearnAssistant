@@ -1,11 +1,59 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { Language } from "@/src/generated/prisma/client"
-import { ILanguageRepository, CreateLanguageData, UpdateLanguageData } from "@/src/infrastructure/persistence/contracts/ILanguageRepository"
+import { Language, Prisma } from "@prisma/client"
+import { ILanguageRepository } from "@/src/infrastructure/persistence/contracts/ILanguageRepository"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
 
 @injectable()
 export class LanguageRepository implements ILanguageRepository {
+
+    // CRUD OPERATIONS
+
+    async createAsync(data: Prisma.LanguageCreateInput): Promise<void> {
+
+        await prisma.language.create({
+            data: data
+        })
+
+        return
+    }
+
+    async getByIdAsync(id: number): Promise<Language | null> {
+
+        const language = await prisma.language.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        return language
+    }
+
+    async updateAsync(id: number, data: Prisma.LanguageUpdateInput): Promise<void> {
+
+        await prisma.language.update({
+
+            where: {
+                id: id
+            },
+            data: data
+        })
+
+        return
+    }
+
+    async deleteAsync(id: number): Promise<void> {
+
+        await prisma.language.delete({
+            where: {
+                id: id
+            }
+        })
+
+        return
+    }
+
+    // HELPER OPERATIONS
 
     async getLanguagesAsync(): Promise<Language[]> {
         
@@ -30,50 +78,8 @@ export class LanguageRepository implements ILanguageRepository {
         return language
     }
 
-    async getAll(): Promise<Language[]> {
+    async getAllAsync(): Promise<Language[]> {
         
         return await prisma.language.findMany()
-    }
-
-    async createAsync(data: CreateLanguageData): Promise<number> {
-
-        const created = await prisma.language.create({
-            data: data
-        })
-
-        return created.id
-    }
-
-    async getByIdAsync(id: number): Promise<Language | null> {
-
-        const language = await prisma.language.findUnique({
-            where: {
-                id: id
-            }
-        })
-
-        return language
-    }
-
-    async update(id: number, data: UpdateLanguageData): Promise<number> {
-
-        const updatedLanguage = await prisma.language.update({
-
-            where: {
-                id: id
-            },
-            data: data
-        })
-
-        return updatedLanguage.id
-    }
-
-    async deleteAsync(id: number): Promise<void> {
-
-        await prisma.language.delete({
-            where: {
-                id: id
-            }
-        })
     }
 }

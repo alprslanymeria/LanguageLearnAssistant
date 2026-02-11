@@ -53,7 +53,7 @@ export class GetReadingBookByIdQueryHandler implements IQueryHandler<GetReadingB
             imageUrl: readingBook.imageUrl,
             sourceUrl: readingBook.sourceUrl,
             leftColor: readingBook.leftColor,
-            languageId: readingBook.reading.language.id
+            languageId: readingBook.languageId
         }
 
         return response

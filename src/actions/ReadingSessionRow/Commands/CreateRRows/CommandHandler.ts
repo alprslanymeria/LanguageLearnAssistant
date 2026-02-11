@@ -3,14 +3,14 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { CreateReadingSessionRowData, IReadingSessionRowRepository } from "@/src/infrastructure/persistence/contracts/IReadingSessionRowRepository"
+import type { IReadingSessionRowRepository } from "@/src/infrastructure/persistence/contracts/IReadingSessionRowRepository"
 import { CreateRRowsCommand } from "./Command"
 import type { IReadingOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IReadingOldSessionRepository"
 import { ReadingOldSessionNotFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
-export class CreateRRowsCommandHandler implements ICommandHandler<CreateRRowsCommand, number> {
+export class CreateRRowsCommandHandler implements ICommandHandler<CreateRRowsCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -30,7 +30,7 @@ export class CreateRRowsCommandHandler implements ICommandHandler<CreateRRowsCom
         this.readingOldSessionRepository = readingOldSessionRepository
     }
     
-    async Handle(request: CreateRRowsCommand): Promise<number> {
+    async Handle(request: CreateRRowsCommand): Promise<void> {
         
         // LOG MESSAGE
         this.logger.info(`CreateRRowsCommandHandler: Creating reading session rows for reading old session with Id ${request.request.readingOldSessionId}`)
@@ -44,7 +44,7 @@ export class CreateRRowsCommandHandler implements ICommandHandler<CreateRRowsCom
             throw new ReadingOldSessionNotFound()
         }
 
-        const rows: CreateReadingSessionRowData[] = request.request.rows.map(row => ({
+        const rows = request.request.rows.map(row => ({
 
             oldSessionId: request.request.readingOldSessionId,
             selectedSentence: row.selectedSentence,
@@ -57,6 +57,6 @@ export class CreateRRowsCommandHandler implements ICommandHandler<CreateRRowsCom
 
         this.logger.info(`CreateRRowsCommandHandler: Successfully created reading session rows for reading old session with Id ${request.request.readingOldSessionId}`)
 
-        return rows.length
+        return
     }
 }

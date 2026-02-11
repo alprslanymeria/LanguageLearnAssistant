@@ -3,15 +3,14 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { CreateWritingSessionRowData, IWritingSessionRowRepository } from "@/src/infrastructure/persistence/contracts/IWritingSessionRowRepository"
+import type { IWritingSessionRowRepository } from "@/src/infrastructure/persistence/contracts/IWritingSessionRowRepository"
 import { CreateWRowsCommand } from "./Command"
 import type { IWritingOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IWritingOldSessionRepository"
 import { WritingOldSessionNotFound } from "@/src/exceptions/NotFound"
-import { Create } from "sharp"
 
 
 @injectable()
-export class CreateWRowsCommandHandler implements ICommandHandler<CreateWRowsCommand, number> {
+export class CreateWRowsCommandHandler implements ICommandHandler<CreateWRowsCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -31,7 +30,7 @@ export class CreateWRowsCommandHandler implements ICommandHandler<CreateWRowsCom
         this.writingOldSessionRepository = writingOldSessionRepository;
     }
     
-    async Handle(request: CreateWRowsCommand): Promise<number> {
+    async Handle(request: CreateWRowsCommand): Promise<void> {
         
         // LOG MESSAGE
         this.logger.info(`CreateWRowsCommandHandler: Creating writing session rows for writing old session with Id ${request.request.writingOldSessionId}`)
@@ -45,7 +44,7 @@ export class CreateWRowsCommandHandler implements ICommandHandler<CreateWRowsCom
             throw new WritingOldSessionNotFound()
         }
 
-        const rows : CreateWritingSessionRowData[] = request.request.rows.map(row => ({
+        const rows = request.request.rows.map(row => ({
 
             oldSessionId: request.request.writingOldSessionId,
             selectedSentence: row.selectedSentence,
@@ -58,6 +57,6 @@ export class CreateWRowsCommandHandler implements ICommandHandler<CreateWRowsCom
 
         this.logger.info(`CreateWRowsCommandHandler: Successfully created writing session rows for writing old session with Id ${request.request.writingOldSessionId}`)
 
-        return rows.length
+        return
     }
 }

@@ -1,11 +1,59 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { FlashcardSessionRow } from "@/src/generated/prisma/client"
-import { IFlashcardSessionRowRepository, CreateFlashcardSessionRowData, UpdateFlashcardSessionRowData } from "@/src/infrastructure/persistence/contracts/IFlashcardSessionRowRepository"
+import { FlashcardSessionRow, Prisma } from "@prisma/client"
+import { IFlashcardSessionRowRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardSessionRowRepository"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
 
 @injectable()
 export class FlashcardSessionRowRepository implements IFlashcardSessionRowRepository {
+
+    // CRUD OPERATIONS
+
+    async createAsync(data: Prisma.FlashcardSessionRowCreateInput): Promise<void> {
+    
+        await prisma.flashcardSessionRow.create({
+            data: data
+        })
+
+        return
+    }
+
+    async getByIdAsync(id: number): Promise<FlashcardSessionRow | null> {
+
+        const flashcardSessionRow = await prisma.flashcardSessionRow.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        return flashcardSessionRow
+    }
+
+    async updateAsync(id: number, data: Prisma.FlashcardSessionRowUpdateInput): Promise<void> {
+
+        await prisma.flashcardSessionRow.update({
+
+            where: {
+                id: id
+            },
+            data: data
+        })
+
+        return
+    }
+
+    async deleteAsync(id: number): Promise<void> {
+
+        await prisma.flashcardSessionRow.delete({
+            where: {
+                id: id
+            }
+        })
+
+        return
+    }
+
+    // HELPER OPERATIONS
 
     async getFlashcardRowsByIdWithPagingAsync(sessionId: string, page: number, pageSize: number): Promise<{ items: FlashcardSessionRow[]; totalCount: number }> {
         
@@ -25,52 +73,10 @@ export class FlashcardSessionRowRepository implements IFlashcardSessionRowReposi
         return { items, totalCount }
     }
 
-    async createRangeAsync(rows: CreateFlashcardSessionRowData[]): Promise<void> {
+    async createRangeAsync(rows: Prisma.FlashcardSessionRowCreateManyInput[]): Promise<void> {
         
         await prisma.flashcardSessionRow.createMany({
             data: rows
-        })
-    }
-
-     async createAsync(data: CreateFlashcardSessionRowData): Promise<number> {
-    
-        const created = await prisma.flashcardSessionRow.create({
-            data: data
-        })
-
-        return created.id
-    }
-
-    async getByIdAsync(id: number): Promise<FlashcardSessionRow | null> {
-
-        const flashcardSessionRow = await prisma.flashcardSessionRow.findUnique({
-            where: {
-                id: id
-            }
-        })
-
-        return flashcardSessionRow
-    }
-
-    async update(id: number, data: UpdateFlashcardSessionRowData): Promise<number> {
-
-        const updatedFlashcardSessionRow = await prisma.flashcardSessionRow.update({
-
-            where: {
-                id: id
-            },
-            data: data
-        })
-
-        return updatedFlashcardSessionRow.id
-    }
-
-    async deleteAsync(id: number): Promise<void> {
-
-        await prisma.flashcardSessionRow.delete({
-            where: {
-                id: id
-            }
         })
     }
 }

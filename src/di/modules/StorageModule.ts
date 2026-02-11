@@ -21,19 +21,18 @@ export class StorageModule implements IContainerModule {
 
         const storageConfig = StorageConfig.load()
 
-        container.bind(TYPES.BucketName).toConstantValue(process.env.GCS_BUCKET_NAME || 'create-items')
         container.bind(TYPES.LocalStorageBasePath).toConstantValue(process.env.LOCAL_STORAGE_PATH || './uploads')
-        container.bind<StorageOptions>(TYPES.StorageConfig).toConstantValue(StorageConfig.load())
+        container.bind<StorageOptions>(TYPES.StorageConfig).toConstantValue(storageConfig)
         
-        if(storageConfig.type === "local") {
+        
+        // REGISTER ALL STRATEGIES, THE FACTORY WILL SELECT THE RIGHT ONE BASED ON CONFIG
+        container.bind<IStorageStrategy>(TYPES.StorageStrategy).to(LocalStorageStrategy).inSingletonScope()
 
-            container.bind<IStorageStrategy>(TYPES.StorageStrategy).to(LocalStorageStrategy).inSingletonScope()
-        }
 
         if(storageConfig.type === "gcloud") {
-            
-            container.bind<IStorageStrategy>(TYPES.StorageStrategy).to(GoogleCloudStorageStrategy).inSingletonScope()
-        
+
+            container.bind(TYPES.BucketName).toConstantValue(process.env.GCS_BUCKET_NAME || 'create-items')
+                    
             container.bind<Storage>(TYPES.GoogleCloudClient).toDynamicValue(() => {
 
                 return new Storage({
@@ -42,7 +41,8 @@ export class StorageModule implements IContainerModule {
                 })
 
             }).inSingletonScope()
-        
+
+            container.bind<IStorageStrategy>(TYPES.StorageStrategy).to(GoogleCloudStorageStrategy).inSingletonScope()
         }
 
         container.bind<IStorageFactory>(TYPES.StorageFactory).to(StorageFactory).inSingletonScope()

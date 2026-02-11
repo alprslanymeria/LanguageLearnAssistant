@@ -3,7 +3,7 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { CreateReadingOldSessionData, IReadingOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IReadingOldSessionRepository"
+import type { IReadingOldSessionRepository } from "@/src/infrastructure/persistence/contracts/IReadingOldSessionRepository"
 import { CreateROSCommand } from "./Command"
 import type { IReadingRepository } from "@/src/infrastructure/persistence/contracts/IReadingRepository"
 import type { IReadingBookRepository } from "@/src/infrastructure/persistence/contracts/IReadingBookRepository"
@@ -11,7 +11,7 @@ import { ReadingBookNotFound, ReadingNotFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
-export class CreateROSCommandHandler implements ICommandHandler<CreateROSCommand, string> {
+export class CreateROSCommandHandler implements ICommandHandler<CreateROSCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -34,7 +34,7 @@ export class CreateROSCommandHandler implements ICommandHandler<CreateROSCommand
         this.readingBookRepository = readingBookRepository;
     }
     
-    async Handle(request: CreateROSCommand): Promise<string> {
+    async Handle(request: CreateROSCommand): Promise<void> {
         
         // LOG MESSAGE
         this.logger.info(`CreateROSCommandHandler: Creating reading old session for user!`)
@@ -59,18 +59,16 @@ export class CreateROSCommandHandler implements ICommandHandler<CreateROSCommand
             throw new ReadingBookNotFound()
         }
 
-        const data : CreateReadingOldSessionData = {
+        const data = {
 
             oldSessionId: request.request.id,
-            readingId: request.request.readingId,
-            bookId: request.request.readingBookId,
+            reading: { connect: { id: request.request.readingId } },
+            book: { connect: { id: request.request.readingBookId } },
             rate: request.request.rate
         }
 
-        const createdId = await this.readingOldSessionRepository.createAsync(data)
+        await this.readingOldSessionRepository.createAsync(data)
 
-        this.logger.info(`CreateROSCommandHandler: Successfully created reading old session with Id ${createdId} for user!`)
-
-        return createdId
+        this.logger.info(`CreateROSCommandHandler: Successfully created reading old session for user!`)
     }
 }

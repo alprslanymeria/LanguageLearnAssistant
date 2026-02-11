@@ -1,29 +1,17 @@
 // IMPORTS
-import { Language } from "@/src/generated/prisma/client"
-
-export interface CreateLanguageData {
-
-    name: string
-    imageUrl: string | null
-}
-
-export interface UpdateLanguageData {
-
-    name?: string
-    imageUrl?: string | null
-}
+import { Language, Prisma } from "@prisma/client"
 
 export interface ILanguageRepository {
+
+    // CRUD
+    createAsync(data: Prisma.LanguageCreateInput): Promise<void>
+    getByIdAsync(id: number): Promise<Language | null>
+    updateAsync(id: number, data: Prisma.LanguageUpdateInput): Promise<void>
+    deleteAsync(id: number): Promise<void>
 
     // HELPER
     getLanguagesAsync(): Promise<Language[]>
     existsByNameAsync(name: string): Promise<Language | null>
     getByNameAsync(name: string): Promise<Language | null>
-    
-    // CRUD
-    getAll(): Promise<Language[]>
-    createAsync(data: CreateLanguageData): Promise<number>
-    getByIdAsync(id: number): Promise<Language | null>
-    update(id: number, data: UpdateLanguageData): Promise<number>
-    deleteAsync(id: number): Promise<void>
+    getAllAsync(): Promise<Language[]>
 }

@@ -6,6 +6,12 @@ import type { ICacheFactory } from '@/src/infrastructure/caching/ICacheFactory'
 import { TYPES } from '@/src/di/type'
 import type { CacheOptions } from './Cache'
 
+/*
+BURADA STRATEGY RESOLVE EDERKEN HEM DI CONTAINER İÇİNDE ENV EĞİŞKENİNE GÖRE BİR RESOLVE HEM DE BURADA
+FACTORY İLE RESOLVE EDİYORUZ. BU ASLINDA BİR ÇELİŞKİDİR. TEK BİR YERDEN RESOLVE ETMEK DAHA İYİDİR.
+RESOLVER OLARAK FACTORY KULLANMAK BEST PRACTICE OLANIDIR. STRATEGY PATTERN'IN AMACINA TAM UYAR.
+*/
+
 @injectable()
 export class CacheService implements ICacheService {
 

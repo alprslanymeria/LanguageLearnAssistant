@@ -1,33 +1,21 @@
 // IMPORTS
 import { injectable } from "inversify"
-import { Flashcard } from "@/src/generated/prisma/client"
+import { Flashcard, Prisma } from "@prisma/client"
 import { prisma } from "@/src/infrastructure/persistence/prisma"
-import { IFlashcardRepository, CreateFlashcardData, UpdateFlashcardData } from "@/src/infrastructure/persistence/contracts/IFlashcardRepository"
+import { IFlashcardRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardRepository"
 
 @injectable()
 export class FlashcardRepository implements IFlashcardRepository {
 
+    // CRUD OPERATIONS
 
-    async getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Flashcard | null> {
-        
-        const flashcard = await prisma.flashcard.findFirst({
-            where: {
-                practiceId: practiceId,
-                userId: userId,
-                languageId: languageId
-            }
-        })
-
-        return flashcard
-    }
-
-    async createAsync(data: CreateFlashcardData): Promise<number> {
+    async createAsync(data: Prisma.FlashcardCreateInput): Promise<void> {
     
-        const created = await prisma.flashcard.create({
+        await prisma.flashcard.create({
             data: data
         })
 
-        return created.id
+        return
     }
 
     async getByIdAsync(id: number): Promise<Flashcard | null> {
@@ -41,9 +29,9 @@ export class FlashcardRepository implements IFlashcardRepository {
         return flashcard
     }
 
-    async update(id: number, data: UpdateFlashcardData): Promise<number> {
+    async updateAsync(id: number, data: Prisma.FlashcardUpdateInput): Promise<void> {
 
-        const updatedFlashcard = await prisma.flashcard.update({
+        await prisma.flashcard.update({
 
             where: {
                 id: id
@@ -51,7 +39,7 @@ export class FlashcardRepository implements IFlashcardRepository {
             data: data
         })
 
-        return updatedFlashcard.id
+        return
     }
 
     async deleteAsync(id: number): Promise<void> {
@@ -61,6 +49,22 @@ export class FlashcardRepository implements IFlashcardRepository {
                 id: id
             }
         })
+
+        return
     }
 
+    // HELPER OPERATIONS
+
+    async getByPracticeIdUserIdLanguageIdAsync(practiceId: number, userId: string, languageId: number): Promise<Flashcard | null> {
+        
+        const flashcard = await prisma.flashcard.findFirst({
+            where: {
+                practiceId: practiceId,
+                userId: userId,
+                languageId: languageId
+            }
+        })
+
+        return flashcard
+    }
 }

@@ -3,7 +3,7 @@ import { inject, injectable } from "inversify"
 import { TYPES } from "@/src/di/type"
 import { ICommandHandler } from "@/src/infrastructure/mediatR/ICommand"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
-import type { CreateDeckWordData, IDeckWordRepository } from "@/src/infrastructure/persistence/contracts/IDeckWordRepository"
+import type { IDeckWordRepository } from "@/src/infrastructure/persistence/contracts/IDeckWordRepository"
 import { CreateDeckWordCommand } from "./Command"
 import type { IFlashcardCategoryRepository } from "@/src/infrastructure/persistence/contracts/IFlashcardCategoryRepository"
 import type { ICacheService } from "@/src/infrastructure/caching/ICacheService"
@@ -12,7 +12,7 @@ import { FlashcardCategoryNotFound } from "@/src/exceptions/NotFound"
 
 
 @injectable()
-export class CreateDeckWordCommandHandler implements ICommandHandler<CreateDeckWordCommand, number> {
+export class CreateDeckWordCommandHandler implements ICommandHandler<CreateDeckWordCommand> {
     
     // FIELDS
     private readonly logger : ILogger
@@ -35,7 +35,7 @@ export class CreateDeckWordCommandHandler implements ICommandHandler<CreateDeckW
         this.flashcardCategoryRepository = flashcardCategoryRepository;
     }
 
-    async Handle(request: CreateDeckWordCommand): Promise<number> {
+    async Handle(request: CreateDeckWordCommand): Promise<void> {
 
         // FORM DATA'S
         const categoryId = Number(request.formData.get("categoryId"))
@@ -54,20 +54,18 @@ export class CreateDeckWordCommandHandler implements ICommandHandler<CreateDeckW
             throw new FlashcardCategoryNotFound()
         }
 
-        const data : CreateDeckWordData = {
+        const data = {
 
-            categoryId: categoryId,
+            category: { connect: { id: categoryId } },
             question: word,
             answer: answer
         }
 
-        const deckWordId = await this.deckWordRepository.createAsync(data)
+        await this.deckWordRepository.createAsync(data)
 
         // INVALIDATE CACHE
         await this.cacheService.invalidateByPrefix(CacheKeys.deckWord.prefix)
 
         this.logger.info(`CreateDeckWordCommandHandler: Successfully created deck word for CategoryId ${categoryId}`)
-
-        return deckWordId
     }
 }
