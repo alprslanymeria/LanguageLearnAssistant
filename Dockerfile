@@ -1,10 +1,5 @@
 # syntax=docker.io/docker/dockerfile:1
 
-
-# THE NECESSARY PACKAGES WERE INSTALLED FROM THE EXISTING DOCKERFILE USING THE 'APK ADD' SECTION.
-# PRISMA GENERATE WAS ADDED TO THE BUILD STAGE.
-# THE PRISMA FILES WERE COPIED TO THE RUNNER STAGE.
-
 FROM node:24-alpine AS base
 
 FROM base AS deps
@@ -40,29 +35,12 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN npx prisma generate
-
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
   else echo "Lockfile not found." && exit 1; \
   fi
-
-
-FROM base AS migrator
-WORKDIR /app
-
-RUN npm init -y && npm install prisma@7.3.0
-
-COPY src/infrastructure/prisma/ ./src/infrastructure/prisma
-COPY prisma.config.ts .
-COPY entrypoint.sh /usr/local/bin/entrypoint
-
-RUN chmod +x /usr/local/bin/entrypoint
-
-CMD ["entrypoint"]
-
 
 FROM base AS runner
 WORKDIR /app
