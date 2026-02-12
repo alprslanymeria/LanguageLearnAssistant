@@ -1,12 +1,12 @@
-// REACT & NEXT
-import { HandleSubmitProps } from "@/src/page/SignupPage/prop"
 // TYPES
-import { authClient } from "@/src/infrastructure/auth/auth-client"
+import { HandleSubmitProps } from "@/src/page/SignupPage/prop"
+// AUTH SERVICE
+import { signIn, signUp } from "@/src/infrastructure/auth/authService"
 
 
-export async function handleSubmit(params : HandleSubmitProps) {
+export async function handleSubmit(params: HandleSubmitProps) {
 
-    const {e, router, dispatch, setLoading} = params
+    const { e, router, dispatch, setLoading } = params
 
     const kese = [e, router]
 
@@ -14,35 +14,48 @@ export async function handleSubmit(params : HandleSubmitProps) {
 
     e.preventDefault()
 
-    setLoading({value: true , source: "SignupHandleSubmit"})
+    setLoading({ value: true, source: "SignupHandleSubmit" })
 
-    const form = e.currentTarget
-    const email = form.email.value as string
-    const password = form.password.value as string
-    const nativeLanguageId = Number(form.nativeLanguageId.value)
+    try {
 
-    await authClient.signUp.email({
+        const form = e.currentTarget
+        const email = form.email.value as string
+        const password = form.password.value as string
+        const nativeLanguageId = Number(form.nativeLanguageId.value)
 
-            name: "test_user",
+        // SIGN UP
+        const signUpResult = await signUp({
+            userName: email.split("@")[0],
             email,
             password,
             nativeLanguageId,
-        }, {
-
-            onSuccess: async () => {
-
-                // REDIRECT TO HOME PAGE
-                router.push("/")
-                
-            },
-
-            onError: (ctx) => {
-
-                dispatch({type: "SET_AUTH_ERROR", payload: {authError: ctx.error.message}})
-            }
         })
 
-    setLoading({value: false})
+        if (signUpResult.errorMessage) {
 
-    return
+            dispatch({ type: "SET_AUTH_ERROR", payload: { authError: signUpResult.errorMessage[0] } })
+            return
+        }
+
+        // AUTO SIGN IN AFTER SUCCESSFUL SIGNUP
+        const signInResult = await signIn({ email, password })
+
+        if (signInResult.errorMessage) {
+
+            // SIGNUP SUCCEEDED BUT AUTO-LOGIN FAILED, REDIRECT TO LOGIN PAGE
+            router.push("/auth/login")
+            return
+        }
+
+        // REDIRECT TO HOME PAGE
+        router.push("/")
+
+    } catch {
+
+        dispatch({ type: "SET_AUTH_ERROR", payload: { authError: "An unexpected error occurred" } })
+
+    } finally {
+
+        setLoading({ value: false })
+    }
 }

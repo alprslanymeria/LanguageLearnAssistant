@@ -1,12 +1,12 @@
-// BETTER AUTH
-import { HandleSubmitProps } from "@/src/page/LoginPage/prop"
 // TYPES
-import { authClient } from "@/src/infrastructure/auth/auth-client"
+import { HandleSubmitProps } from "@/src/page/LoginPage/prop"
+// AUTH SERVICE
+import { signIn } from "@/src/infrastructure/auth/authService"
 
 
-export async function handleSubmit( params : HandleSubmitProps) {
+export async function handleSubmit(params: HandleSubmitProps) {
 
-    const {e, router, dispatch, setLoading} = params
+    const { e, router, dispatch, setLoading } = params
 
     const kese = [e, router]
 
@@ -14,32 +14,31 @@ export async function handleSubmit( params : HandleSubmitProps) {
 
     e.preventDefault()
 
-    setLoading({value: true , source: "LoginHandleSubmit"})
+    setLoading({ value: true, source: "LoginHandleSubmit" })
 
-    const form = e.currentTarget
-    const email = form.email.value as string
-    const password = form.password.value as string
+    try {
 
-    // CLIENT SIDE AUTH
-    await authClient.signIn.email({
+        const form = e.currentTarget
+        const email = form.email.value as string
+        const password = form.password.value as string
 
-            email,
-            password,
-            callbackURL: "/",
-        },
+        const result = await signIn({ email, password })
 
-        {
-            onSuccess: () => {
+        if (result.errorMessage) {
 
-                // REDIRECT TO HOME PAGE
-                router.push("/")
-            },
+            dispatch({ type: "SET_AUTH_ERROR", payload: { authError: result.errorMessage[0] } })
+            return
+        }
 
-            onError: (ctx) => {
+        // REDIRECT TO HOME PAGE
+        router.push("/")
 
-                dispatch({type: "SET_AUTH_ERROR", payload: {authError: ctx.error.message}})
-            }
-        })
+    } catch {
 
-    setLoading({value: false})
+        dispatch({ type: "SET_AUTH_ERROR", payload: { authError: "An unexpected error occurred" } })
+
+    } finally {
+
+        setLoading({ value: false })
+    }
 }

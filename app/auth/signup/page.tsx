@@ -16,8 +16,8 @@ import { useAlert } from '@/src/infrastructure/providers/AlertProvider/AlertProv
 import { useLoading } from '@/src/infrastructure/providers/LoadingProvider/LoadingProvider'
 // STORE
 import { GlobalStore } from '@/src/infrastructure/store/globalStore'
-// BETTER AUTH
-import { SignInWithGoogle } from '@/src/infrastructure/auth/auth-client'
+// AUTH SERVICE
+import { signInWithGoogle } from '@/src/infrastructure/auth/authService'
 
 
 // BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.
@@ -110,7 +110,7 @@ function SignupPage() {
 
                     <button
                         type="button"
-                        onClick={async () => await SignInWithGoogle() }
+                        onClick={() => signInWithGoogle()}
                         className="flex items-center justify-center w-full gap-2 px-4 py-2 mt-4 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
                     >
                         <GoogleLogo className="w-5 h-5" />

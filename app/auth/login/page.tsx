@@ -10,8 +10,8 @@ import { GoogleLogo } from "@/src/components/svg/googleSvg"
 import { useLoginReducer } from "@/src/page/LoginPage/useLoginReducer"
 import { handleSubmit } from "@/src/page/LoginPage/handlers"
 import { useLoginPageCustomEffect } from "@/src/page/LoginPage/useLoginPageCustomEffect"
-// BETTER AUTH
-import { SignInWithGoogle } from "@/src/infrastructure/auth/auth-client"
+// AUTH SERVICE
+import { signInWithGoogle } from "@/src/infrastructure/auth/authService"
 // STORE
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // PROVIDER
@@ -90,7 +90,7 @@ function LoginPage() {
 
                     <button
                         type="button"
-                        onClick={async () => await SignInWithGoogle() }
+                        onClick={() => signInWithGoogle()}
                         className="flex items-center justify-center w-full gap-2 px-4 py-2 mt-4 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
                     >
                         <GoogleLogo className="w-5 h-5" />
