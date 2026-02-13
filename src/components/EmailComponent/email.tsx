@@ -3,8 +3,6 @@
 // REACT & NEXT
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { handleDropdownClick, handleLogout } from "@/src/components/EmailComponent/handlers"
 import { useEmailReducer } from "@/src/components/EmailComponent/useEmailReducer"
@@ -13,6 +11,7 @@ import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 
 
 export function EmailComponent() {
@@ -24,9 +23,9 @@ export function EmailComponent() {
     const {isLoading, loadingSource, setLoading} = useLoading()
 
     // SESSION
-    const {data: session, isPending} = authClient.useSession() 
-    const userId = session?.user.id
-    const email = session?.user.email
+    const { session, isPending } = useSession()
+    const userId = session?.userId
+    const email = session?.email
 
     //STORE
     const resetExcept = GlobalStore((state) => state.resetExcept)

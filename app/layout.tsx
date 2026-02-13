@@ -9,6 +9,7 @@ import { RootLayoutProps } from "@/src/page/RootLayout/prop"
 // PROVIDERS
 import { AlertProvider } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { LoadingProvider } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { SessionProvider } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 
 export const metadata: Metadata = {
   title: "Language Learn Assistant",
@@ -23,12 +24,14 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
           <body>
               <AlertProvider>
                 <LoadingProvider>
+                  <SessionProvider>
                     <div className="container max-w-screen-xl mx-auto px-4">
                       <NavbarComponent/>
                     </div>
                     <div className="w-full">
                         {children}
                     </div>
+                  </SessionProvider>
                 </LoadingProvider>
               </AlertProvider>
           </body>

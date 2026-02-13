@@ -1,7 +1,7 @@
 // TYPES
 import { HandleDropdownClickProps, HandleLogoutProps } from "@/src/components/EmailComponent/prop"
-// BETTER AUTH
-import { SignOut } from "@/src/infrastructure/auth/auth-client"
+// AUTH SERVICE
+import { signOut } from "@/src/infrastructure/auth/authService"
 // LIBRARY
 import socket from "@/src/infrastructure/socket/socketClient"
 // STORE
@@ -52,7 +52,7 @@ export async function handleLogout(params : HandleLogoutProps) {
         
     } finally {
 
-        await SignOut()
+        await signOut()
 
         dispatch({type : "TOGGLE_DROPDOWN"})
 
