@@ -2,8 +2,6 @@
 
 // REACT & NEXT
 import { useRouter } from "next/navigation"
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // STORE
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
@@ -12,6 +10,7 @@ import { handleChoose, handleSvgClick } from "@/src/page/CreatePage/handlers"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 // COMPONENTS
 import BookSvg from "@/src/components/svg/BookSvg"
 import DeckSvg from "@/src/components/svg/DeckSvg"
@@ -25,7 +24,7 @@ import { ListeningCategoryWithDeckVideos } from "@/src/actions/ListeningCategory
 
 
 
-export default function Page(){
+export default function Page() {
 
     // HOOKS
     const {showAlert} = useAlert()
@@ -33,8 +32,8 @@ export default function Page(){
     const {isLoading, loadingSource, setLoading} = useLoading()
 
     //SESSION
-    const {data: session, isPending} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session, isPending} = useSession() 
+    const userId = session?.userId
 
     //STORE
     const language = GlobalStore((state) =>  state.Language)

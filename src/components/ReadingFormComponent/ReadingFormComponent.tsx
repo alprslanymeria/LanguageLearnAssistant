@@ -2,13 +2,12 @@
 
 // REACT & NEXT
 import { useRouter } from "next/navigation"
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // STORE
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 // TYPES
 import { ReadingFormComponentProps } from "@/src/components/ReadingFormComponent/prop"
 import { ReadingBook } from "@prisma/client"
@@ -19,8 +18,8 @@ import { calculateRate, closeAndSave, handleTextSelection, handleTranslate } fro
 export default function ReadingFormComponent({dispatch} : ReadingFormComponentProps) {
 
     //SESSION
-    const {data: session, isPending} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session, isPending} = useSession() 
+    const userId = session?.userId
 
     //HOOKS
     const {showAlert} = useAlert()

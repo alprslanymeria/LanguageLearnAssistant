@@ -3,8 +3,6 @@
 // REACT & NEXT
 import Image from "next/image"
 import { useActionState } from "react"
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useProfilePageReducer } from "@/src/page/ProfilePage/useProfileReducer"
 import { useProfilePageCustomEffect } from "@/src/page/ProfilePage/useProfilePageCustomEffect"
@@ -12,6 +10,7 @@ import { handleSubmit } from "@/src/page/ProfilePage/handlers"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 //COMPONENTS
 import Loader from "@/src/components/loader"
 
@@ -24,8 +23,8 @@ export default function Page() {
     const {isLoading, loadingSource, setLoading} = useLoading()
 
     //SESSION
-    const {data: session, isPending: isPendingBetterAuth} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session, isPending: isPendingBetterAuth} = useSession() 
+    const userId = session?.userId
 
     //USE EFFECTS
     useProfilePageCustomEffect({userId, state: states.state, setLoading, showAlert, dispatch})

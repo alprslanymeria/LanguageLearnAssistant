@@ -7,14 +7,13 @@ import { useRouter } from "next/navigation"
 import { FlagComponentProps } from "@/src/components/FlagComponent/prop"
 // ASSETS
 import {Fonts} from "@/public/fonts/fonts"
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useFlagReducer } from "@/src/components/FlagComponent/useFlagReducer"
 import { handleFlagClick, handleStartClick } from "@/src/components/FlagComponent/handlers"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 
 
 export default function FlagComponent({languages} : FlagComponentProps) {
@@ -26,8 +25,8 @@ export default function FlagComponent({languages} : FlagComponentProps) {
     const {isLoading, loadingSource, setLoading} = useLoading()
 
     //SESSION
-    const {data: session, isPending} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session, isPending } = useSession() 
+    const userId = session?.userId
 
     return (
         

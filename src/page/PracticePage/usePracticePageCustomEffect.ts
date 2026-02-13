@@ -49,7 +49,7 @@ export function usePracticePageCustomEffect(params: UsePracticePageCustomEffect)
 
                 switch (practice) {
                     case "flashcard":
-                        response = await GetFOSWithPaging(userId!, language!, {page: state.page, pageSize: state.limit})
+                        response = await GetFOSWithPaging(language!, {page: state.page, pageSize: state.limit})
 
                         if(response && response.status != HttpStatusCode.OK) {
                             
@@ -65,7 +65,7 @@ export function usePracticePageCustomEffect(params: UsePracticePageCustomEffect)
 
                         break;
                     case "reading":
-                        response = await GetROSWithPaging(userId!, language!, {page: state.page, pageSize: state.limit})
+                        response = await GetROSWithPaging(language!, {page: state.page, pageSize: state.limit})
 
                         if(response && response.status != HttpStatusCode.OK) {
                             
@@ -81,7 +81,7 @@ export function usePracticePageCustomEffect(params: UsePracticePageCustomEffect)
 
                         break;
                     case "writing":
-                        response = await GetWOSWithPaging(userId!, language!, {page: state.page, pageSize: state.limit})
+                        response = await GetWOSWithPaging(language!, {page: state.page, pageSize: state.limit})
 
                         if(response && response.status != HttpStatusCode.OK) {
                             
@@ -97,7 +97,7 @@ export function usePracticePageCustomEffect(params: UsePracticePageCustomEffect)
 
                         break;
                     case "listening":
-                        response = await GetLOSWithPaging(userId!, language!, {page: state.page, pageSize: state.limit})
+                        response = await GetLOSWithPaging(language!, {page: state.page, pageSize: state.limit})
 
                         if(response && response.status != HttpStatusCode.OK) {
                             

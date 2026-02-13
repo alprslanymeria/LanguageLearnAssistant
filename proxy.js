@@ -1,6 +1,5 @@
+// IMPORTS
 import { NextResponse } from "next/server"
-import { auth } from "@/src/infrastructure/auth/auth"
-import { headers } from "next/headers"
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL
 
@@ -14,10 +13,30 @@ const ROUTES = {
 const isRouteMatching = (path, routes) => 
     routes.some(route => path.startsWith(route))
 
-// HELPER: GET USER SESSION
-const getSession = async () =>
-     await auth.api.getSession({headers: await headers()})
 
+// HELPER: CHECK IF ACCESS TOKEN EXISTS AND IS NOT EXPIRED
+const getSession = (req) => {
+
+    const token = req.cookies.get("access_token")?.value
+    if (!token) return null
+
+    try {
+
+        const parts = token.split(".")
+        if (parts.length !== 3) return null
+
+        const payload = JSON.parse(atob(parts[1]))
+        const exp = payload.exp * 1000
+
+        if (Date.now() >= exp) return null
+
+        return payload
+
+    } catch {
+
+        return null
+    }
+}
 
 
 export default async function proxy(req){
@@ -33,7 +52,7 @@ export default async function proxy(req){
     if(isPassRoute) return NextResponse.next()
 
     //GET SESSION
-    const session = await getSession()
+    const session = getSession(req)
 
     if (isProtectedRoute && !session) return NextResponse.redirect(`${BASE}/auth/login`)
 

@@ -49,7 +49,7 @@ export async function handleTranslate(params : HandleTranslateProps) {
             setLoading({value: true , source: "WritingHandleTranslate"})
 
             // GET TRANSLATIONS
-            const response = await TranslateText(userId!, {
+            const response = await TranslateText({
 
                 selectedText: sessionData.data.WSelectedText!,
                 practice: practice!,

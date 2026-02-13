@@ -48,7 +48,7 @@ export async function handleTranslate(params : HandleTranslateProps) {
             setLoading({value: true , source: "ReadingHandleTranslate"})
 
             // GET TRANSLATIONS
-            const response = await TranslateText(userId!, {
+            const response = await TranslateText({
 
                 selectedText: sessionData.data.RSelectedText!,
                 practice: practice!,

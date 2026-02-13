@@ -86,7 +86,7 @@ export function useWordEditCustomEffect(params : UseWordEditCustomEffectProps) {
 
                 setLoading({value: true , source: "page"})
 
-                const response = await GetAllFCategories(userId!)
+                const response = await GetAllFCategories()
 
                 if(response && response.status != HttpStatusCode.OK) {
 

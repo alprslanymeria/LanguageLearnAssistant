@@ -2,8 +2,6 @@
 
 // REACT & NEXT
 import { useRouter } from "next/navigation"
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useWordAddReducer } from "./useWordAddReducer"
 import { useWordAddCustomEffect } from "./useWordAddCustomEffect"
@@ -11,6 +9,7 @@ import { handleSubmit } from "./handlers"
 // PROVIDERS
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 // COMPONENTS
 import Loader from "@/src/components/loader"
 // TYPES
@@ -20,8 +19,8 @@ import { FlashcardCategoryWithLanguageId } from "@/src/actions/FlashcardCategory
 export default function WordAddComponent () {
 
     //SESSION
-    const {data: session, isPending: isPendingBetterAuth} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session, isPending: isPendingBetterAuth} = useSession() 
+    const userId = session?.userId
 
     // HOOKS
     const {states , dispatch} = useWordAddReducer()

@@ -3,8 +3,6 @@
 // REACT & NEXT
 import { Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 //COMPONENTS
 import BookSvg from "@/src/components/svg/BookSvg"
 import DeckSvg from "@/src/components/svg/DeckSvg"
@@ -21,6 +19,7 @@ import { useDetailPageCustomEffect } from "@/src/page/DetailPage/useDetailPageCu
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 // STORE
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 
@@ -33,8 +32,8 @@ function DetailPage() {
     const oldSessionId = searchParams!.get("id")
 
     //SESSION
-    const {data: session} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session, isPending} = useSession() 
+    const userId = session?.userId
 
     // HOOKS
     const {state, dispatch} = useDetailPageReducer()

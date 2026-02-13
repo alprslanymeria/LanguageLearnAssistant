@@ -1,9 +1,8 @@
 "use client"
 
 // REACT & NEXT
+import { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // COMPONENTS
 import ListTableComponent from "@/src/components/ListTableComponent/listTable"
 import Loader from "@/src/components/loader"
@@ -13,7 +12,7 @@ import { useListPageCustomEffect } from "@/src/page/ListPage/useListPageCustomEf
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
-import { Suspense } from "react"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 
 
 // BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.
@@ -24,8 +23,8 @@ function ListPage() {
     const table = searchParams!.get("table")
 
     //SESSION
-    const {data: session} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session, isPending} = useSession() 
+    const userId = session?.userId
 
     //HOOKS
     const {state, dispatch} = useListPageReducer()

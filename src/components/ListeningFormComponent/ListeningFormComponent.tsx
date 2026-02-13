@@ -2,11 +2,10 @@
 
 // REACT & NEXT
 import { useRouter } from "next/navigation"
-// BETTER-AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // PROVIDERS
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 // STORE
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
@@ -20,8 +19,8 @@ export default function ListeningFormComponent({dispatch} : ListeningFormCompone
 
 
     //SESSION
-    const {data: session, isPending} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session, isPending } = useSession() 
+    const userId = session?.userId
 
     //HOOKS
     const {showAlert} = useAlert()

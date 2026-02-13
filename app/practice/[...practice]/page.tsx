@@ -1,6 +1,7 @@
 "use client"
 
 // REACT & NEXT
+import { Suspense } from "react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 // ASSETS
@@ -8,6 +9,7 @@ import {Fonts} from "@/public/fonts/fonts"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 // COMPONENTS
 import InfoMessageComponent from "@/src/components/InfoMessageComponent/infoMessage"
 import Loader from "@/src/components/loader"
@@ -17,11 +19,8 @@ import { handleCreateClick } from "@/src/page/PracticePage/handlers"
 import { usePracticePageReducer } from "@/src/page/PracticePage/usePracticePageReducer"
 // STORE
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // COMPONENTS
 import PaginationComponent from "@/src/components/PaginationComponent/PaginationComponent"
-import { Suspense } from "react"
 
 
 // BUILD SIRASINDA HATA VERDİĞİ İÇİN SUSPENSE BOUNDARY İÇERİSİNE ALINDI.
@@ -36,8 +35,8 @@ function PracticePage() {
     const language = searchParams!.get("language")
 
     //SESSION
-    const {data: session} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session} = useSession() 
+    const userId = session?.userId
 
     // HOOKS
     const {state, dispatch} = usePracticePageReducer()

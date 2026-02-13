@@ -4,11 +4,10 @@
 import { useFlashcardAddReducer } from "./useFlashcardAddReducer"
 import { useFlashcardAddCustomEffect } from "./useFlashcardAddCustomEffect"
 import { handleSubmit } from "./handlers"
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // PROVIDERS
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 // COMPONENTS
 import Loader from "@/src/components/loader"
 
@@ -16,8 +15,8 @@ import Loader from "@/src/components/loader"
 export default function FlashcardAddComponent () {
 
     //SESSION
-    const {data: session, isPending: isPendingBetterAuth} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session, isPending: isPendingBetterAuth } = useSession() 
+    const userId = session?.userId
 
     // HOOKS
     const {states , dispatch} = useFlashcardAddReducer()

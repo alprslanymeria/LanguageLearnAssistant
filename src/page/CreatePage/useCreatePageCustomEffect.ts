@@ -50,16 +50,16 @@ export function useCreatePageCustomEffect(params: UseCreatePageCustomEffectProps
 
                 switch (practice) {
                     case "reading":
-                        response = await GetRBookCreateItems(userId!, language!, practice)
+                        response = await GetRBookCreateItems( language!, practice)
                         break;
                     case "writing":
-                        response = await GetWBookCreateItems(userId!, language!, practice)
+                        response = await GetWBookCreateItems( language!, practice)
                         break;
                     case "listening":
-                        response = await GetLCategoryCreateItems(userId!, language!, practice)
+                        response = await GetLCategoryCreateItems( language!, practice)
                         break;
                     case "flashcard":
-                        response = await GetFCategoryCreateItems(userId!, language!, practice)
+                        response = await GetFCategoryCreateItems( language!, practice)
                         break;
                 
                     default:

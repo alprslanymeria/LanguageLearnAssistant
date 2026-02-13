@@ -3,8 +3,6 @@
 // REACT & NEXT
 import Link from "next/link"
 import { usePathname} from "next/navigation"
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // ASSETS
 import MenuIcon from "@/public/icons/menuIcon"
 import CloseIcon from "@/public/icons/closeIcon"
@@ -16,6 +14,7 @@ import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 
 
 export function MenuComponent() {
@@ -27,9 +26,9 @@ export function MenuComponent() {
   const {isLoading, loadingSource, setLoading} = useLoading()
 
   // SESSION
-  const {data: session, isPending} = authClient.useSession() 
-  const userId = session?.user.id
-  const email = session?.user.email
+  const { session, isPending } = useSession() 
+  const userId = session?.userId
+  const email = session?.email
 
   //STORE
   const resetExcept = GlobalStore((state) => state.resetExcept)

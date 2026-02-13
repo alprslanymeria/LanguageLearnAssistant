@@ -2,8 +2,6 @@
 
 // REACT & NEXT
 import { useRouter } from "next/navigation"
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // STORE
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // TYPES
@@ -12,6 +10,7 @@ import { FlashcardCategoryWithDeckWords } from "@/src/actions/FlashcardCategory/
 // PROVIDER
 import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProvider"
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { handleClick, handleCloseClick, handleNextClick } from "@/src/components/FlashcardFormComponent/handlers"
 import { useFlashcardFormCustomEffect } from "@/src/components/FlashcardFormComponent/useFlashcardFormCustomEffect"
@@ -20,8 +19,8 @@ import { useFlashcardFormCustomEffect } from "@/src/components/FlashcardFormComp
 export default function FlashcardFormComponent({dispatch} : FlashcardFormComponentProps) {
 
     //SESSION
-    const {data: session, isPending} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session, isPending } = useSession() 
+    const userId = session?.userId
 
     //HOOKS
     const router = useRouter()

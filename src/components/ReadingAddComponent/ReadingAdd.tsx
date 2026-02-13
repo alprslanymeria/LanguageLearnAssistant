@@ -1,7 +1,5 @@
 "use client"
 
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // ICONS
 import FileIcon from "@/src/components/svg/FileUpload"
 // REDUCER & HANDLERS & CUSTOM EFFECTS
@@ -13,6 +11,7 @@ import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProv
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // COMPONENTS
 import Loader from "@/src/components/loader"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 
 
 export default function ReadingAddComponent () {
@@ -23,8 +22,8 @@ export default function ReadingAddComponent () {
     const {isLoading , loadingSource, setLoading} = useLoading()
 
     //SESSION
-    const {data: session, isPending: isPendingBetterAuth} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session, isPending: isPendingBetterAuth } = useSession() 
+    const userId = session?.userId
 
     // USE EFFECT
     useReadingAddCustomEffect({state: states.state, setLoading, dispatch, showAlert})

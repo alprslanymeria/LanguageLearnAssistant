@@ -90,7 +90,7 @@ export function useWordAddCustomEffect(params : UseWordAddCustomEffectProps) {
 
                 setLoading({value: true , source: "page"})
 
-                const response = await GetAllFCategories(userId!)
+                const response = await GetAllFCategories()
 
                 if(response && response.data?.totalCount === 0) {
 

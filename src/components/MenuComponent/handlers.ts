@@ -1,7 +1,7 @@
 // TYPES
 import { HandleIconClickProps, HandleLogoutProps } from "@/src/components/MenuComponent/prop"
-// BETTER AUTH
-import { SignOut } from "@/src/infrastructure/auth/auth-client"
+// AUTH SERVICE
+import { signOut } from "@/src/infrastructure/auth/authService"
 import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 // LIBRARY
 import socket from "@/src/infrastructure/socket/socketClient"
@@ -58,7 +58,7 @@ export async function handleLogout(params : HandleLogoutProps) {
 
         resetExcept() // --> Hepsi NULL olsun
 
-        await SignOut()
+        await signOut()
 
         setLoading({value: false})
     }

@@ -1,7 +1,5 @@
 "use client"
 
-// BETTER AUTH
-import { authClient } from "@/src/infrastructure/auth/auth-client"
 // ICONS
 import FileIcon from "@/src/components/svg/FileUpload"
 // TYPES
@@ -15,6 +13,7 @@ import { useAlert } from "@/src/infrastructure/providers/AlertProvider/AlertProv
 import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/LoadingProvider"
 // COMPONENTS
 import Loader from "@/src/components/loader"
+import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 
 
 export default function WritingEditComponent({ itemId } : WritingEditComponentProps) {
@@ -25,8 +24,8 @@ export default function WritingEditComponent({ itemId } : WritingEditComponentPr
     const {isLoading , loadingSource, setLoading} = useLoading()
 
     //SESSION
-    const {data: session, isPending: isPendingBetterAuth} = authClient.useSession() 
-    const userId = session?.user.id
+    const { session, isPending: isPendingBetterAuth} = useSession() 
+    const userId = session?.userId
 
     // USE EFFECT
     useWritingEditCustomEffect({state: states.state, itemId, dispatch, setLoading, showAlert})

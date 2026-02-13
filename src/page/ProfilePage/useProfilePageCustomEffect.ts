@@ -46,7 +46,7 @@ export function useProfilePageCustomEffect(params : UseProfilePageCustomEffectPr
                     setLoading({value: true , source: "page"})
         
                     // GET USER INFOS
-                    const responseOne = await GetProfileInfos(userId!)
+                    const responseOne = await GetProfileInfos()
     
                     if(responseOne && responseOne.status != HttpStatusCode.OK) {
                             

@@ -39,7 +39,7 @@ export function useListPageCustomEffect( params : UseListPageCustomEffectProps) 
                 switch(table) {
                     case "rbooks":
 
-                        response = await GetAllRBooksWithPaging(userId!, {page: state.page, pageSize: state.limit})
+                        response = await GetAllRBooksWithPaging({page: state.page, pageSize: state.limit})
 
                         if(response && response.status != HttpStatusCode.OK) {
                                                 
@@ -66,7 +66,7 @@ export function useListPageCustomEffect( params : UseListPageCustomEffectProps) 
 
                     case "wbooks":
 
-                        response = await GetAllWBooksWithPaging(userId!, {page: state.page, pageSize: state.limit})
+                        response = await GetAllWBooksWithPaging({page: state.page, pageSize: state.limit})
 
                         if(response && response.status != HttpStatusCode.OK) {
                                                 
@@ -92,7 +92,7 @@ export function useListPageCustomEffect( params : UseListPageCustomEffectProps) 
 
                     case "fcategories":
 
-                        response = await GetAllFCategoriesWithPaging(userId!, {page: state.page, pageSize: state.limit})
+                        response = await GetAllFCategoriesWithPaging({page: state.page, pageSize: state.limit})
 
                         if(response && response.status != HttpStatusCode.OK) {
                                                 
@@ -117,7 +117,7 @@ export function useListPageCustomEffect( params : UseListPageCustomEffectProps) 
 
                     case "fwords":
 
-                        response = await GetAllDWordsWithPaging(userId!, {page: state.page, pageSize: state.limit})
+                        response = await GetAllDWordsWithPaging({page: state.page, pageSize: state.limit})
 
                         if(response && response.status != HttpStatusCode.OK) {
                                                 
