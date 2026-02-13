@@ -88,7 +88,8 @@ export async function oauthFetchBase(
             },
         })
 
-        const result: OAuthApiResponse<void> = await response.json()
+        const text = await response.text()
+        const result: OAuthApiResponse<void> = text ? JSON.parse(text) : {}
 
         const hasError = !response.ok || (result.errorMessage && result.errorMessage.length > 0)
 
@@ -134,7 +135,8 @@ export async function oauthFetchForm(
             },
         })
 
-        const result: OAuthApiResponse<void> = await response.json()
+        const text = await response.text()
+        const result: OAuthApiResponse<void> = text ? JSON.parse(text) : {}
 
         const hasError = !response.ok || (result.errorMessage && result.errorMessage.length > 0)
 

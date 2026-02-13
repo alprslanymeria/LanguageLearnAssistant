@@ -87,7 +87,8 @@ export async function backendFetchBase(
             },
         })
 
-        const result: BackendApiResponse<void> = await response.json()
+        const text = await response.text()
+        const result: BackendApiResponse<void> = text ? JSON.parse(text) : {}
 
         const hasError = !response.ok || (result.errorMessage && result.errorMessage.length > 0)
 
@@ -132,7 +133,8 @@ export async function backendFetchForm(
             },
         })
 
-        const result: BackendApiResponse<void> = await response.json()
+        const text = await response.text()
+        const result: BackendApiResponse<void> = text ? JSON.parse(text) : {}
 
         const hasError = !response.ok || (result.errorMessage && result.errorMessage.length > 0)
 
