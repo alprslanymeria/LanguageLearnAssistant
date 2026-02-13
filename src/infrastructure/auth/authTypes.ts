@@ -23,16 +23,6 @@ export type TokenResponse = {
     refreshTokenExpiration: string
 }
 
-// USER DTO RESPONSE AFTER SIGNUP REQUEST
-export type UserDto = {
-
-    id: string
-    userName: string | null
-    email: string
-    imageUrl: string | null
-    nativeLanguageId: number
-}
-
 // SERVICE RESULT FOR MAPPING RETURNED DATA AND ERROR MESSAGES
 export type ApiServiceResult<T> = {
 

@@ -1,7 +1,8 @@
 // NEXT
 import { NextRequest, NextResponse } from "next/server"
 // TYPES
-import { ApiServiceResult, UserDto } from "@/src/infrastructure/auth/authTypes"
+import { ApiServiceResult } from "@/src/infrastructure/auth/authTypes"
+import { UserDto } from "@/src/actions/User/Response"
 
 
 const OAUTH_SERVER_URL = process.env.OAUTH_SERVER_URL

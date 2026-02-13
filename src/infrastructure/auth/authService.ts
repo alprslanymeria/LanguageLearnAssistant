@@ -1,5 +1,6 @@
 // TYPES
-import { ApiServiceResult, SignInRequest, SignUpRequest, UserDto, UserSession } from "@/src/infrastructure/auth/authTypes"
+import { UserDto } from "@/src/actions/User/Response"
+import { ApiServiceResult, SignInRequest, SignUpRequest, UserSession } from "@/src/infrastructure/auth/authTypes"
 
 
 // SIGNS IN A USER VIA THE NEXT.JS BFF ROUTE HANDLER
