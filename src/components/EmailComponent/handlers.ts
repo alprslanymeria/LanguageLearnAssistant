@@ -10,7 +10,7 @@ import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // HANDLE LOGOUT
 export async function handleLogout(params : HandleLogoutProps) {
 
-    const {userId, pathName, setLoading, resetExcept, showAlert, dispatch} = params
+    const {userId, pathName, setLoading, resetExcept, showAlert, refreshSession, dispatch} = params
 
     const isHydrated = GlobalStore.persist?.hasHydrated?.() ?? false
 
@@ -53,6 +53,9 @@ export async function handleLogout(params : HandleLogoutProps) {
     } finally {
 
         await signOut()
+
+        // REFRESH SESSION TO UPDATE UI
+        await refreshSession()
 
         dispatch({type : "TOGGLE_DROPDOWN"})
 

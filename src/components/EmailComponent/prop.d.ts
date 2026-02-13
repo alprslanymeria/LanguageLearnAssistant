@@ -20,6 +20,7 @@ export type HandleLogoutProps = {
   resetExcept: (keysToKeep?: string | string[] | undefined) => void
   showAlert: (props: ShowAlertProps) => void
   setLoading: (props: setLoadingProps) => void
+  refreshSession: () => Promise<void>
   dispatch: (action: {
                           type: "TOGGLE_DROPDOWN"
                       }) => void

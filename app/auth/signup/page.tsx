@@ -14,6 +14,7 @@ import { handleSubmit } from "@/src/page/SignupPage/handlers"
 // PROVIDER
 import { useAlert } from '@/src/infrastructure/providers/AlertProvider/AlertProvider'
 import { useLoading } from '@/src/infrastructure/providers/LoadingProvider/LoadingProvider'
+import { useSession } from '@/src/infrastructure/providers/SessionProvider/SessionProvider'
 // STORE
 import { GlobalStore } from '@/src/infrastructure/store/globalStore'
 // AUTH SERVICE
@@ -27,6 +28,7 @@ function SignupPage() {
     const {state , dispatch} = useSignupReducer()
     const { showAlert } = useAlert()
     const {isLoading, loadingSource, setLoading} = useLoading()
+    const { refreshSession } = useSession()
     const router = useRouter()
 
     // STORE
@@ -49,7 +51,7 @@ function SignupPage() {
         <div className="flex items-center justify-center">
             <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
                 <h2 className="text-2xl font-bold text-center">Sign Up</h2>
-                <form className="space-y-4" method="POST" onSubmit={(e) => handleSubmit({e, router, dispatch, setLoading})}>
+                <form className="space-y-4" method="POST" onSubmit={(e) => handleSubmit({e, router, dispatch, setLoading, refreshSession})}>
                     <input type="hidden" name="operation" value={"signup"} />
                     <div>
                         {state.authError && <p className="text-sm text-red-500 text-center">{state.authError}</p>}

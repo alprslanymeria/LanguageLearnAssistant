@@ -11,7 +11,7 @@ import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // HANDLE LOGOUT
 export async function handleLogout(params : HandleLogoutProps) {
 
-    const {userId, pathName, setLoading, showAlert, resetExcept, dispatch} = params
+    const {userId, pathName, setLoading, showAlert, refreshSession, resetExcept, dispatch} = params
 
     const isHydrated = GlobalStore.persist?.hasHydrated?.() ?? false
 
@@ -59,6 +59,9 @@ export async function handleLogout(params : HandleLogoutProps) {
         resetExcept() // --> Hepsi NULL olsun
 
         await signOut()
+
+        // REFRESH SESSION TO UPDATE UI
+        await refreshSession()
 
         setLoading({value: false})
     }

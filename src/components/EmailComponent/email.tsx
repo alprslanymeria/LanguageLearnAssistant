@@ -23,7 +23,7 @@ export function EmailComponent() {
     const {isLoading, loadingSource, setLoading} = useLoading()
 
     // SESSION
-    const { session, isPending } = useSession()
+    const { session, isPending, refreshSession } = useSession()
     const userId = session?.userId
     const email = session?.email
 
@@ -64,7 +64,7 @@ export function EmailComponent() {
                         <Link href="/list?table=wbooks" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold" onClick={() => handleDropdownClick({dispatch})}>✍️ Writing Books</Link>
                     <button
                         disabled= {(isLoading && loadingSource === "EmailHandleLogout") || isPending}
-                        onClick={() => handleLogout({ userId, pathName, resetExcept, showAlert, dispatch , setLoading})}
+                        onClick={() => handleLogout({ userId, pathName, resetExcept, showAlert, refreshSession, dispatch , setLoading})}
                         className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100 font-semibold"
                     >
                         {isLoading && loadingSource === "EmailHandleLogout" ? (

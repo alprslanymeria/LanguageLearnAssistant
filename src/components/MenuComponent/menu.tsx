@@ -26,7 +26,7 @@ export function MenuComponent() {
   const {isLoading, loadingSource, setLoading} = useLoading()
 
   // SESSION
-  const { session, isPending } = useSession() 
+  const { session, isPending, refreshSession } = useSession() 
   const userId = session?.userId
   const email = session?.email
 
@@ -92,7 +92,7 @@ export function MenuComponent() {
 
             <button
               disabled= {isLoading && loadingSource === "MenuHandleLogout"}
-              onClick={() => handleLogout({ userId, pathName, resetExcept, dispatch, showAlert , setLoading})} 
+              onClick={() => handleLogout({ userId, pathName, resetExcept, dispatch, showAlert, refreshSession, setLoading})} 
               className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 mt-6 rounded-lg transition"
             >
 

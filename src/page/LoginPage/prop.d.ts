@@ -21,6 +21,7 @@ export type HandleSubmitProps = {
   router: AppRouterInstance
   dispatch: React.Dispatch<Action>
   setLoading: (props: setLoadingProps) => void
+  refreshSession: () => Promise<void>
 }
 
 // USE EFFECTS

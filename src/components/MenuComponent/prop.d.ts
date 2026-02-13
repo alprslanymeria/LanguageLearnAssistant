@@ -24,6 +24,7 @@ export type HandleLogoutProps = {
   pathName: string | null
   showAlert: (props: ShowAlertProps) => void
   setLoading: (props: setLoadingProps) => void
+  refreshSession: () => Promise<void>
   resetExcept: (fieldsToKeep?: any) => void
   dispatch: (action: { type: "TOGGLE_MENU" }) => void
 }

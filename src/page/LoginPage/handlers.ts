@@ -6,7 +6,7 @@ import { signIn } from "@/src/infrastructure/auth/authService"
 
 export async function handleSubmit(params: HandleSubmitProps) {
 
-    const { e, router, dispatch, setLoading } = params
+    const { e, router, dispatch, setLoading, refreshSession } = params
 
     const kese = [e, router]
 
@@ -29,6 +29,9 @@ export async function handleSubmit(params: HandleSubmitProps) {
             dispatch({ type: "SET_AUTH_ERROR", payload: { authError: result.errorMessage[0] } })
             return
         }
+
+        // REFRESH SESSION BEFORE REDIRECT
+        await refreshSession()
 
         // REDIRECT TO HOME PAGE
         router.push("/")
