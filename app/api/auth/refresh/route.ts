@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: refreshToken }),
+            body: JSON.stringify({ Token: refreshToken }),
         })
 
         const result: ApiServiceResult<TokenResponse> = await response.json()

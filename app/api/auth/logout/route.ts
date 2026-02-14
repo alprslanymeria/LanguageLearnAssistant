@@ -21,7 +21,7 @@ export async function POST() {
             await fetch(`${OAUTH_SERVER_URL}/api/Auth/RevokeRefreshToken`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: refreshToken }),
+                body: JSON.stringify({ Token: refreshToken })
             })
         }
 

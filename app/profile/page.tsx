@@ -39,7 +39,7 @@ export default function Page() {
             <form method="POST" onSubmit={(e) => handleSubmit({ e, dispatch, setLoading })}>
 
                 {/* HIDDEN DATA'S*/}
-                <input type="hidden" name="userId" value={userId} />
+                <input type="hidden" name="UserId" value={userId} />
 
                 {/* PROFILE IMAGE */}
                 <div className="flex flex-col items-center mb-6">
@@ -59,8 +59,8 @@ export default function Page() {
                         {/* HIDDEN FILE INPUT*/}
                         <input
                             type="file"
-                            id="profileImage"
-                            name="profileImage"
+                            id="Image"
+                            name="Image"
                             accept="image/*"
                             onChange={(e) => {
 
@@ -73,7 +73,7 @@ export default function Page() {
                         />
 
                     <label
-                        htmlFor="profileImage"
+                        htmlFor="Image"
                         className="cursor-pointer px-4 py-2 text-sm bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition-colors"
                     >
                         Upload New Image
@@ -87,8 +87,8 @@ export default function Page() {
                     </label>
                     <input
                         type="text"
-                        id="name"
-                        name="name"
+                        id="Name"
+                        name="Name"
                         value={states.name}
                         onChange={(e) => dispatch({type: "SET_NAME" , payload: {name: e.target.value}})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -117,8 +117,8 @@ export default function Page() {
                     </label>
                     <select
                         value={states.nativeLanguageId}
-                        id="nativeLanguageId"
-                        name="nativeLanguageId"
+                        id="NativeLanguageId"
+                        name="NativeLanguageId"
                         onChange={(e) => dispatch({type: "SET_NATIVE_LANGUAGE_ID" , payload: {nativeLanguageId: Number(e.target.value)}})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >

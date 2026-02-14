@@ -50,21 +50,21 @@ function LoginPage() {
                         {state.authError && <p className="text-sm text-red-500 text-center">{state.authError}</p>}
                     </div>
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                        <label htmlFor="Email" className="block text-sm font-medium text-gray-700">Email</label>
                         <input
                             type="email"
-                            name="email"
-                            id="email"
+                            name="Email"
+                            id="Email"
                             className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required
                         />
                     </div>
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+                        <label htmlFor="Password" className="block text-sm font-medium text-gray-700">Password</label>
                         <input
                             type="password"
-                            name="password"
-                            id="password"
+                            name="Password"
+                            id="Password"
                             className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required
                         />

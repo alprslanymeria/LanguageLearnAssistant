@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
         const response = await fetch(`${OAUTH_SERVER_URL}/api/User`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
+            body: JSON.stringify(body)
         })
 
         const result: ApiServiceResult<UserDto> = await response.json()

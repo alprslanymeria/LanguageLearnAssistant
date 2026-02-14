@@ -19,10 +19,10 @@ export async function handleSubmit(params: HandleSubmitProps) {
     try {
 
         const form = e.currentTarget
-        const email = form.email.value as string
-        const password = form.password.value as string
+        const Email = form.Email.value as string
+        const Password = form.Password.value as string
 
-        const result = await signIn({ email, password })
+        const result = await signIn({ Email, Password })
 
         if (result.errorMessage) {
 

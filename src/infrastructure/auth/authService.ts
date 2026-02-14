@@ -11,7 +11,7 @@ export async function signIn(params: SignInRequest): Promise<ApiServiceResult<vo
 
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(params),
+        body: JSON.stringify(params)
     })
 
     const result = await response.json()
@@ -32,7 +32,7 @@ export async function signUp(params: SignUpRequest): Promise<ApiServiceResult<Us
 
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(params),
+        body: JSON.stringify(params)
     })
 
     const result = await response.json()
