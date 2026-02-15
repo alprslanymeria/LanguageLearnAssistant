@@ -38,7 +38,7 @@ export const UpdateProfileInfosCommandValidator = z.object({
             message: "NATIVE LANGUAGE ID MUST BE GREATER THAN 0"
         }),
 
-    profileImage: z
+    image: z
         .instanceof(File)
         .optional()
         .refine(

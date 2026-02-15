@@ -61,7 +61,7 @@ export function useProfilePageCustomEffect(params : UseProfilePageCustomEffectPr
                     const data : UserDto = responseOne.data as UserDto
     
                     dispatch({type: "SET_USER" , payload: {user: data}})
-                    dispatch({type: "SET_NAME", payload: {name: data.name}})
+                    dispatch({type: "SET_NAME", payload: {name: data.userName}})
                     dispatch({type: "SET_PROFILE_IMAGE", payload: {profileImage: data.image!}})
 
                     // GET LANGUAGES

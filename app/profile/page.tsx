@@ -60,8 +60,8 @@ export default function Page() {
                         {/* HIDDEN FILE INPUT*/}
                         <input
                             type="file"
-                            id="profileImage"
-                            name="profileImage"
+                            id="image"
+                            name="image"
                             accept="image/*"
                             onChange={(e) => {
 
@@ -74,7 +74,7 @@ export default function Page() {
                         />
 
                     <label
-                        htmlFor="profileImage"
+                        htmlFor="image"
                         className="cursor-pointer px-4 py-2 text-sm bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition-colors"
                     >
                         Upload New Image
