@@ -5,9 +5,13 @@ import { cookies } from "next/headers"
 import { AUTH_COOKIES } from "@/src/infrastructure/auth/authTypes"
 
 
+// EXTERNALLY ACCESSIBLE URL OF THIS NEXT.JS APP
+const APP_URL = process.env.APP_URL
+
+
 export async function GET(request: NextRequest) {
 
-    const origin = request.nextUrl.origin
+    const origin = APP_URL
 
     try {
 
