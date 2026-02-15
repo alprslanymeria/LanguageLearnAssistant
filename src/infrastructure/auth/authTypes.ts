@@ -1,17 +1,17 @@
 // SIGNIN REQUEST
 export type SignInRequest = {
 
-    Email: string
-    Password: string
+    email: string
+    password: string
 }
 
 // SIGNUP REQUEST
 export type SignUpRequest = {
 
-    UserName: string
-    Email: string
-    Password: string
-    NativeLanguageId: number
+    userName: string
+    email: string
+    password: string
+    nativeLanguageId: number
 }
 
 // TOKEN RESPONSE AFTER SIGNIN REQUEST

@@ -39,7 +39,7 @@ export default function Page() {
             <form method="POST" onSubmit={(e) => handleSubmit({ e, dispatch, setLoading })}>
 
                 {/* HIDDEN DATA'S*/}
-                <input type="hidden" name="UserId" value={userId} />
+                <input type="hidden" name="userId" value={userId} />
 
                 {/* PROFILE IMAGE */}
                 <div className="flex flex-col items-center mb-6">
@@ -59,8 +59,8 @@ export default function Page() {
                         {/* HIDDEN FILE INPUT*/}
                         <input
                             type="file"
-                            id="Image"
-                            name="Image"
+                            id="image"
+                            name="image"
                             accept="image/*"
                             onChange={(e) => {
 
@@ -73,13 +73,13 @@ export default function Page() {
                         />
 
                     <label
-                        htmlFor="Image"
+                        htmlFor="image"
                         className="cursor-pointer px-4 py-2 text-sm bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition-colors"
                     >
                         Upload New Image
                     </label>
                 </div>
-                
+                            
                 {/* NAME */}
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -87,8 +87,8 @@ export default function Page() {
                     </label>
                     <input
                         type="text"
-                        id="Name"
-                        name="Name"
+                        id="name"
+                        name="name"
                         value={states.name}
                         onChange={(e) => dispatch({type: "SET_NAME" , payload: {name: e.target.value}})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -117,8 +117,8 @@ export default function Page() {
                     </label>
                     <select
                         value={states.nativeLanguageId}
-                        id="NativeLanguageId"
-                        name="NativeLanguageId"
+                        id="nativeLanguageId"
+                        name="nativeLanguageId"
                         onChange={(e) => dispatch({type: "SET_NATIVE_LANGUAGE_ID" , payload: {nativeLanguageId: Number(e.target.value)}})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >

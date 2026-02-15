@@ -19,16 +19,17 @@ export async function handleSubmit(params: HandleSubmitProps) {
     try {
 
         const form = e.currentTarget
-        const Email = form.Email.value as string
-        const Password = form.Password.value as string
-        const NativeLanguageId = Number(form.NativeLanguageId.value)
+        const email = form.email.value as string
+        const password = form.password.value as string
+        const nativeLanguageId = Number(form.nativeLanguageId.value)
 
         // SIGN UP
         const signUpResult = await signUp({
-            UserName: Email.split("@")[0],
-            Email,
-            Password,
-            NativeLanguageId
+
+            userName: email.split("@")[0],
+            email,
+            password,
+            nativeLanguageId
         })
 
         if (signUpResult.errorMessage) {
@@ -38,7 +39,7 @@ export async function handleSubmit(params: HandleSubmitProps) {
         }
 
         // AUTO SIGN IN AFTER SUCCESSFUL SIGNUP
-        const signInResult = await signIn({ Email, Password })
+        const signInResult = await signIn({ email, password })
 
         if (signInResult.errorMessage) {
 
