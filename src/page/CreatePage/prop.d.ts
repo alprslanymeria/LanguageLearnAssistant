@@ -8,7 +8,6 @@ import { WritingOldSessionDto } from "@/src/actions/WritingOldSession/Response"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 import { FlashcardCategoryWithDeckWords, ListeningCategoryWithDeckVideos } from "@/src/infrastructure/store/globalStoreTypes"
-import { FlashcardOldSession, ReadingOldSession, WritingOldSession, ListeningOldSession, ReadingBook, WritingBook } from "@prisma/client"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
 // HANDLERS

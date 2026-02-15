@@ -9,7 +9,7 @@ import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 import { useReadingSessionReducer } from "@/src/components/ReadingSessionComponent/useReadingSessionReducer"
 import { useReadingSessionCustomEffect } from "@/src/components/ReadingSessionComponent/useReadingSessionCustomEffect"
 // TYPES
-import { ReadingBook } from "@prisma/client"
+import { ReadingBookDto } from "@/src/actions/ReadingBook/Response"
 
 
 export default function ReadingSessionComponent() {
@@ -19,7 +19,7 @@ export default function ReadingSessionComponent() {
 
     //STORE
     const sessionData = GlobalStore((state) => state.SessionData)
-    const item = GlobalStore((state) => state.SelectedItem) as ReadingBook
+    const item = GlobalStore((state) => state.SelectedItem) as ReadingBookDto
     const hasHydrated = GlobalStore((state) => state.HasHydrated)
 
     // USE EFFECTS

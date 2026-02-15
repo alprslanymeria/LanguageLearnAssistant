@@ -1,5 +1,4 @@
 // TYPES
-import { ReadingBook } from "@prisma/client"
 import { Action } from "@/src/components/ReadingSessionComponent/prop"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"

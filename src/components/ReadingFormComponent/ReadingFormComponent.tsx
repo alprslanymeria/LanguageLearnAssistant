@@ -10,7 +10,7 @@ import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/Loadi
 import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 // TYPES
 import { ReadingFormComponentProps } from "@/src/components/ReadingFormComponent/prop"
-import { ReadingBook } from "@prisma/client"
+import { ReadingBookDto } from "@/src/actions/ReadingBook/Response"
 // ROUTE & HANDLERS
 import { calculateRate, closeAndSave, handleTextSelection, handleTranslate } from "@/src/components/ReadingFormComponent/handlers"
 
@@ -31,7 +31,7 @@ export default function ReadingFormComponent({dispatch} : ReadingFormComponentPr
     const practice = GlobalStore((state) => state.Practice)
     const sessionData = GlobalStore((state) => state.SessionData )
     const oldSessionId = GlobalStore((state) => state.OldSessionId )
-    const item = GlobalStore((state) => state.SelectedItem) as ReadingBook
+    const item = GlobalStore((state) => state.SelectedItem) as ReadingBookDto
     const updateReadingSession = GlobalStore((state) => state.updateReadingSession )
 
 

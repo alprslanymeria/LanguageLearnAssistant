@@ -2,7 +2,6 @@
 import { ShowAlertProps } from "@/src/infrastructure/providers/AlertProvider/prop"
 import { setLoadingProps } from "@/src/infrastructure/providers/LoadingProvider/prop"
 import { SerializedServiceResult } from "@/src/infrastructure/common/ServiceResult"
-import { FlashcardCategory, Language } from "@prisma/client"
 import { LanguageDto } from "@/src/actions/Language/Response"
 import { FormEvent } from "react"
 

@@ -8,14 +8,15 @@ import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { useWritingSessionReducer } from "@/src/components/WritingSessionComponent/useWritingSessionReducer"
 import { useWritingSessionCustomEffect } from "@/src/components/WritingSessionComponent/useWritingSessionCustomEffect"
-import { WritingBook } from "@prisma/client"
+// TYPES
+import { WritingBookDto } from "@/src/actions/WritingBook/Response"
 
 
 export default function WritingSessionComponent() {
 
     //STORE
     const sessionData = GlobalStore((state) => state.SessionData)
-    const item = GlobalStore((state) => state.SelectedItem) as WritingBook
+    const item = GlobalStore((state) => state.SelectedItem) as WritingBookDto
     const hasHydrated = GlobalStore((state) => state.HasHydrated)
 
     //HOOKS

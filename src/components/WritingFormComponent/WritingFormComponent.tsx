@@ -10,7 +10,7 @@ import { useLoading } from "@/src/infrastructure/providers/LoadingProvider/Loadi
 import { useSession } from "@/src/infrastructure/providers/SessionProvider/SessionProvider"
 // TYPES
 import { WritingFormComponentProps } from "@/src/components/WritingFormComponent/prop"
-import { WritingBook } from "@prisma/client"
+import { WritingBookDto } from "@/src/actions/WritingBook/Response"
 // REDUCER & HANDLERS & CUSTOM USE EFFECTS
 import { calculateRate, closeAndSave, handleTextSelection, handleTranslate } from "@/src/components/WritingFormComponent/handlers"
 
@@ -31,7 +31,7 @@ export default function WritingFormComponent({dispatch} : WritingFormComponentPr
     const practice = GlobalStore((state) => state.Practice)
     const sessionData = GlobalStore((state) => state.SessionData )
     const oldSessionId = GlobalStore((state) => state.OldSessionId )
-    const item = GlobalStore((state) => state.SelectedItem) as WritingBook
+    const item = GlobalStore((state) => state.SelectedItem) as WritingBookDto
     const updateWritingSession = GlobalStore((state) => state.updateWritingSession )
 
     return (
