@@ -12,20 +12,45 @@ Hata alırsan:
 5: npm install --legacy-peer-deps VEYA npm install --force
 
 
-# Development için (SQLite, PostgreSQL local):
-npx prisma db push
+NOT 1 - ÖNEMLİ BAĞIMLILIKLARIN YÜKLENMESİ
+____________________________________________
 
-# Production için (migration oluştur):
-npx prisma migrate dev --name init
+PRISMA
+- npm install prisma tsx @types/mssql --save-dev
+- npm install @prisma/client @prisma/adapter-mssql dotenv mssql
+- npx prisma init
+- Schema dosyası / dosyaları oluşturulur. İki seçenek var:
+    - One schema FILE
+        - prisma.config.ts dosyasında "schema" alanı belirtilirken
+          schema.prisma'ı direkt veririz.
+          schema: "src/infrastructure/prisma/schema.prisma"
+        - Migrations klasörü de schema.prisma ile aynı dizinde olmalıdır.
+          path: "src/infrastructure/prisma/migrations"
+    - Multi schema FILE
+        - prisma klasörü altında "models" klasörü oluşturulur.
+        - burada ilgili .prisma schema dosyaları oluşturulur. (e.g flashcard.prisma , reading.prisma)
+        - ana "schema.prisma" dosyamız "models" klasörü ile aynı dizinde bulunur.
+        - prisma.config.ts dosyasında "schema" alanı belirtilirken 
+          schema.prisma'ı direkt vermek yerine onun bulunduğu klasör verilir.
+          schema: "src/infrastructure/prisma/"
+        - Migrations klasörü de schema.prisma ile aynı dizinde olmalıdır.
+          path: "src/infrastructure/prisma/migrations"
+- CONFIGURE YOUR PRISMA.CONFIG.TS FILE
+- CREATE MIGRATION
+- IMPLEMENT MIGRATION
 
-# Migration'ı production'a uygula:
-npx prisma migrate deploy
 
-NOT 1
-__________
-schema prisma dosyası değiştiğinde şu kodu çalıştır --> npx prisma generate --schema=./prisma/schema.prisma
+PRISMA KOMUTLARI
+- npx prisma db push                    --> schema dosyasını migration oluşturmadan DB'e uygular.
+- npx prisma migrate dev --name init    --> schema dosyasını migration oluşturur.
+- npx prisma migrate deploy             -- > Oluşturulan migration dosyalarını DB'e uygular.
 
-bu kod tip dosyasının güncellenmesini sağlar.
+** schema dosyası değiştiğinde "npx prisma generate --schema=./prisma/schema.prisma" bu komutu çalıştırmalıyız.
+Bu kod tip dosyasının güncellenmesini sağlar. prisma.config.ts dosyası sayesinde artık --schema belirtmemize gerek yok.
+
+
+INVERSIFY
+- 
 
 
 NOT 2
@@ -90,231 +115,3 @@ ______________________________
 next build --webpack olarak kullanıyorum çünkü docker ile build aldığım sırada "pino" kütüphanesi yüzünden hata alıyorum.
 ilerleyen zamanlarda bu flag'i kaldırıp tekrar denerim.
 
-
-
-NOT 7
-_________________________________
-
-OBSERVABILITY
-- instrumentation.ts
-- instrumentation.node.ts
-
-LOGGING
-- STRATEGY PATTERN
-- FACTORY PATTERN
-- ILogger.ts
-- ILogStream.ts
-    - ConsoleLogStream.ts
-    - ElasticsearchLogStream.ts
-- Logger.ts
-- Log.d.ts
-- LoggerConfig.ts
-- LoggerFactory.ts
-
-
-
-
-WITH-ASP-NET-CORE-CLEAN-ARCH
-_________________________________
-
-- Prisma olmayacak, database backend tarafından yürütülecek.
-- Action metotlar olmayacak. Action metotlar backend tarafında taşınacak.
-- Dockerfile burada kalacak. Nextjs image'ı docker hub'a yüklenecek. docker compose dosyası ve otel collector
-config dosyası, prometheus yaml dosyası backend tarafından tanımlanacak.
-- proxy.js dosyası kontrol edilir.
-- zod schema kaldırılır. Backend tarafında fluent validation ile bunların kontrolü sağlanır.
-
-
-- Backend tarafında controller'lar yazılacak, ilgili entity'ler için servisler ve repository'ler yazılacak.
-- request ve response modelle yazılır.
-
-
-ACTION METHODS
-- auth.ts
-    SignIn
-    SignUp
-
-profile.ts
-    GetProfileInfos
-        # User Entity
-        # User Controller
-    SaveProfileInfos
-        # User Entity
-        # User Controller
-
-
-- language.ts
-    GetLanguages
-        # Language Entity
-        # Language Controller                 
-    CompareLanguageId
-        # User Entity
-        # User Controller
-
-
-- practice.ts
-    GetPractices
-        # Practice Entity
-        # Practice Controller
-
-
-
-crud.ts
-    GetItemById
-        # GetReadingBookItemById
-            # ReadingBook Entity
-            # ReadingBook Controller
-        # GetWritingBookItemById
-            # WritingBook Entity
-            # WritingBook Controller
-        # GetFlashcardCategoryItemById
-            # FlashcardCategory Entity
-            # FlashcardCategory Controller
-        # GetDeckWordItemById
-            # DeckWord Entity
-            # DeckWord Controller
-    DeleteById
-        # DeleteReadingBookItemById
-            # ReadingBook Entity
-            # ReadingBook Controller
-        # DeleteWritingBookItemById
-            # WritingBook Entity
-            # WritingBook Controller
-        # DeleteFlashcardCategoryItemById
-            # FlashcardCategory Entity
-            # FlashcardCategory Controller
-        # DeleteDeckWordItemById
-            # DeckWord Entity
-            # DeckWord Controller
-    GetExistingRecord
-        # HELPER METOT NOT ACTION
-    ReadingAddOrUpdate
-        # ReadingBookAdd
-            # ReadingBook Entity
-            # ReadingBook Controller
-        # ReadingBookUpdate
-            # ReadingBook Entity
-            # ReadingBook Controller
-    WritingAddOrUpdate
-        # WritingBookAdd
-            # WritingBook Entity
-            # WritingBook Controller
-        # WritingBookUpdate
-            # WritingBook Entity
-            # WritingBook Controller
-    DeckWordAddOrUpdate
-        # DeckWordAdd
-            # DeckWord Entity
-            # DeckWord Controller
-        # DeckWordUpdate
-            # DeckWord Entity
-            # DeckWord Controller
-    FlashcardCategoryAddOrUpdate
-        # FlashcardCategoryAdd
-            # FlashcardCategory Entity
-            # FlashcardCategory Controller
-        # FlashcardCategoryUpdate
-            # FlashcardCategory Entity
-            # FlashcardCategory Controller
-
-
-
-list.ts
-    GetAllRBooksWithPaging
-        # ReadingBook Entity
-        # ReadingBook Controller
-    GetAllWBooksWithPaging
-        # WritingBook Entity
-        # WritingBook Controller
-    GetAllFCategoriesWithPaging
-        # FlashcardCategory Entity
-        # FlashcardCategory Controller
-    GetAllFWordsWithPaging
-        # DeckWord Entity
-        # DeckWord Controller
-
-
-
-oldSession.ts
-    GetOldSessions 
-        # GetReadingOldSessions
-            # ReadingOldSession Entity
-            # ReadingOldSession Controller
-        # GetFlashcardOldSessions
-            # FlashcardOldSession Entity
-            # FlashcardOldSession Controller
-        # GetWritingOldSessions
-            # WritingOldSession Entity
-            # WritingOldSession Controller
-        # GetListeningOldSessions
-            # ListeningOldSession Entity
-            # ListeningOldSession Controller
-    SaveOldSession
-        # SaveReadingOldSession
-            # ReadingOldSession Entity
-            # ReadingOldSession Controller
-        # SaveFlashcardOldSession
-            # FlashcardOldSession Entity
-            # FlashcardOldSession Controller
-        # SaveWritingOldSession
-            # WritingOldSession Entity
-            # WritingOldSession Controller
-        # SaveListeningOldSession
-            # ListeningOldSession Entity
-            # ListeningOldSession Controller
-
-
-rate.ts
-    CalculateRate
-        # HELPER METOT / BURADA KALABİLİR
-
-
-
-rows.ts
-    GetRowsById
-        # GetReadingRowsById
-            # ReadingSessionRow Entity
-            # ReadingSessionRow Controller
-        # GetWritingRowsById
-            # WritingSessionRow Entity
-            # WritingSessionRow Controller
-        # GetFlashcardRowsById
-            # FlashcardSessionRow Entity
-            # FlashcardSessionRow Controller
-        # GetListeningRowsById
-            # ListeningSessionRow Entity
-            # ListeningSessionRow Controller
-    SaveRows
-        # SaveReadingRows
-            # ReadingSessionRow Entity
-            # ReadingSessionRow Controller
-        # SaveWritingRows
-            # WritingSessionRow Entity
-            # WritingSessionRow Controller
-        # SaveFlashcardRows
-            # FlashcardSessionRow Entity
-            # FlashcardSessionRow Controller
-        # SaveListeningRows
-            # ListeningSessionRow Entity
-            # ListeningSessionRow Controller
-
-
-translate.ts
-    TranslateText
-        # HELPER METOT / BURADA KALABİLİR.
-
-
-utils.ts
-    GetCreateItems
-        # GetReadingBookCreateItems
-            # ReadingBook Entity
-            # ReadingBook Controller
-        # GetWritingBookCreateItems
-            # WritingBook Entity
-            # WritingBook Controller
-        # GetFlashcardCategoryCreateItems
-            # FlashcardCategory Entity
-            # FlashcardCategory Controller
-        # GetListeningCreateItems
-            # ListeningCategory Entity
-            # ListeningCategory Controller
