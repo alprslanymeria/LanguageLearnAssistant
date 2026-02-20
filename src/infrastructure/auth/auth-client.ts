@@ -1,5 +1,3 @@
-// REACT & NEXT
-// import router from "next/router"
 // BETTER AUTH
 import { createAuthClient } from "better-auth/react"
 import { inferAdditionalFields } from "better-auth/client/plugins"
