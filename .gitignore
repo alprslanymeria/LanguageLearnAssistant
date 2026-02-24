@@ -39,5 +39,5 @@ yarn-error.log*
 next-env.d.ts
 
 # GOOGLE SERVICE ACCOUNT
-totemic-atom-447420-b0-943ce371ff89.json
+gcp-key.json
 /src/generated/prisma
