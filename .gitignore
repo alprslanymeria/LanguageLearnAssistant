@@ -39,5 +39,5 @@ yarn-error.log*
 next-env.d.ts
 
 # GOOGLE SERVICE ACCOUNT
-.gcp-key.json
+gcp-key.json
 /src/generated/prisma
