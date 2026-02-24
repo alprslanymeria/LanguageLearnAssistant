@@ -42,7 +42,8 @@ export class GetProfileInfosQueryHandler implements IQueryHandler<GetProfileInfo
 
         const userDto : UserDto = {
 
-            name: user.name,
+            id: user.id,
+            userName: user.name,
             email: user.email,
             image: user.image,
             nativeLanguageId: user.nativeLanguageId

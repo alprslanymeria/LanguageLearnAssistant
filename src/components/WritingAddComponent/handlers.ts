@@ -4,7 +4,7 @@ import { HandleFileChangeOneProps, HandleFileChangeTwoProps, HandleSubmitProps }
 
 export async function handleSubmit( params: HandleSubmitProps) {
 
-    const {e, dispatch, setLoading} = params
+    const {e, dispatch, setLoading, bookName, languageId, userId, imageFile, sourceFile} = params
 
     const kese = [e]
 
@@ -14,13 +14,25 @@ export async function handleSubmit( params: HandleSubmitProps) {
 
     setLoading({value: true , source: "WritingAddHandleSubmit"})
 
-    const formData = new FormData(e.currentTarget)
-
-    const response =  await CreateWritingBook( formData )
-
-    dispatch({type: "SET_STATE", payload: {state: response}})
-
-    setLoading({value: false})
+    try {
+    
+            const formData = new FormData()
+            
+            formData.append("bookName", bookName)
+            formData.append("languageId", String(languageId))
+            formData.append("userId", userId ?? "")
+            formData.append("practice", "writing")
+            if (imageFile) formData.append("imageFile", imageFile)
+            if (sourceFile) formData.append("sourceFile", sourceFile)
+    
+            const response =  await CreateWritingBook( formData )
+    
+            dispatch({type: "SET_STATE", payload: {state: response}})
+    
+        } finally {
+    
+            setLoading({value: false})
+        }
 
 }
 

@@ -14,6 +14,7 @@ import { StorageFactory } from "@/src/infrastructure/storage/StorageFactory"
 import { GoogleCloudStorageStrategy } from "@/src/infrastructure/storage/GoogleCloudStorageStrategy"
 import { IStorageService } from "@/src/infrastructure/storage/IStorageService"
 import { StorageService } from "@/src/infrastructure/storage/StorageService"
+import { getSecret } from '@/src/utils/serverHelper'
 
 export class StorageModule implements IContainerModule {
 
@@ -33,11 +34,14 @@ export class StorageModule implements IContainerModule {
 
             container.bind(TYPES.BucketName).toConstantValue(process.env.GCS_BUCKET_NAME || 'create-items')
                     
-            container.bind<Storage>(TYPES.GoogleCloudClient).toDynamicValue(() => {
+            container.bind<Storage>(TYPES.GoogleCloudClient).toDynamicValue(async () => {
+
+                const json = await getSecret("GCP_SERVICE_ACCOUNT_JSON")
+                const credentials = JSON.parse(json)
 
                 return new Storage({
                     projectId: process.env.GCP_PROJECT_ID,
-                    keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
+                    credentials
                 })
 
             }).inSingletonScope()

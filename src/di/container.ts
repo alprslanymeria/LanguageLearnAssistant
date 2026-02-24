@@ -14,23 +14,37 @@ import { StorageModule } from "./modules/StorageModule"
 import { TranslationModule } from "./modules/TranslationModule"
 import { PipelineBehaviorModule } from "./modules/PipelineBehaviorModule"
 
+let container: Container | null = null
 
-const container = new Container()
+async function buildContainer(): Promise<Container> {
 
-// MODULES TO REGISTER
-const modules: IContainerModule[] = [
-    new LoggingModule(),
-    new PipelineBehaviorModule(),
-    new CachingModule(),
-    new StorageModule(),
-    new TranslationModule(),
-    new RepositoryModule(),
-    new ServiceModule(),
-    new CommandModule(),
-    new QueryModule()
-]
+    const container = new Container()
 
-// REGISTER ALL MODULES TO CONTAINER
-modules.forEach(module => module.register(container))
+    // MODULES TO REGISTER
+    const modules: IContainerModule[] = [
+        new LoggingModule(),
+        new PipelineBehaviorModule(),
+        new CachingModule(),
+        new StorageModule(),
+        new TranslationModule(),
+        new RepositoryModule(),
+        new ServiceModule(),
+        new CommandModule(),
+        new QueryModule()
+    ]
 
-export default container
+    for (const module of modules) {
+
+        await module.register(container)
+    }
+
+    return container
+}
+
+
+export async function getContainer(): Promise<Container> {
+
+  if (!container) { container = await buildContainer() }
+  
+  return container
+}

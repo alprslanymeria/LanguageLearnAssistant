@@ -33,6 +33,11 @@ export type HandleSubmitProps = {
     e: FormEvent<HTMLFormElement>
     dispatch: React.Dispatch<Action>
     setLoading: (props: setLoadingProps) => void
+    bookName: string
+    languageId: number
+    userId: string | undefined
+    imageFile: File | null
+    sourceFile: File | null
 }
 
 export type HandleFileChangeOneProps = {

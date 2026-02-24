@@ -22,7 +22,6 @@ export const UpdateReadingBookCommandValidator = z.object({
   itemId: z
     .coerce
     .number()
-    .int()  
     .gt(0, {
       message: "ITEM ID MUST BE GREATER THAN 0"
     }),
@@ -30,7 +29,6 @@ export const UpdateReadingBookCommandValidator = z.object({
   languageId: z
     .coerce
     .number()
-    .int()
     .gt(0, {
       message: "LANGUAGE ID MUST BE GREATER THAN 0"
     }),

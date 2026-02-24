@@ -39,7 +39,8 @@ export default function ReadingAddComponent () {
             <div className="p-6">
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Create Book</h2>
 
-                <form className="space-y-6" method="POST" onSubmit={(e) => handleSubmit({ e, dispatch, setLoading })} >
+                <form className="space-y-6" 
+                onSubmit={(e) => handleSubmit({ e, dispatch, setLoading, bookName: states.name, languageId: states.languageId, userId, imageFile: states.fileOne, sourceFile: states.fileTwo })} >
                     
                     {/* HIDDEN DATA'S*/}
                     <input type="hidden" name="userId" value={userId} />

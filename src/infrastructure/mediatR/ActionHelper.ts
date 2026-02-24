@@ -1,7 +1,8 @@
 import 'server-only'
 
 // IMPORTS
-import container from "@/src/di/container"
+// import container from "@/src/di/container"
+import { getContainer } from "@/src/di/container"
 import { TYPES } from "@/src/di/type"
 import type { ILogger } from "@/src/infrastructure/logging/ILogger"
 import { QueryBus } from "@/src/infrastructure/mediatR/QueryBus"
@@ -34,8 +35,9 @@ export async function executeQuery<T>(
 
 ): Promise<SerializedServiceResult<T>> {
 
+    const container = await getContainer()
     const logger = container.get<ILogger>(TYPES.Logger)
-    const queryBus = container.get<QueryBus>(TYPES.QueryBus)
+    const queryBus = await container.getAsync<QueryBus>(TYPES.QueryBus)
 
     try {
 
@@ -68,8 +70,9 @@ export async function executeCommand(
 
 ): Promise<SerializedServiceResultBase> {
 
+    const container = await getContainer()
     const logger = container.get<ILogger>(TYPES.Logger)
-    const commandBus = container.get<CommandBus>(TYPES.CommandBus)
+    const commandBus = await container.getAsync<CommandBus>(TYPES.CommandBus)
 
     try {
 
@@ -91,7 +94,7 @@ export async function executeCommand(
 
 /// <summary>
 /// EXECUTE FORMDATA COMMAND ACTION
-/// FORMDATA VALIDATION STAYS HERE (VALIDATES PLAIN OBJECT REPRESENTATION, NOT THE COMMAND)
+/// FORMDATA VALIDATION STAYS HERE
 /// LOGGING IS HANDLED BY PIPELINE BEHAVIOR
 /// </summary>
 export async function executeFormDataCommand(
@@ -105,8 +108,9 @@ export async function executeFormDataCommand(
 
 ): Promise<SerializedServiceResultBase> {
 
+    const container = await getContainer()
     const logger = container.get<ILogger>(TYPES.Logger)
-    const commandBus = container.get<CommandBus>(TYPES.CommandBus)
+    const commandBus = await container.getAsync<CommandBus>(TYPES.CommandBus)
 
     try {
 

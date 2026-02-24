@@ -14,6 +14,7 @@ import { ITranslateService } from "@/src/services/translate/ITranslateService"
 import { TranslateService } from "@/src/services/translate/TranslateService"
 import { TranslateConfig } from '@/src/services/translate/TranslateConfig'
 import { TranslateOptions } from '@/src/services/translate/Translate'
+import { getSecret } from '@/src/utils/serverHelper'
 
 export class TranslationModule implements IContainerModule {
 
@@ -25,13 +26,16 @@ export class TranslationModule implements IContainerModule {
 
         if(translateConfig.type === "google") {
 
-            container.bind<Translate>(TYPES.GoogleTranslationProvider).toDynamicValue(() => {
+            container.bind<Translate>(TYPES.GoogleTranslationProvider).toDynamicValue(async () => {
 
                 const { Translate } = v2
 
+                const json = await getSecret("GCP_SERVICE_ACCOUNT_JSON")
+                const credentials = JSON.parse(json)
+
                 return new Translate({
 
-                    keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
+                    credentials
                 })
 
             }).inSingletonScope()

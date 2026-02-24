@@ -118,7 +118,7 @@ export class CommandModule implements IContainerModule {
 
         // BIND REGISTRY AND BUS
         container.bind(CommandHandlerRegistry).toSelf().inSingletonScope()
-        container.bind(TYPES.CommandBus).toDynamicValue((context) => {
+        container.bind(TYPES.CommandBus).toDynamicValue(async (context) => {
 
             const registry = context.get(CommandHandlerRegistry)
 
@@ -132,12 +132,12 @@ export class CommandModule implements IContainerModule {
             registry.register(CREATE_FROWS_COMMAND, context.get(CreateFRowsCommandHandler))
             registry.register(CREATE_LOS_COMMAND, context.get(CreateLOSCommandHandler))
             registry.register(CREATE_LROWS_COMMAND, context.get(CreateLRowsCommandHandler))
-            registry.register(CREATE_READING_BOOK_COMMAND, context.get(CreateReadingBookCommandHandler))
+            registry.register(CREATE_READING_BOOK_COMMAND, await context.getAsync(CreateReadingBookCommandHandler))
             registry.register(DELETE_RBOOK_ITEM_BY_ID_COMMAND, context.get(DeleteRBookItemByIdCommandHandler))
             registry.register(UPDATE_READING_BOOK_COMMAND, context.get(UpdateReadingBookCommandHandler))
             registry.register(CREATE_ROS_COMMAND, context.get(CreateROSCommandHandler))
             registry.register(CREATE_RROWS_COMMAND, context.get(CreateRRowsCommandHandler))
-            registry.register(CREATE_WRITING_BOOK_COMMAND, context.get(CreateWritingBookCommandHandler))
+            registry.register(CREATE_WRITING_BOOK_COMMAND, await context.getAsync(CreateWritingBookCommandHandler))
             registry.register(DELETE_WBOOK_ITEM_BY_ID_COMMAND, context.get(DeleteWBookItemByIdCommandHandler))
             registry.register(UPDATE_WRITING_BOOK_COMMAND, context.get(UpdateWritingBookCommandHandler))
             registry.register(CREATE_WOS_COMMAND, context.get(CreateWOSCommandHandler))

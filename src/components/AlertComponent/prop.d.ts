@@ -26,7 +26,5 @@ export type UseAlertComponentCustomEffectProps = {
 
   duration?: number
   onClose?: () => void
-  dispatch: (action: {
-                        type: "SET_VISIBLE"; payload: { visible: boolean }
-                      }) => void
+  dispatch: React.Dispatch<Action>
 }

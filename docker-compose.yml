@@ -90,7 +90,6 @@ services:
       - "3000:3000"
     env_file:
       - .env
-      - .env.local
     depends_on:
       - redis
       - elasticsearch
@@ -98,17 +97,18 @@ services:
       - otel-collector
       - migrator
       - sqlserver
+    volumes:
+      - ./gcp-key.json:/app/key.json
     environment:
       NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: 1
-      GOOGLE_APPLICATION_CREDENTIALS: /app/gcp-key.json
-    volumes:
-      - C:\Users\alpar\Documents\projects\totemic-atom-447420-b0-d685515ea319.json:/app/gcp-key.json:ro # HOST:DOCKER:PERMISSIONS
+      GCP_PROJECT_ID: totemic-atom-447420-b0
+      GOOGLE_APPLICATION_CREDENTIALS: /app/key.json
     restart: unless-stopped
 
 # SOCKET SERVER FOR LIVE SESSIONS
   socket-server:
-    image: alparslanorgnl/apps:socket-server
+    image: alparslanorgnl/backend:socket-server
     container_name: socket-server
     restart: always
     ports:

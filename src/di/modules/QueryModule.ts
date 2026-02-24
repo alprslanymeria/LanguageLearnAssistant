@@ -152,7 +152,7 @@ export class QueryModule implements IContainerModule {
 
         // REGISTRY AND BUS BINDING
         container.bind(QueryHandlerRegistry).toSelf().inSingletonScope()
-        container.bind(TYPES.QueryBus).toDynamicValue((context) => {
+        container.bind(TYPES.QueryBus).toDynamicValue(async (context) => {
 
             const registry = context.get(QueryHandlerRegistry)
 
@@ -174,7 +174,7 @@ export class QueryModule implements IContainerModule {
             registry.register(GET_READING_BOOK_BY_ID_QUERY, context.get(GetReadingBookByIdQueryHandler))
             registry.register(GET_ROS_WITH_PAGING_QUERY, context.get(GetROSWithPagingQueryHandler))
             registry.register(GET_RROWS_BY_ID_WITH_PAGING_QUERY, context.get(GetRRowsByIdWithPagingQueryHandler))
-            registry.register(TRANSLATE_TEXT_QUERY, context.get(TranslateTextQueryHandler))
+            registry.register(TRANSLATE_TEXT_QUERY, await context.getAsync(TranslateTextQueryHandler))
             registry.register(GET_ALL_WBOOKS_WITH_PAGING_QUERY, context.get(GetAllWBooksWithPagingQueryHandler))
             registry.register(GET_WBOOK_CREATE_ITEMS_QUERY, context.get(GetWBookCreateItemsQueryHandler))
             registry.register(GET_WRITING_BOOK_BY_ID_QUERY, context.get(GetWritingBookByIdQueryHandler))

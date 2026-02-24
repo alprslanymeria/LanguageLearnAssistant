@@ -21,7 +21,6 @@ export const CreateReadingBookCommandValidator = z.object({
   languageId: z
     .coerce
     .number()
-    .int()
     .gt(0, {
       message: "LANGUAGE ID MUST BE GREATER THAN 0"
     }),

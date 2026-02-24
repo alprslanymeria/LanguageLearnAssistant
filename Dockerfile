@@ -59,7 +59,8 @@ COPY src/infrastructure/prisma/ ./src/infrastructure/prisma
 COPY prisma.config.ts .
 COPY entrypoint.sh /usr/local/bin/entrypoint
 
-RUN chmod +x /usr/local/bin/entrypoint
+# FIX LINE ENDINGS
+RUN sed -i 's/\r$//' /usr/local/bin/entrypoint && chmod +x /usr/local/bin/entrypoint
 
 CMD ["entrypoint"]
 

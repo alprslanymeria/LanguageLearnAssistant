@@ -28,3 +28,4 @@ export function calculateSuccessRate(rows: { similarity?: number }[]): number {
 
   return (totalSimilarity / rows.length) * 100
 }
+

@@ -1,6 +1,3 @@
-import { Translate } from "@google-cloud/translate/build/src/v2";
-import { DeckVideoRepository } from "../infrastructure/persistence/repositories/DeckVideoRepository";
-
 export const TYPES = {
 
   // LOGGING
@@ -16,6 +13,7 @@ export const TYPES = {
   CacheService: Symbol.for('CacheService'),
   RedisClient: Symbol.for('RedisClient'),
 
+  // BEHAVIORS
   CacheBehavior: Symbol.for('CacheBehavior'),
   PipelineBehavior: Symbol.for('PipelineBehavior'),
 
@@ -69,5 +67,5 @@ export const TYPES = {
   // SERVICES
   EntityVerificationService: Symbol.for('EntityVerificationService'),
   ImageProcessingService: Symbol.for('ImageProcessingService'),
-  FileStorageHelper: Symbol.for('FileStorageHelper'),
+  FileStorageHelper: Symbol.for('FileStorageHelper')
 };
