@@ -167,4 +167,5 @@ NOT 7
 __________
 
 docker build -t alparslanorgnl/frontend:language-assistant --target runner . && docker push alparslanorgnl/frontend:language-assistant
-docker build -t alparslanorgnl/frontend:language-assistant-migration --target migrator . && docker push alparslanorgnl/frontend:language-assistant-migration
+
+docker build -t alparslanorgnl/migration:language-assistant-migration --target migrator . && docker push alparslanorgnl/migration:language-assistant-migration
