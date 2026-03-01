@@ -17,8 +17,8 @@ import {
 
 const resource = resourceFromAttributes({
 
-    [ATTR_SERVICE_NAME]: 'language-learn-assistant',
-    [ATTR_SERVICE_VERSION]: '5.0',
+    [ATTR_SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || 'language-learn-assistant',
+    [ATTR_SERVICE_VERSION]: process.env.OTEL_SERVICE_VERSION || '5.0',
 })
 
 const sdk = new NodeSDK({

@@ -30,9 +30,13 @@ export class CachingModule implements IContainerModule {
 
         if(cacheConfig.type === "redis") {
 
+            const redisUrl = process.env.REDIS_URL
+            
+            if (!redisUrl) throw new Error("Missing required environment variable: REDIS_URL (required when CACHE_TYPE=redis)")
+
             container.bind<Redis>(TYPES.RedisClient).toDynamicValue(() => {
 
-                return new Redis(process.env.REDIS_URL!, {
+                return new Redis(redisUrl, {
 
                     // IF NECESSEARY I CAN IMPLEMENT HERE BU I AM PASSING FOR NOW
                     // retryStrategy: (times) => {

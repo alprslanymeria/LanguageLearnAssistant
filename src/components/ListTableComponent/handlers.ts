@@ -8,9 +8,6 @@ import { HandleCreateProps, HandleDeleteProps, HandleEditProps } from "@/src/com
 import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
 
 
-// BASE
-const BASE = process.env.NEXT_PUBLIC_BASE_URL
-
 export function handleCreate(params : HandleCreateProps) {
 
     const {table, router} = params
@@ -19,7 +16,7 @@ export function handleCreate(params : HandleCreateProps) {
 
     if(kese.some(k => !k)) return
     
-    router.push(`${BASE}/add?table=${table}`)
+    router.push(`/add?table=${table}`)
 }
 
 export function handleEdit(params: HandleEditProps) {
@@ -30,7 +27,7 @@ export function handleEdit(params: HandleEditProps) {
 
     if(kese.some(k => !k)) return
     
-    router.push(`${BASE}/edit?id=${itemId}&table=${table}`)
+    router.push(`/edit?id=${itemId}&table=${table}`)
 }
 
 export async function handleDelete(params : HandleDeleteProps) {

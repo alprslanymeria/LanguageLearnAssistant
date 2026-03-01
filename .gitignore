@@ -28,8 +28,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# ENV FILES (CAN OPT-IN FOR COMMITTING IF NEEDED)
-.env*
+# ENV FILES
+.env
+.env.*
+!.env.example
 
 # VERCEL
 .vercel

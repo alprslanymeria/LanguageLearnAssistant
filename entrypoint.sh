@@ -6,15 +6,15 @@ SLEEP_SECONDS=5
 
 for i in $(seq 1 $MAX_ATTEMPTS); do
 
-  echo "Attempt $i: Connecting to SQL Server..."
+  echo "ATTEMPT $i: CONNECTING TO SQL SERVER..."
   if npx prisma migrate deploy; then
-    echo "Migration successful ✅"
+    echo "MIGRATION SUCCESSFUL ✅"
     exit 0
   fi
 
-  echo "Migration failed. Retrying in ${SLEEP_SECONDS}s..."
+  echo "MIGRATION FAILED. RETRYING IN ${SLEEP_SECONDS}s..."
   sleep $SLEEP_SECONDS
 done
 
-echo "Migration failed after ${MAX_ATTEMPTS} attempts!"
+echo "MIGRATION FAILED AFTER ${MAX_ATTEMPTS} ATTEMPTS!"
 exit 1

@@ -1,0 +1,4 @@
+services:
+  nextjs:
+    volumes:
+      - ./gcp-key.json:/app/key.json

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/src/infrastructure/auth/auth"
 import { headers } from "next/headers"
 
-const BASE = process.env.NEXT_PUBLIC_BASE_URL
+const BASE = process.env.BASE_URL
 
 const ROUTES = {
     protected: ["/create", "/session", "/language", "/practice", "/profile", "/detail", "/list", "/edit", "/add"],

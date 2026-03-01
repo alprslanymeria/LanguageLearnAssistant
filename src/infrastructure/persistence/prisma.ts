@@ -6,18 +6,18 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
 const sqlConfig = {
 
-  user: "sa",
-  password: "iA69754.",
-  database: "languageAssistant",
-  server: "sqlserver",
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  server: process.env.DB_SERVER,
   pool: {
     max: 10,
     min: 0,
     idleTimeoutMillis: 30000
   },
   options: {
-    encrypt: false,
-    trustServerCertificate: true
+    encrypt: process.env.DB_ENCRYPT === "true",
+    trustServerCertificate: process.env.DB_TRUST_SERVER_CERTIFICATE === "true"
   }
 }
 

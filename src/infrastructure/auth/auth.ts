@@ -10,8 +10,11 @@ const adapter = prismaAdapter(prisma, {
     provider: "sqlserver"
 })
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
+
+if (!GOOGLE_CLIENT_ID) throw new Error("Missing required environment variable: GOOGLE_CLIENT_ID")
+if (!GOOGLE_CLIENT_SECRET) throw new Error("Missing required environment variable: GOOGLE_CLIENT_SECRET")
 
 export const auth = betterAuth({
 

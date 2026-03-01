@@ -1,16 +1,13 @@
 // TYPES
 import { HandleChooseProps, HandleSvgClickProps } from "@/src/page/CreatePage/prop"
-//LIBRARIES
-import {encrypt} from "@/src/infrastructure/security/crypto"
 //3RD PARTY
 import { v4 as uuidv4 } from 'uuid'
 // ACTIONS
+import { encryptSessionId } from "@/src/actions/EncryptSessionId"
+// INFRA
 import { GlobalStore } from "@/src/infrastructure/store/globalStore"
 import  socket  from "@/src/infrastructure/socket/socketClient"
 import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
-
-//BASE
-const BASE = process.env.NEXT_PUBLIC_BASE_URL
 
 
 export async function handleSvgClick(params : HandleSvgClickProps) {
@@ -66,6 +63,9 @@ export async function handleChoose(params : HandleChooseProps) {
 
         setLoading({value: true , source: "ChooseHandler"})
 
+        // ENCRYPT SESSION ID ON SERVER SIDE (BEFORE SOCKET CALL)
+        const safeUrl = await encryptSessionId(liveSessionId)
+
         //LIVESESSION İÇERİSİNE KAYDET
         socket.emit("create-live-session", {userId, liveSessionId}, (response : any) => {
 
@@ -77,12 +77,8 @@ export async function handleChoose(params : HandleChooseProps) {
                 return
             }
 
-            //CREATE SAFE URL
-            const encryptedSessionId = encrypt(liveSessionId)
-            const safeUrl = encodeURIComponent(encryptedSessionId)
-
             //SESSION SAYFASINA YÖNLENDİR
-            router.push(`${BASE}/session?id=${safeUrl}`)
+            router.push(`/session?id=${safeUrl}`)
         })
 
         

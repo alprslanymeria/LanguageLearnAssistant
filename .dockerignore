@@ -6,3 +6,14 @@ README.md
 .next
 .git
 gcp-key.json
+.env*
+uploads
+CQRS.txt
+notes.txt
+steps.md
+LICENSE
+prometheus.yml
+otel-collector-config.yaml
+docker-compose.yml
+docker-compose.override.yml
+seedData.sql

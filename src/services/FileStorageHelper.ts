@@ -33,7 +33,8 @@ export class FileStorageHelper implements IFileStorageHelper {
 
         this.logger.info(`FileStorageHelper: Uploaded file for user ${userId} to ${fileUrl}`)
 
-        const editedFileUrl = `https://storage.googleapis.com/create-items/${fileUrl}`
+        const bucketName = process.env.GCS_BUCKET_NAME || 'create-items'
+        const editedFileUrl = `https://storage.googleapis.com/${bucketName}/${fileUrl}`
 
         return editedFileUrl
     }
@@ -45,7 +46,8 @@ export class FileStorageHelper implements IFileStorageHelper {
         // EXTRACT FILE PATH FROM URL
         // Remove domain and bucket name to get relative path
         // https://storage.googleapis.com/create-items/user/folder/file -> user/folder/file
-        const filePath = fileUrl.replace("https://storage.googleapis.com/create-items/", "")
+        const bucketName = process.env.GCS_BUCKET_NAME || 'create-items'
+        const filePath = fileUrl.replace(`https://storage.googleapis.com/${bucketName}/`, "")
 
         try {
 

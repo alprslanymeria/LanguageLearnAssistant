@@ -2,16 +2,13 @@
 import { useEffect } from "react"
 // TYPES
 import { UseCreatePageCustomEffectProps } from "@/src/page/CreatePage/prop"
+// ACTIONS
 import { GetRBookCreateItems } from "@/src/actions/ReadingBook/Controller"
 import { GetWBookCreateItems } from "@/src/actions/WritingBook/Controller"
 import { GetFCategoryCreateItems } from "@/src/actions/FlashcardCategory/Controller"
 import { GetLCategoryCreateItems } from "@/src/actions/ListeningCategory/Controller"
+// COMMON
 import { HttpStatusCode } from "@/src/infrastructure/common/HttpStatusCode"
-// ACTIONS
-
-
-//BASE
-const BASE = process.env.NEXT_PUBLIC_BASE_URL
 
 
 export function useCreatePageCustomEffect(params: UseCreatePageCustomEffectProps) {
@@ -97,7 +94,7 @@ export function useCreatePageCustomEffect(params: UseCreatePageCustomEffectProps
 
         if(createItems?.length === 0) {
 
-            setTimeout(() => { router.push(`${BASE}/`) }, 2000)
+            setTimeout(() => { router.push(`/`) }, 2000)
             
             showAlert({type: "info", title: "info", message: "NO ITEMS FOUND!"})
 

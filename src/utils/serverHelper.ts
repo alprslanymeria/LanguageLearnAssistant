@@ -10,9 +10,11 @@ export async function getSecret(name: string) {
 
   if (cache[name]) return cache[name]
 
+  const projectId = process.env.GCP_PROJECT_ID
+
   const [version] = await client.accessSecretVersion({
     
-    name: `projects/651357981664/secrets/${name}/versions/1`,
+    name: `projects/${projectId}/secrets/${name}/versions/latest`,
   })
 
   const value = version.payload?.data?.toString() || ""
