@@ -6,7 +6,7 @@ README.md
 .next
 .git
 gcp-key.json
-.env*
+# .env*
 uploads
 CQRS.txt
 notes.txt
